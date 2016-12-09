@@ -3,12 +3,16 @@ namespace ModbusTcpClient\Network;
 
 use InvalidArgumentException;
 
+/**
+ * Port of php
+ */
 class ModbusConnection extends ModbusConnectionProperties
 {
     /**
-     * @var resource Communication socket
+     * @var resource communication socket
      */
     private $streamSocket;
+
     private $logger;
 
 
@@ -32,22 +36,17 @@ class ModbusConnection extends ModbusConnectionProperties
 
     public function connect()
     {
-        $protocol = null;
-        switch ($this->protocol) {
-            case 'TCP':
-            case 'UDP':
-                $protocol = strtolower($this->protocol);
-                break;
-            default:
-                throw new InvalidArgumentException("Unknown socket protocol, should be 'TCP' or 'UDP'");
+        $protocol = strtolower($this->getProtocol());
+        if (!($protocol === 'tcp' || $protocol === 'udp')) {
+            throw new InvalidArgumentException("Unknown protocol, should be 'TCP' or 'UDP'");
         }
 
         $opts = [];
-        if (strlen($this->client) > 0) {
-            // Bind the client stream to a specific local port
+        if (strlen($this->getClient()) > 0) {
+            // Bind the client stream to a specific local network interface and port
             $opts = array(
                 'socket' => array(
-                    'bindto' => "{$this->client}:{$this->clientPort}",
+                    'bindto' => "{$this->getClient()}:{$this->getClientPort()}",
                 ),
             );
         }
@@ -67,49 +66,57 @@ class ModbusConnection extends ModbusConnectionProperties
             throw new IOException($message, $errno);
         }
 
-        if (strlen($this->client) > 0) {
-//            $this->statusMessages[] = 'Bound';
+        if ($this->logger !== null) {
+            $this->logger->debug('Connected');
         }
-//        $this->statusMessages[] = 'Connected';
 
         stream_set_blocking($this->streamSocket, false); // use non-blocking stream
 
-        $writeTimeoutParts = $this->secsToSecUsecArray($this->writeTimeoutSec);
         // set as stream timeout as we use 'stream_select' to read data and this method has its own timeout
         // this call will only affect our fwrite parts (send data method)
-        stream_set_timeout($this->streamSocket, $writeTimeoutParts['sec'], $writeTimeoutParts['usec']);
+        stream_set_timeout(
+            $this->streamSocket,
+            (int)$this->getWriteTimeoutSec(),
+            $this->extractUsec($this->getWriteTimeoutSec())
+        );
 
         return true;
     }
 
     public function receive()
     {
-        $totalReadTimeout = $this->timeoutSec;
         $lastAccess = microtime(true);
 
-        $readTimeout = $this->secsToSecUsecArray($this->readTimeoutSec);
         while (true) {
             $read = array($this->streamSocket);
             $write = null;
             $except = null;
             $data = '';
-            if (false !== stream_select($read, $write, $except, $readTimeout['sec'], $readTimeout['usec'])) {
-//                $this->statusMessages[] = 'Wait data ... ';
+            if (false !== stream_select(
+                    $read,
+                    $write,
+                    $except,
+                    (int)$this->getReadTimeoutSec(),
+                    $this->extractUsec($this->getReadTimeoutSec())
+                )
+            ) {
+                if ($this->logger !== null) {
+                    $this->logger->debug('Polling data');
+                }
 
                 if (in_array($this->streamSocket, $read, false)) {
                     $data .= fread($this->streamSocket, 2048); // read max 2048 bytes
                     if (!empty($data)) {
-//                        $this->statusMessages[] = 'Data received';
+                        if ($this->logger !== null) {
+                            $this->logger->debug('Data received: ' . unpack('H*', $data));
+                        }
                         return $data;
                     }
                     $lastAccess = microtime(true);
                 } else {
                     $timeSpentWaiting = microtime(true) - $lastAccess;
-                    if ($timeSpentWaiting >= $totalReadTimeout) {
-                        throw new IOException(
-                            "Watchdog time expired [ {$totalReadTimeout} sec ]!!! " .
-                            "Connection to {$this->host}:{$this->port} is not established."
-                        );
+                    if ($timeSpentWaiting >= $this->getTimeoutSec()) {
+                        throw new IOException("Read total timeout expired");
                     }
                 }
             } else {
@@ -122,14 +129,16 @@ class ModbusConnection extends ModbusConnectionProperties
     public function send($packet)
     {
         fwrite($this->streamSocket, $packet, strlen($packet));
-//        $this->statusMessages[] = 'Send';
+
+        if ($this->logger !== null) {
+            $this->logger->debug('Data sent: ' . unpack('H*', $packet));
+        }
     }
 
     public function close()
     {
         if (is_resource($this->streamSocket)) {
             fclose($this->streamSocket);
-//            $this->statusMessages[] = 'Disconnected';
         }
     }
 
@@ -138,13 +147,12 @@ class ModbusConnection extends ModbusConnectionProperties
         $this->close();
     }
 
-    private function secsToSecUsecArray($secs)
+    /**
+     * @param float $seconds
+     * @return int
+     */
+    private function extractUsec($seconds)
     {
-        $remainder = $secs - floor($secs);
-
-        return [
-            'sec' => round($secs - $remainder),
-            'usec' => round($remainder * 1e6),
-        ];
+        return (int)(($seconds - (int)$seconds) * 1e6);
     }
 }
