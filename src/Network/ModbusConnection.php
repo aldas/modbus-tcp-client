@@ -80,7 +80,7 @@ class ModbusConnection extends ModbusConnectionProperties
             $this->extractUsec($this->getWriteTimeoutSec())
         );
 
-        return true;
+        return $this;
     }
 
     public function receive()
@@ -133,6 +133,8 @@ class ModbusConnection extends ModbusConnectionProperties
         if ($this->logger !== null) {
             $this->logger->debug('Data sent: ' . unpack('H*', $packet));
         }
+
+        return $this;
     }
 
     public function close()
