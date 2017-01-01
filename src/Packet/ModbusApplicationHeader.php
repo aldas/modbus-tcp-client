@@ -3,6 +3,7 @@
 namespace ModbusTcpClient\Packet;
 
 
+use ModbusTcpClient\ModbusException;
 use ModbusTcpClient\Utils\Types;
 
 class ModbusApplicationHeader
@@ -79,19 +80,34 @@ class ModbusApplicationHeader
 
     public static function parse($binaryString)
     {
-//        $data = unpack();
+
+        if (strlen($binaryString) < 7) {
+            throw new ModbusException('Data length too short to be valid header!');
+        }
+
+        $transactionId = Types::parseUInt16BE($binaryString[0] . $binaryString[1]);
+        $length = Types::parseUInt16BE($binaryString[4] . $binaryString[5]);
+        $unitId = Types::parseByte($binaryString[6]);
+
+        self::validate($length, $unitId, $transactionId);
+
+        return new ModbusApplicationHeader(
+            $length,
+            $unitId,
+            $transactionId
+        );
     }
 
-    private function validate($length, $unitId, $transactionId)
+    private static function validate($length, $unitId, $transactionId)
     {
-        if ((null === $length) || !($length > 0 && $length <= Types::MAX_VALUE_UINT16)) {
-            throw new \OutOfRangeException("length is not set or out of range: {$this->length}");
+        if (!$length || !($length > 0 && $length <= Types::MAX_VALUE_UINT16)) {
+            throw new \OutOfRangeException("length is not set or out of range: {$length}");
         }
         if (!($unitId >= 0 && $unitId <= Types::MAX_VALUE_BYTE)) {
-            throw new \OutOfRangeException("unitId is out of range: {$this->unitId}");
+            throw new \OutOfRangeException("unitId is out of range: {$unitId}");
         }
         if ((null !== $transactionId) && !($transactionId >= 0 && $transactionId <= Types::MAX_VALUE_UINT16)) {
-            throw new \OutOfRangeException("transactionId is out of range: {$this->transactionId}");
+            throw new \OutOfRangeException("transactionId is out of range: {$transactionId}");
         }
     }
 }

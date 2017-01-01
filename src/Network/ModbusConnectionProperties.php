@@ -1,6 +1,8 @@
 <?php
 namespace ModbusTcpClient\Network;
 
+use Psr\Log\LoggerInterface;
+
 /**
  * ModbusConnection immutable properties base class
  */
@@ -42,6 +44,11 @@ abstract class ModbusConnectionProperties
      * @var string gateway port
      */
     protected $port = 502;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
 
 
 
@@ -115,6 +122,14 @@ abstract class ModbusConnectionProperties
     public function getPort()
     {
         return $this->port;
+    }
+
+    /**
+     * @return LoggerInterface
+     */
+    public function getLogger()
+    {
+        return $this->logger;
     }
 
 }

@@ -1,7 +1,8 @@
 <?php
 namespace Tests\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegisters;
+use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use PHPUnit\Framework\TestCase;
 
 /*
@@ -19,20 +20,20 @@ use PHPUnit\Framework\TestCase;
  * 0003: The total number of registers requested. (read 3 registers 40108 to 40110)
  */
 
-class ReadHoldingRegistersTest extends TestCase
+class ReadHoldingRegistersRequestTest extends TestCase
 {
     public function testPacketToString()
     {
         $this->assertEquals(
             "\x00\x01\x00\x00\x00\x06\x11\x03\x00\x6B\x00\x03",
-            (new ReadHoldingRegisters(107, 3, 17, 1))->__toString()
+            (new ReadHoldingRegistersRequest(107, 3, 17, 1))->__toString()
         );
     }
 
     public function testPacketProperties()
     {
-        $packet = new ReadHoldingRegisters(107, 3, 17, 1);
-        $this->assertEquals(3, $packet->getFunctionCode());
+        $packet = new ReadHoldingRegistersRequest(107, 3, 17, 1);
+        $this->assertEquals(IModbusPacket::READ_HOLDING_REGISTERS, $packet->getFunctionCode());
         $this->assertEquals(107, $packet->getStartAddress());
         $this->assertEquals(3, $packet->getQuantity());
 
@@ -45,7 +46,7 @@ class ReadHoldingRegistersTest extends TestCase
 
     public function testPacketMandatoryProperties()
     {
-        $packet = new ReadHoldingRegisters(107, 3);
+        $packet = new ReadHoldingRegistersRequest(107, 3);
 
         $this->assertEquals(3, $packet->getFunctionCode());
         $this->assertEquals(107, $packet->getStartAddress());

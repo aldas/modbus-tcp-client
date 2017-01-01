@@ -12,32 +12,23 @@ namespace ModbusTcpClient\Packet;
  * 0003: The total number of registers requested. (read 3 registers 40108 to 40110)
  */
 
-use ModbusTcpClient\Utils\Types;
-
 abstract class ProtocolDataUnit implements IModbusPacket
 {
-    private $startAddress;
+    /**
+     * @var ModbusApplicationHeader
+     */
+    private $header;
 
-    public function __construct($startAddress)
+    public function __construct($unitId = 0, $transactionId = null)
     {
-        $this->startAddress = $startAddress;
+        $this->header = new ModbusApplicationHeader($this->getLength(), $unitId, $transactionId);
     }
 
-    public function getStartAddress()
+    /**
+     * @return ModbusApplicationHeader
+     */
+    public function getHeader()
     {
-        return $this->startAddress;
+        return $this->header;
     }
-
-    public function getLength()
-    {
-        return 2; // size of startAddress
-    }
-
-    protected function validate()
-    {
-        if ((null === $this->startAddress) || !($this->startAddress > 0 && $this->startAddress <= Types::MAX_VALUE_UINT16)) {
-            throw new \OutOfRangeException("startAddress is not set or out of range: {$this->startAddress}");
-        }
-    }
-
 }

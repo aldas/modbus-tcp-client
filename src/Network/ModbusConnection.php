@@ -13,9 +13,6 @@ class ModbusConnection extends ModbusConnectionProperties
      */
     private $streamSocket;
 
-    private $logger;
-
-
     public function __construct(ModbusConnectionBuilder $builder)
     {
         $this->host = $builder->getHost();
@@ -27,6 +24,7 @@ class ModbusConnection extends ModbusConnectionProperties
         $this->readTimeoutSec = $builder->getReadTimeoutSec();
         $this->writeTimeoutSec = $builder->getWriteTimeoutSec();
         $this->protocol = $builder->getProtocol();
+        $this->logger = $builder->getLogger();
     }
 
     public static function getBuilder()
@@ -66,7 +64,7 @@ class ModbusConnection extends ModbusConnectionProperties
             throw new IOException($message, $errno);
         }
 
-        if ($this->logger !== null) {
+        if ($this->logger) {
             $this->logger->debug('Connected');
         }
 
@@ -100,14 +98,14 @@ class ModbusConnection extends ModbusConnectionProperties
                     $this->extractUsec($this->getReadTimeoutSec())
                 )
             ) {
-                if ($this->logger !== null) {
+                if ($this->logger) {
                     $this->logger->debug('Polling data');
                 }
 
                 if (in_array($this->streamSocket, $read, false)) {
                     $data .= fread($this->streamSocket, 2048); // read max 2048 bytes
                     if (!empty($data)) {
-                        if ($this->logger !== null) {
+                        if ($this->logger) {
                             $this->logger->debug('Data received: ' . unpack('H*', $data));
                         }
                         return $data;
@@ -130,7 +128,7 @@ class ModbusConnection extends ModbusConnectionProperties
     {
         fwrite($this->streamSocket, $packet, strlen($packet));
 
-        if ($this->logger !== null) {
+        if ($this->logger) {
             $this->logger->debug('Data sent: ' . unpack('H*', $packet));
         }
 

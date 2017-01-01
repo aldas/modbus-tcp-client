@@ -1,0 +1,66 @@
+<?php
+
+
+namespace ModbusTcpClient\Packet\ModbusFunction;
+
+use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
+use ModbusTcpClient\Utils\Types;
+
+
+/**
+ * Request for Write Single Coil (FC=05)
+ */
+class WriteSingleCoilRequest extends ProtocolDataUnitRequest
+{
+    /**
+     * @var bool value to be sent to modbus
+     */
+    private $coil;
+
+    public function __construct($startAddress, $coil, $unitId = 0, $transactionId = null)
+    {
+        parent::__construct($startAddress, $unitId, $transactionId);
+        $this->coil = $coil;
+
+        $this->validate();
+    }
+
+    public function getFunctionCode()
+    {
+        return IModbusPacket::WRITE_SINGLE_COIL;
+    }
+
+    public function __toString()
+    {
+        return parent::__toString()
+            . Types::toByte($this->isCoil() ? 0xFF : 0x0)
+            . chr(0x0);
+    }
+
+    public function getLength()
+    {
+        return parent::getLength() + 2; // coil size (1 byte + 1 byte)
+    }
+
+    public function validate()
+    {
+        parent::validate();
+        if (!is_bool($this->coil)) {
+            throw new \InvalidArgumentException("coil must be boolean value");
+        }
+    }
+
+    public static function parse($binaryString)
+    {
+        // TODO: Implement parse() method.
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCoil()
+    {
+        return $this->coil;
+    }
+}

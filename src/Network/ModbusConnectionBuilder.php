@@ -3,6 +3,8 @@
 namespace ModbusTcpClient\Network;
 
 
+use Psr\Log\LoggerInterface;
+
 class ModbusConnectionBuilder extends ModbusConnectionProperties
 {
     /**
@@ -108,4 +110,15 @@ class ModbusConnectionBuilder extends ModbusConnectionProperties
         $this->port = $port;
         return $this;
     }
+
+    /**
+     * @param LoggerInterface $logger
+     * @return ModbusConnectionBuilder
+     */
+    public function setLogger($logger)
+    {
+        $this->logger = $logger;
+        return $this;
+    }
+
 }
