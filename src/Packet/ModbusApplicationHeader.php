@@ -75,7 +75,8 @@ class ModbusApplicationHeader
             . Types::toUInt16BE($this->getTransactionId())
             . Types::toUInt16BE($this->getProtocolId())
             . Types::toUInt16BE($this->getLength())
-            . Types::toByte($this->getUnitId());
+            . Types::toByte($this->getUnitId())
+            ;
     }
 
     public static function parse($binaryString)
@@ -101,13 +102,13 @@ class ModbusApplicationHeader
     private static function validate($length, $unitId, $transactionId)
     {
         if (!$length || !($length > 0 && $length <= Types::MAX_VALUE_UINT16)) {
-            throw new \OutOfRangeException("length is not set or out of range: {$length}");
+            throw new \OutOfRangeException("length is not set or out of range (uint16): {$length}");
         }
-        if (!($unitId >= 0 && $unitId <= Types::MAX_VALUE_BYTE)) {
-            throw new \OutOfRangeException("unitId is out of range: {$unitId}");
+        if (!($unitId >= 0 && $unitId <= 247)) {
+            throw new \OutOfRangeException("unitId is out of range (0-247): {$unitId}");
         }
         if ((null !== $transactionId) && !($transactionId >= 0 && $transactionId <= Types::MAX_VALUE_UINT16)) {
-            throw new \OutOfRangeException("transactionId is out of range: {$transactionId}");
+            throw new \OutOfRangeException("transactionId is out of range (uint16): {$transactionId}");
         }
     }
 }

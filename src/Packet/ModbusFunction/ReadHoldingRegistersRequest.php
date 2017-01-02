@@ -1,5 +1,4 @@
 <?php
-
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Packet\IModbusPacket;
@@ -53,10 +52,10 @@ class ReadHoldingRegistersRequest extends ProtocolDataUnitRequest
     public function validate()
     {
         parent::validate();
-        if ((null !== $this->quantity) && ($this->quantity > Types::MIN_VALUE_UINT16 && $this->quantity <= Types::MAX_VALUE_UINT16)) {
+        if ((null !== $this->quantity) && ($this->quantity > 0 && $this->quantity <= 124)) {
             return;
         }
-        throw new \OutOfRangeException("quantity is not set or out of range (uint16): {$this->quantity}");
+        throw new \OutOfRangeException("quantity is not set or out of range (0-124): {$this->quantity}");
     }
 
     public static function parse($binaryString)

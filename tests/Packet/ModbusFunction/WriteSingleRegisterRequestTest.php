@@ -1,8 +1,5 @@
 <?php
-
-
 namespace Tests\Packet\ModbusFunction;
-
 
 use ModbusTcpClient\Packet\IModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleRegisterRequest;

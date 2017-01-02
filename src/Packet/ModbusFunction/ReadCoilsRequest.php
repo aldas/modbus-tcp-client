@@ -1,6 +1,4 @@
 <?php
-
-
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 
@@ -53,10 +51,10 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest
     public function validate()
     {
         parent::validate();
-        if ((null !== $this->quantity) && ($this->quantity > Types::MIN_VALUE_UINT16 && $this->quantity <= Types::MAX_VALUE_UINT16)) {
+        if ((null !== $this->quantity) && ($this->quantity > 0 && $this->quantity <= (8 * Types::MAX_VALUE_BYTE))) {
             return;
         }
-        throw new \OutOfRangeException("quantity is not set or out of range (uint16): {$this->quantity}");
+        throw new \OutOfRangeException("quantity is not set or out of range (0-2048): {$this->quantity}");
     }
 
     public static function parse($binaryString)

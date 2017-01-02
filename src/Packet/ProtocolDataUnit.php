@@ -21,8 +21,10 @@ abstract class ProtocolDataUnit implements IModbusPacket
 
     public function __construct($unitId = 0, $transactionId = null)
     {
-        $this->header = new ModbusApplicationHeader($this->getLength(), $unitId, $transactionId);
+        $this->header = new ModbusApplicationHeader($this->getLengthInternal(), $unitId, $transactionId);
     }
+
+    abstract protected function getLengthInternal();
 
     /**
      * @return ModbusApplicationHeader

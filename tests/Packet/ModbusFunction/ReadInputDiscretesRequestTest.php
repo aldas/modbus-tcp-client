@@ -3,22 +3,23 @@ namespace Tests\Packet\ModbusFunction;
 
 use ModbusTcpClient\Packet\IModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsRequest;
+use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesRequest;
 use PHPUnit\Framework\TestCase;
 
-class ReadCoilsRequestTest extends TestCase
+class ReadInputDiscretesRequestTest extends TestCase
 {
     public function testPacketToString()
     {
         $this->assertEquals(
-            "\x00\x01\x00\x00\x00\x06\x10\x01\x00\x6B\x00\x03",
-            (new ReadCoilsRequest(107, 3, 16, 1))->__toString()
+            "\x00\x01\x00\x00\x00\x06\x10\x02\x00\x6B\x00\x03",
+            (new ReadInputDiscretesRequest(107, 3, 16, 1))->__toString()
         );
     }
 
     public function testPacketProperties()
     {
-        $packet = new ReadCoilsRequest(107, 3, 17, 1);
-        $this->assertEquals(IModbusPacket::READ_COILS, $packet->getFunctionCode());
+        $packet = new ReadInputDiscretesRequest(107, 3, 17, 1);
+        $this->assertEquals(IModbusPacket::READ_INPUT_DISCRETES, $packet->getFunctionCode());
         $this->assertEquals(107, $packet->getStartAddress());
         $this->assertEquals(3, $packet->getQuantity());
 

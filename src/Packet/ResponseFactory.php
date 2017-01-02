@@ -5,6 +5,7 @@ namespace ModbusTcpClient\Packet;
 
 
 use ModbusTcpClient\ModbusException;
+use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use ModbusTcpClient\Utils\Types;
 
@@ -19,11 +20,10 @@ class ResponseFactory
         $functionCode = ord($binaryString[7]);
 
         if (($functionCode & ExceptionResponse::EXCEPTION_BITMASK) > 0) {
-            $functionCode = $functionCode - ExceptionResponse::EXCEPTION_BITMASK; //function code is in low bits of exception
+            $functionCode -= ExceptionResponse::EXCEPTION_BITMASK; //function code is in low bits of exception
             $exceptionCode = Types::parseByte($binaryString[8]);
 
             return new ExceptionResponse(ModbusApplicationHeader::parse($binaryString), $functionCode, $exceptionCode);
-
         }
 
 
@@ -36,6 +36,9 @@ class ResponseFactory
         switch ($functionCode) {
             case IModbusPacket::READ_HOLDING_REGISTERS:
                 return new ReadHoldingRegistersResponse($rawData, $unitId, $transactionId);
+                break;
+            case IModbusPacket::READ_COILS:
+                return new ReadCoilsResponse($rawData, $unitId, $transactionId);
                 break;
             default:
                 throw new \InvalidArgumentException("Unknown function code '{$functionCode}' read from response packet");

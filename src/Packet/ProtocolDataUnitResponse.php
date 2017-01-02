@@ -12,6 +12,8 @@ namespace ModbusTcpClient\Packet;
  * 0003: The total number of registers requested. (read 3 registers 40108 to 40110)
  */
 
+use ModbusTcpClient\Utils\Types;
+
 abstract class ProtocolDataUnitResponse extends ProtocolDataUnit
 {
     /**
@@ -19,16 +21,36 @@ abstract class ProtocolDataUnitResponse extends ProtocolDataUnit
      */
     private $rawData;
 
+    /**
+     * @var int
+     */
+    private $length;
+
     public function __construct($rawData, $unitId = 0, $transactionId = null)
     {
         $this->rawData = $rawData;
+        $this->length = strlen($this->rawData);
 
         parent::__construct($unitId, $transactionId);
     }
 
+    public function __toString()
+    {
+        return b''
+            . $this->getHeader()
+            . Types::toByte($this->getFunctionCode())
+            . Types::toByte($this->getLength())
+            . $this->getRawData();
+    }
+
     public function getLength()
     {
-        return strlen($this->rawData);
+        return $this->length;
+    }
+
+    protected function getLengthInternal()
+    {
+        return $this->getLength() + 2; // 2 is for function code + data length
     }
 
     /**
