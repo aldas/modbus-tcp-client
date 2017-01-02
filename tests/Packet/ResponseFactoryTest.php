@@ -13,6 +13,24 @@ use PHPUnit\Framework\TestCase;
 
 class ResponseFactoryTest extends TestCase
 {
+    /**
+     * @expectedException \ModbusTcpClient\ModbusException
+     * @expectedExceptionMessage Response null or data length too short to be valid packet!
+     */
+    public function testShouldThrowExceptionOnGarbageData()
+    {
+        ResponseFactory::parseResponse("\x00\x01\x00\x00\x00\x06\x11\x06");
+    }
+
+    /**
+     * @expectedException \ModbusTcpClient\ModbusException
+     * @expectedExceptionMessage Response null or data length too short to be valid packet!
+     */
+    public function testShouldThrowExceptionOnNullData()
+    {
+        ResponseFactory::parseResponse(null);
+    }
+
     public function testShouldParseExceptionResponse()
     {
         //exception for read coils (FC1), error code 3
@@ -56,7 +74,7 @@ class ResponseFactoryTest extends TestCase
         $this->assertEquals(IModbusPacket::READ_COILS, $response->getFunctionCode());
         $this->assertEquals(2, $response->getLength()); // bytes. length bytes = (coils * 8 + coils % 8) / 8
         $this->assertEquals("\xCD\x6B", $response->getRawData());
-//        $this->assertEquals([0, 3], $response->getData());
+        $this->assertEquals([205, 107], $response->getData());
 
         $header = $response->getHeader();
         $this->assertEquals(3, $header->getUnitId());

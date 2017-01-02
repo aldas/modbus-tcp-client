@@ -13,8 +13,8 @@ class ResponseFactory
 {
     public static function parseResponse($binaryString)
     {
-        if (strlen($binaryString) < 9) { // 7 bytes for MBAP header and at least 2 bytes for PDU
-            throw new ModbusException('Response data length too short to be valid packet!');
+        if ($binaryString === null || strlen($binaryString) < 9) { // 7 bytes for MBAP header and at least 2 bytes for PDU
+            throw new ModbusException('Response null or data length too short to be valid packet!');
         }
 
         $functionCode = ord($binaryString[7]);
@@ -23,9 +23,9 @@ class ResponseFactory
             $functionCode -= ExceptionResponse::EXCEPTION_BITMASK; //function code is in low bits of exception
             $exceptionCode = Types::parseByte($binaryString[8]);
 
+            //TODO throw an exception already here?
             return new ExceptionResponse(ModbusApplicationHeader::parse($binaryString), $functionCode, $exceptionCode);
         }
-
 
         $transactionId = Types::parseUInt16BE($binaryString[0] . $binaryString[1]);
         $unitId = Types::parseByte($binaryString[6]);

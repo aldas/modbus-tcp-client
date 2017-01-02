@@ -4,22 +4,23 @@ namespace Tests\Packet\ModbusFunction;
 
 use ModbusTcpClient\Packet\IModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesResponse;
 use PHPUnit\Framework\TestCase;
 
-class ReadCoilsResponseTest extends TestCase
+class ReadInputDiscretesResponseTest extends TestCase
 {
     public function testPacketToString()
     {
         $this->assertEquals(
-            "\x81\x80\x00\x00\x00\x05\x03\x01\x02\xCD\x6B",
-            (new ReadCoilsResponse("\xCD\x6B", 3, 33152))->__toString()
+            "\x81\x80\x00\x00\x00\x05\x03\x02\x02\xCD\x6B",
+            (new ReadInputDiscretesResponse("\xCD\x6B", 3, 33152))->__toString()
         );
     }
 
     public function testPacketProperties()
     {
-        $packet = new ReadCoilsResponse("\xCD\x6B", 3, 33152);
-        $this->assertEquals(IModbusPacket::READ_COILS, $packet->getFunctionCode());
+        $packet = new ReadInputDiscretesResponse("\xCD\x6B", 3, 33152);
+        $this->assertEquals(IModbusPacket::READ_INPUT_DISCRETES, $packet->getFunctionCode());
 
         $this->assertEquals("\xCD\x6B", $packet->getRawData());
         $this->assertEquals([0xCD, 0x6B], $packet->getData()); //TODO data as boolean array?

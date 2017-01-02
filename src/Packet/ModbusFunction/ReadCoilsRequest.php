@@ -51,6 +51,9 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest
     public function validate()
     {
         parent::validate();
+
+        //quantity e.g. 'number of data bytes to follow' is 1 byte on RESPONSE packet so only 256 bytes (2048 bits)
+        // is allowed to be set as quantity
         if ((null !== $this->quantity) && ($this->quantity > 0 && $this->quantity <= (8 * Types::MAX_VALUE_BYTE))) {
             return;
         }
