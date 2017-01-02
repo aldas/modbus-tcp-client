@@ -72,4 +72,19 @@ class Types
         }, $ints);
     }
 
+    public static function binaryStringToBooleanArray($binary) {
+        $result = [];
+        $coilCount = 8 * strlen($binary);
+
+        for ($index = 0; $index < $coilCount; $index++) {
+            $bit = $index % 8;
+            if ($bit === 0) {
+                $byteAsInt = ord($binary[(int)($index / 8)]);
+            }
+            $result[] = (($byteAsInt & (1 << $bit)) >> $bit) === 1;
+
+        }
+        return $result; //TODO refactor to generator?
+    }
+
 }

@@ -3,17 +3,16 @@ namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Packet\IModbusPacket;
 use ModbusTcpClient\Packet\ProtocolDataUnitResponse;
-use ModbusTcpClient\Utils\Types;
 
 /**
- * Response for Read Coils (FC=01)
+ * Response for Write Single Coil (FC=05)
  */
-class ReadCoilsResponse extends ProtocolDataUnitResponse
+class WriteSingleCoilResponse extends ProtocolDataUnitResponse
 {
 
     public function getFunctionCode()
     {
-        return IModbusPacket::READ_COILS;
+        return IModbusPacket::WRITE_SINGLE_COIL;
     }
 
     public static function parse($binaryString)
@@ -21,8 +20,9 @@ class ReadCoilsResponse extends ProtocolDataUnitResponse
         // TODO: Implement parse() method.
     }
 
-    public function getCoils()
+    public function isCoil()
     {
-        return Types::binaryStringToBooleanArray($this->getRawData());
+        $response = $this->getData();
+        return $response[0] === 0xFF && $response[1] === 0x0;
     }
 }

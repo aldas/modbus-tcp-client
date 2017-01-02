@@ -39,4 +39,13 @@ class TypesTest extends TestCase
         $this->assertEquals("\x55\x0\x09", Types::byteArrayToByte([85, 0, 9]));
     }
 
+    public function testShouldConvertBinaryStringToBooleanArray()
+    {
+        // bit are set from least significant (right) to most significant (left) so it is reversed
+        $this->assertEquals([
+            1, 0, 1, 0, 1, 0, 1, 0, // hex: 55 = bin: 0101 0101 -> reverse for user input: 1010 1010
+            1, 0, 0, 1, 0, 0, 0, 0  // hex: 09 = bin: 0000 1001 -> reverse for user input: 1001 0000
+        ], Types::binaryStringToBooleanArray("\x55\x09"));
+    }
+
 }

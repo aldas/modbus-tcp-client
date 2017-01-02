@@ -23,7 +23,11 @@ class ReadInputDiscretesResponseTest extends TestCase
         $this->assertEquals(IModbusPacket::READ_INPUT_DISCRETES, $packet->getFunctionCode());
 
         $this->assertEquals("\xCD\x6B", $packet->getRawData());
-        $this->assertEquals([0xCD, 0x6B], $packet->getData()); //TODO data as boolean array?
+        $this->assertEquals([0xCD, 0x6B], $packet->getData());
+        $this->assertEquals([
+            1, 0, 1, 1, 0, 0, 1, 1,  // hex: CD -> bin: 1100 1101 -> reverse for user input: 1011 0011
+            1, 1, 0, 1, 0, 1, 1, 0   // hex: 6B -> bin: 0110 1011 -> reverse for user input: 1101 0110
+        ], $packet->getCoils());
 
         $header = $packet->getHeader();
         $this->assertEquals(33152, $header->getTransactionId());

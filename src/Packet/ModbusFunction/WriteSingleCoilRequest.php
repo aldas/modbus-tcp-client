@@ -45,7 +45,7 @@ class WriteSingleCoilRequest extends ProtocolDataUnitRequest
     {
         parent::validate();
         if (!is_bool($this->coil)) {
-            throw new \InvalidArgumentException("coil must be boolean value");
+            throw new \InvalidArgumentException('coil must be boolean value');
         }
     }
 
