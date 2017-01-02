@@ -62,4 +62,14 @@ class Types
         return $result;
     }
 
+    public static function int16ArrayToByteArray(array $ints)
+    {
+        return array_map(function ($elem) {
+            if ($elem) {
+                return Types::toUInt16BE($elem);
+            }
+            return null;
+        }, $ints);
+    }
+
 }

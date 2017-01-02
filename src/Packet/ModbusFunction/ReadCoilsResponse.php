@@ -5,7 +5,7 @@ use ModbusTcpClient\Packet\IModbusPacket;
 use ModbusTcpClient\Packet\ProtocolDataUnitResponse;
 
 /**
- * Response for Read Coil Status (FC=01)
+ * Response for Read Coils (FC=01)
  */
 class ReadCoilsResponse extends ProtocolDataUnitResponse
 {

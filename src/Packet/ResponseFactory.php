@@ -28,7 +28,6 @@ class ResponseFactory
 
 
         $transactionId = Types::parseUInt16BE($binaryString[0] . $binaryString[1]);
-        $length = Types::parseUInt16BE($binaryString[4] . $binaryString[5]);
         $unitId = Types::parseByte($binaryString[6]);
 
         $rawData = substr($binaryString, 9);

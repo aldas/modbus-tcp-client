@@ -7,7 +7,7 @@ use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Utils\Types;
 
 /**
- * Request for Read Coil Status (FC=01)
+ * Request for Read Coils (FC=01)
  */
 class ReadCoilsRequest extends ProtocolDataUnitRequest
 {

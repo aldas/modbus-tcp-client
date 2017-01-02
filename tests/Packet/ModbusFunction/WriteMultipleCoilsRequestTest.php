@@ -33,10 +33,7 @@ class WriteMultipleCoilsRequestTest extends TestCase
      */
     public function testValidateEmptyCoils()
     {
-        $this->assertEquals(
-            "\x00\x01\x00\x00\x00\x06\x11\x05\x00\x6B\x00\x00",
-            (new WriteMultipleCoilsRequest(107, [], 17, 1))->__toString()
-        );
+        (new WriteMultipleCoilsRequest(107, [], 17, 1))->__toString();
     }
 
     public function testOnPacketProperties()
