@@ -53,8 +53,6 @@ class ResponseFactoryTest extends TestCase
 
         $this->assertInstanceOf(ReadHoldingRegistersResponse::class, $response);
         $this->assertEquals(IModbusPacket::READ_HOLDING_REGISTERS, $response->getFunctionCode());
-        $this->assertEquals(2, $response->getLength()); // bytes. words = byte / 2 as 1 word = 2 bytes
-        $this->assertEquals("\x00\x03", $response->getRawData());
         $this->assertEquals([0, 3], $response->getData());
 
         $header = $response->getHeader();
@@ -68,13 +66,15 @@ class ResponseFactoryTest extends TestCase
         //81 80 + 00 00 + 00 05 + 01  + 01 + 02  + CD 6b
         $data = "\x81\x80\x00\x00\x00\x05\x03\x01\x02\xCD\x6B";
 
+        /* @var ReadCoilsResponse */
         $response = ResponseFactory::parseResponse($data);
 
         $this->assertInstanceOf(ReadCoilsResponse::class, $response);
         $this->assertEquals(IModbusPacket::READ_COILS, $response->getFunctionCode());
-        $this->assertEquals(2, $response->getLength()); // bytes. length bytes = (coils * 8 + coils % 8) / 8
-        $this->assertEquals("\xCD\x6B", $response->getRawData());
-        $this->assertEquals([205, 107], $response->getData());
+        $this->assertEquals([
+            1, 0, 1, 1, 0, 0, 1, 1,  // hex: CD -> bin: 1100 1101 -> reverse for user input: 1011 0011
+            1, 1, 0, 1, 0, 1, 1, 0   // hex: 6B -> bin: 0110 1011 -> reverse for user input: 1101 0110
+        ], $response->getCoils());
 
         $header = $response->getHeader();
         $this->assertEquals(3, $header->getUnitId());

@@ -13,17 +13,15 @@ class ReadInputDiscretesResponseTest extends TestCase
     {
         $this->assertEquals(
             "\x81\x80\x00\x00\x00\x05\x03\x02\x02\xCD\x6B",
-            (new ReadInputDiscretesResponse("\xCD\x6B", 3, 33152))->__toString()
+            (new ReadInputDiscretesResponse("\x02\xCD\x6B", 3, 33152))->__toString()
         );
     }
 
     public function testPacketProperties()
     {
-        $packet = new ReadInputDiscretesResponse("\xCD\x6B", 3, 33152);
+        $packet = new ReadInputDiscretesResponse("\x02\xCD\x6B", 3, 33152);
         $this->assertEquals(IModbusPacket::READ_INPUT_DISCRETES, $packet->getFunctionCode());
 
-        $this->assertEquals("\xCD\x6B", $packet->getRawData());
-        $this->assertEquals([0xCD, 0x6B], $packet->getData());
         $this->assertEquals([
             1, 0, 1, 1, 0, 0, 1, 1,  // hex: CD -> bin: 1100 1101 -> reverse for user input: 1011 0011
             1, 1, 0, 1, 0, 1, 1, 0   // hex: 6B -> bin: 0110 1011 -> reverse for user input: 1101 0110

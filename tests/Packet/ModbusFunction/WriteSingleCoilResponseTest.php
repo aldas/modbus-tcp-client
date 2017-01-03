@@ -11,18 +11,16 @@ class WriteSingleCoilResponseTest extends TestCase
     public function testPacketToString()
     {
         $this->assertEquals(
-            "\x81\x80\x00\x00\x00\x05\x03\x05\x02\xFF\x00",
-            (new WriteSingleCoilResponse("\xFF\x00", 3, 33152))->__toString()
+            "\x81\x80\x00\x00\x00\x05\x03\x05\x00\x02\xFF\x00",
+            (new WriteSingleCoilResponse("\x00\x02\xFF\x00", 3, 33152))->__toString()
         );
     }
 
     public function testOnPacketProperties()
     {
-        $packet = new WriteSingleCoilResponse("\xFF\x00", 3, 33152);
+        $packet = new WriteSingleCoilResponse("\x00\x02\xFF\x00", 3, 33152);
         $this->assertEquals(IModbusPacket::WRITE_SINGLE_COIL, $packet->getFunctionCode());
 
-        $this->assertEquals("\xFF\x0", $packet->getRawData());
-        $this->assertEquals([0xFF, 0x0], $packet->getData());
         $this->assertEquals(true, $packet->isCoil());
 
         $header = $packet->getHeader();
@@ -34,11 +32,9 @@ class WriteSingleCoilResponseTest extends TestCase
 
     public function testOffPacketProperties()
     {
-        $packet = new WriteSingleCoilResponse("\x00\x00", 3, 33152);
+        $packet = new WriteSingleCoilResponse("\x00\x02\x00\x00", 3, 33152);
         $this->assertEquals(IModbusPacket::WRITE_SINGLE_COIL, $packet->getFunctionCode());
 
-        $this->assertEquals("\x00\x0", $packet->getRawData());
-        $this->assertEquals([0x0, 0x0], $packet->getData());
         $this->assertEquals(false, $packet->isCoil());
 
         $header = $packet->getHeader();

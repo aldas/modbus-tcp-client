@@ -38,14 +38,9 @@ abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
         return $this->startAddress;
     }
 
-    public function getLength()
-    {
-        return 3; // size of function code (1 byte) + startAddress (2 bytes)
-    }
-
     protected function getLengthInternal()
     {
-        return $this->getLength();
+        return 3; // size of function code (1 byte) + startAddress (2 bytes)
     }
 
     protected function validate()

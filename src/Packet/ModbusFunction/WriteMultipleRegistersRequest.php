@@ -30,16 +30,6 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest
         $this->validate();
     }
 
-    public function getFunctionCode()
-    {
-        return IModbusPacket::WRITE_MULTIPLE_REGISTERS;
-    }
-
-    public function getLength()
-    {
-        return parent::getLength() + (1 + $this->registersBytesSize); // registers count + number of bytes registers need for data
-    }
-
     public function validate()
     {
         parent::validate();
@@ -53,6 +43,11 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest
         }
     }
 
+    public function getFunctionCode()
+    {
+        return IModbusPacket::WRITE_MULTIPLE_REGISTERS;
+    }
+
     public function __toString()
     {
         return parent::__toString()
@@ -61,16 +56,16 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest
             . Registers::getRegisterArrayAsByteString($this->registers);
     }
 
-    public static function parse($binaryString)
-    {
-        // TODO: Implement parse() method.
-    }
-
     /**
      * @return array
      */
     public function getRegisters()
     {
         return $this->registers;
+    }
+
+    protected function getLengthInternal()
+    {
+        return parent::getLengthInternal() + (1 + $this->registersBytesSize); // registers count + number of bytes registers need for data
     }
 }

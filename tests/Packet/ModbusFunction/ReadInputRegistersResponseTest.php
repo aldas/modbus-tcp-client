@@ -14,16 +14,15 @@ class ReadInputRegistersResponseTest extends TestCase
     {
         $this->assertEquals(
             "\x81\x80\x00\x00\x00\x05\x03\x04\x02\xCD\x6B",
-            (new ReadInputRegistersResponse("\xCD\x6B", 3, 33152))->__toString()
+            (new ReadInputRegistersResponse("\x02\xCD\x6B", 3, 33152))->__toString()
         );
     }
 
     public function testPacketProperties()
     {
-        $packet = new ReadInputRegistersResponse("\xCD\x6B\x0\x0\x0\x01", 3, 33152);
+        $packet = new ReadInputRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01", 3, 33152);
         $this->assertEquals(IModbusPacket::READ_INPUT_REGISTERS, $packet->getFunctionCode());
 
-        $this->assertEquals("\xCD\x6B\x0\x0\x0\x01", $packet->getRawData());
         $this->assertEquals([0xCD, 0x6B, 0x0, 0x0, 0x0, 0x1], $packet->getData()); //TODO get data as array of words (2 bytes)
 
         $header = $packet->getHeader();

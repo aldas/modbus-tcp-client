@@ -25,17 +25,13 @@ class ReadHoldingRegistersRequest extends ProtocolDataUnitRequest
 
     }
 
-    public function getLength()
+    public function validate()
     {
-        return parent::getLength() + 2; // quantity size (2 bytes)
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getQuantity()
-    {
-        return $this->quantity;
+        parent::validate();
+        if ((null !== $this->quantity) && ($this->quantity > 0 && $this->quantity <= 124)) {
+            return;
+        }
+        throw new \OutOfRangeException("quantity is not set or out of range (0-124): {$this->quantity}");
     }
 
     public function getFunctionCode()
@@ -49,17 +45,16 @@ class ReadHoldingRegistersRequest extends ProtocolDataUnitRequest
             . Types::toUInt16BE($this->getQuantity());
     }
 
-    public function validate()
+    /**
+     * @return int
+     */
+    public function getQuantity()
     {
-        parent::validate();
-        if ((null !== $this->quantity) && ($this->quantity > 0 && $this->quantity <= 124)) {
-            return;
-        }
-        throw new \OutOfRangeException("quantity is not set or out of range (0-124): {$this->quantity}");
+        return $this->quantity;
     }
 
-    public static function parse($binaryString)
+    protected function getLengthInternal()
     {
-        return null;
+        return parent::getLengthInternal() + 2; // quantity size (2 bytes)
     }
 }

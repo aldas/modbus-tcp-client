@@ -24,6 +24,14 @@ class WriteSingleCoilRequest extends ProtocolDataUnitRequest
         $this->validate();
     }
 
+    public function validate()
+    {
+        parent::validate();
+        if (!is_bool($this->coil)) {
+            throw new \InvalidArgumentException('coil must be boolean value');
+        }
+    }
+
     public function getFunctionCode()
     {
         return IModbusPacket::WRITE_SINGLE_COIL;
@@ -36,29 +44,16 @@ class WriteSingleCoilRequest extends ProtocolDataUnitRequest
             . chr(0x0);
     }
 
-    public function getLength()
-    {
-        return parent::getLength() + 2; // coil size (1 byte + 1 byte)
-    }
-
-    public function validate()
-    {
-        parent::validate();
-        if (!is_bool($this->coil)) {
-            throw new \InvalidArgumentException('coil must be boolean value');
-        }
-    }
-
-    public static function parse($binaryString)
-    {
-        // TODO: Implement parse() method.
-    }
-
     /**
      * @return bool
      */
     public function isCoil()
     {
         return $this->coil;
+    }
+
+    protected function getLengthInternal()
+    {
+        return parent::getLengthInternal() + 2; // coil size (1 byte + 1 byte)
     }
 }

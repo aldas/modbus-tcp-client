@@ -114,7 +114,7 @@ class ModbusConnection extends ModbusConnectionProperties
                 } else {
                     $timeSpentWaiting = microtime(true) - $lastAccess;
                     if ($timeSpentWaiting >= $this->getTimeoutSec()) {
-                        throw new IOException("Read total timeout expired");
+                        throw new IOException('Read total timeout expired');
                     }
                 }
             } else {

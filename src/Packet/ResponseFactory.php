@@ -30,8 +30,9 @@ class ResponseFactory
         $transactionId = Types::parseUInt16BE($binaryString[0] . $binaryString[1]);
         $unitId = Types::parseByte($binaryString[6]);
 
-        $rawData = substr($binaryString, 9);
+        $rawData = substr($binaryString, 8);
 
+        //TODO add all response types
         switch ($functionCode) {
             case IModbusPacket::READ_HOLDING_REGISTERS:
                 return new ReadHoldingRegistersResponse($rawData, $unitId, $transactionId);

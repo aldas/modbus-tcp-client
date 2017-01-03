@@ -24,22 +24,24 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest
         $this->validate();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getQuantity()
+    public function validate()
     {
-        return $this->quantity;
+        parent::validate();
+
+        if ((null !== $this->quantity) && ($this->quantity > 0 && $this->quantity <= Types::MAX_VALUE_UINT16)) {
+            return;
+        }
+        throw new \OutOfRangeException("quantity is not set or out of range (1-65535): {$this->quantity}");
+    }
+
+    public static function parse($binaryString)
+    {
+        // TODO: Implement parse() method.
     }
 
     public function getFunctionCode()
     {
         return IModbusPacket::READ_COILS;
-    }
-
-    public function getLength()
-    {
-        return parent::getLength() + 2; // quantity size (2 bytes)
     }
 
     public function __toString()
@@ -48,20 +50,16 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest
             . Types::toUInt16BE($this->getQuantity());
     }
 
-    public function validate()
+    /**
+     * @return int
+     */
+    public function getQuantity()
     {
-        parent::validate();
-
-        //quantity e.g. 'number of data bytes to follow' is 1 byte on RESPONSE packet so only 256 bytes (2048 bits)
-        // is allowed to be set as quantity
-        if ((null !== $this->quantity) && ($this->quantity > 0 && $this->quantity <= (8 * Types::MAX_VALUE_BYTE))) {
-            return;
-        }
-        throw new \OutOfRangeException("quantity is not set or out of range (0-2048): {$this->quantity}");
+        return $this->quantity;
     }
 
-    public static function parse($binaryString)
+    protected function getLengthInternal()
     {
-        // TODO: Implement parse() method.
+        return parent::getLengthInternal() + 2; // quantity size (2 bytes)
     }
 }

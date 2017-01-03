@@ -27,23 +27,6 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest
         $this->validate();
     }
 
-    public function getFunctionCode()
-    {
-        return IModbusPacket::WRITE_MULTIPLE_COILS;
-    }
-
-    public function getLength()
-    {
-        return parent::getLength() + (1 + $this->coilBytesSize); // coil count + number of bytes coils need for data
-    }
-
-    public function __toString()
-    {
-        return parent::__toString()
-            . Types::toByte($this->coilCount)
-            . Types::byteArrayToByte(Types::booleanArrayToByteArray($this->coils));
-    }
-
     public function validate()
     {
         parent::validate();
@@ -55,9 +38,16 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest
         }
     }
 
-    public static function parse($binaryString)
+    public function getFunctionCode()
     {
-        // TODO: Implement parse() method.
+        return IModbusPacket::WRITE_MULTIPLE_COILS;
+    }
+
+    public function __toString()
+    {
+        return parent::__toString()
+            . Types::toByte($this->coilCount)
+            . Types::byteArrayToByte(Types::booleanArrayToByteArray($this->coils));
     }
 
     /**
@@ -66,5 +56,10 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest
     public function getCoils()
     {
         return $this->coils;
+    }
+
+    protected function getLengthInternal()
+    {
+        return parent::getLengthInternal() + (1 + $this->coilBytesSize); // coil count + number of bytes coils need for data
     }
 }

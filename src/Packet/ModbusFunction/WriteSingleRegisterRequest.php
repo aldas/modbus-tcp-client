@@ -25,22 +25,6 @@ class WriteSingleRegisterRequest extends ProtocolDataUnitRequest
         $this->validate();
     }
 
-    public function getFunctionCode()
-    {
-        return IModbusPacket::WRITE_SINGLE_REGISTER;
-    }
-
-    public function getLength()
-    {
-        return parent::getLength() + 2; // value size (2 bytes)
-    }
-
-    public function __toString()
-    {
-        return parent::__toString()
-            . Types::toUInt16BE($this->getValue());
-    }
-
     public function validate()
     {
         parent::validate();
@@ -50,9 +34,15 @@ class WriteSingleRegisterRequest extends ProtocolDataUnitRequest
         throw new \OutOfRangeException("value is not set or out of range (int16): {$this->value}");
     }
 
-    public static function parse($binaryString)
+    public function getFunctionCode()
     {
-        // TODO: Implement parse() method.
+        return IModbusPacket::WRITE_SINGLE_REGISTER;
+    }
+
+    public function __toString()
+    {
+        return parent::__toString()
+            . Types::toUInt16BE($this->getValue());
     }
 
     /**
@@ -61,5 +51,10 @@ class WriteSingleRegisterRequest extends ProtocolDataUnitRequest
     public function getValue()
     {
         return $this->value;
+    }
+
+    protected function getLengthInternal()
+    {
+        return parent::getLengthInternal() + 2; // value size (2 bytes)
     }
 }
