@@ -34,11 +34,6 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest
         throw new \OutOfRangeException("quantity is not set or out of range (1-65535): {$this->quantity}");
     }
 
-    public static function parse($binaryString)
-    {
-        // TODO: Implement parse() method.
-    }
-
     public function getFunctionCode()
     {
         return IModbusPacket::READ_COILS;

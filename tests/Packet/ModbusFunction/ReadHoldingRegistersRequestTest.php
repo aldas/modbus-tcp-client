@@ -48,7 +48,7 @@ class ReadHoldingRegistersRequestTest extends TestCase
     {
         $packet = new ReadHoldingRegistersRequest(107, 3);
 
-        $this->assertEquals(3, $packet->getFunctionCode());
+        $this->assertEquals(IModbusPacket::READ_HOLDING_REGISTERS, $packet->getFunctionCode());
         $this->assertEquals(107, $packet->getStartAddress());
         $this->assertEquals(3, $packet->getQuantity());
 

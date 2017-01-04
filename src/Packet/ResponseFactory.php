@@ -33,6 +33,7 @@ class ResponseFactory
         $rawData = substr($binaryString, 8);
 
         //TODO add all response types
+        //TODO should responses parse all their data themselves?
         switch ($functionCode) {
             case IModbusPacket::READ_HOLDING_REGISTERS:
                 return new ReadHoldingRegistersResponse($rawData, $unitId, $transactionId);

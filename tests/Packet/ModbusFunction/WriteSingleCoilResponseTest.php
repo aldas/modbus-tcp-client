@@ -11,7 +11,7 @@ class WriteSingleCoilResponseTest extends TestCase
     public function testPacketToString()
     {
         $this->assertEquals(
-            "\x81\x80\x00\x00\x00\x05\x03\x05\x00\x02\xFF\x00",
+            "\x81\x80\x00\x00\x00\x06\x03\x05\x00\x02\xFF\x00",
             (new WriteSingleCoilResponse("\x00\x02\xFF\x00", 3, 33152))->__toString()
         );
     }
@@ -26,7 +26,7 @@ class WriteSingleCoilResponseTest extends TestCase
         $header = $packet->getHeader();
         $this->assertEquals(33152, $header->getTransactionId());
         $this->assertEquals(0, $header->getProtocolId());
-        $this->assertEquals(5, $header->getLength());
+        $this->assertEquals(6, $header->getLength());
         $this->assertEquals(3, $header->getUnitId());
     }
 
@@ -40,7 +40,7 @@ class WriteSingleCoilResponseTest extends TestCase
         $header = $packet->getHeader();
         $this->assertEquals(33152, $header->getTransactionId());
         $this->assertEquals(0, $header->getProtocolId());
-        $this->assertEquals(5, $header->getLength());
+        $this->assertEquals(6, $header->getLength());
         $this->assertEquals(3, $header->getUnitId());
     }
 

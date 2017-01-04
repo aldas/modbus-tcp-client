@@ -38,4 +38,10 @@ class WriteMultipleCoilsResponse extends StartAddressResponse
     {
         return parent::getLengthInternal() + 2; //coilCount is 2 bytes
     }
+
+    public function __toString()
+    {
+        return parent::__toString()
+            . Types::toUInt16BE($this->coilCount);
+    }
 }
