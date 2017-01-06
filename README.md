@@ -1,6 +1,7 @@
 # Modbus TCP protocol client
 
-* Modbus TCP/IP description: http://www.simplymodbus.ca/TCP.htm
+* Modbus TCP/IP specification: http://www.modbus.org/specs.php
+* Modbus TCP/IP simpler description: http://www.simplymodbus.ca/TCP.htm
 
 ##Supported functions
 
@@ -18,7 +19,7 @@
 * PHP 5.6+
 
 ## Intention
-This library is influenced by [phpmodbus](https://github.com/adduc/phpmodbus) library and meant to be provide decoupled Modbus protocol (packets) and networking related features so you could build modbus client with our own choice of networking code (ext_sockets/streams/Reactphp asynchronous streams) or use library provided networking classes (php Streams)
+This library is influenced by [phpmodbus](https://github.com/adduc/phpmodbus) library and meant to be provide decoupled Modbus protocol (request/response packets) and networking related features so you could build modbus client with our own choice of networking code (ext_sockets/streams/Reactphp asynchronous streams) or use library provided networking classes (php Streams)
 
 ## Example (fc3 - read holding registers)
 
