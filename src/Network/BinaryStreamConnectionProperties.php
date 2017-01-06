@@ -4,9 +4,11 @@ namespace ModbusTcpClient\Network;
 use Psr\Log\LoggerInterface;
 
 /**
- * ModbusConnection immutable properties base class
+ * BinaryStreamConnection immutable properties base class
+ *
+ * uses same properties as PhpModbus library ModbusMaster class
  */
-abstract class ModbusConnectionProperties
+abstract class BinaryStreamConnectionProperties
 {
     /**
      * @var string (optional) client IP address when binding client

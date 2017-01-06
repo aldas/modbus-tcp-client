@@ -5,12 +5,12 @@ namespace ModbusTcpClient\Network;
 
 use Psr\Log\LoggerInterface;
 
-class ModbusConnectionBuilder extends ModbusConnectionProperties
+class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
 {
     /**
-     * Return built instance of ModbusConnection
+     * Return built instance of BinaryStreamConnection
      *
-     * @return ModbusConnection built instance
+     * @return BinaryStreamConnection built instance
      * @throws \LogicException
      */
     public function build()
@@ -18,12 +18,12 @@ class ModbusConnectionBuilder extends ModbusConnectionProperties
         if (empty($this->host)) {
             throw new \LogicException('host property can not be left null or empty!');
         }
-        return new ModbusConnection($this);
+        return new BinaryStreamConnection($this);
     }
 
     /**
      * @param string $client
-     * @return ModbusConnectionBuilder
+     * @return BinaryStreamConnectionBuilder
      */
     public function setClient($client)
     {
@@ -33,7 +33,7 @@ class ModbusConnectionBuilder extends ModbusConnectionProperties
 
     /**
      * @param string $clientPort
-     * @return ModbusConnectionBuilder
+     * @return BinaryStreamConnectionBuilder
      */
     public function setClientPort($clientPort)
     {
@@ -43,7 +43,7 @@ class ModbusConnectionBuilder extends ModbusConnectionProperties
 
     /**
      * @param float $timeoutSec
-     * @return ModbusConnectionBuilder
+     * @return BinaryStreamConnectionBuilder
      */
     public function setTimeoutSec($timeoutSec)
     {
@@ -53,7 +53,7 @@ class ModbusConnectionBuilder extends ModbusConnectionProperties
 
     /**
      * @param float $connectTimeoutSec
-     * @return ModbusConnectionBuilder
+     * @return BinaryStreamConnectionBuilder
      */
     public function setConnectTimeoutSec($connectTimeoutSec)
     {
@@ -63,7 +63,7 @@ class ModbusConnectionBuilder extends ModbusConnectionProperties
 
     /**
      * @param float $readTimeoutSec
-     * @return ModbusConnectionBuilder
+     * @return BinaryStreamConnectionBuilder
      */
     public function setReadTimeoutSec($readTimeoutSec)
     {
@@ -73,7 +73,7 @@ class ModbusConnectionBuilder extends ModbusConnectionProperties
 
     /**
      * @param float $writeTimeoutSec
-     * @return ModbusConnectionBuilder
+     * @return BinaryStreamConnectionBuilder
      */
     public function setWriteTimeoutSec($writeTimeoutSec)
     {
@@ -83,7 +83,7 @@ class ModbusConnectionBuilder extends ModbusConnectionProperties
 
     /**
      * @param string $protocol
-     * @return ModbusConnectionBuilder
+     * @return BinaryStreamConnectionBuilder
      */
     public function setProtocol($protocol)
     {
@@ -93,7 +93,7 @@ class ModbusConnectionBuilder extends ModbusConnectionProperties
 
     /**
      * @param string $host
-     * @return ModbusConnectionBuilder
+     * @return BinaryStreamConnectionBuilder
      */
     public function setHost($host)
     {
@@ -103,7 +103,7 @@ class ModbusConnectionBuilder extends ModbusConnectionProperties
 
     /**
      * @param string $port
-     * @return ModbusConnectionBuilder
+     * @return BinaryStreamConnectionBuilder
      */
     public function setPort($port)
     {
@@ -113,7 +113,7 @@ class ModbusConnectionBuilder extends ModbusConnectionProperties
 
     /**
      * @param LoggerInterface $logger
-     * @return ModbusConnectionBuilder
+     * @return BinaryStreamConnectionBuilder
      */
     public function setLogger($logger)
     {

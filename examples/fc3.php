@@ -1,12 +1,12 @@
 <?php
 
-use ModbusTcpClient\Network\ModbusConnection;
+use ModbusTcpClient\Network\BinaryStreamConnection;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ResponseFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$connection = ModbusConnection::getBuilder()
+$connection = BinaryStreamConnection::getBuilder()
     ->setPort(5020)
     ->setHost('127.0.0.1')
     ->build();

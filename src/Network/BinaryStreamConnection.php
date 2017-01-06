@@ -3,17 +3,14 @@ namespace ModbusTcpClient\Network;
 
 use InvalidArgumentException;
 
-/**
- * Port of php
- */
-class ModbusConnection extends ModbusConnectionProperties
+class BinaryStreamConnection extends BinaryStreamConnectionProperties
 {
     /**
      * @var resource communication socket
      */
     private $streamSocket;
 
-    public function __construct(ModbusConnectionBuilder $builder)
+    public function __construct(BinaryStreamConnectionBuilder $builder)
     {
         $this->host = $builder->getHost();
         $this->port = $builder->getPort();
@@ -29,7 +26,7 @@ class ModbusConnection extends ModbusConnectionProperties
 
     public static function getBuilder()
     {
-        return new ModbusConnectionBuilder();
+        return new BinaryStreamConnectionBuilder();
     }
 
     public function connect()
@@ -133,6 +130,11 @@ class ModbusConnection extends ModbusConnectionProperties
         }
 
         return $this;
+    }
+
+    public function sendAndReceive($packet)
+    {
+        return $this->send($packet)->receive();
     }
 
     public function close()
