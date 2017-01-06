@@ -24,6 +24,10 @@ class RegistersTest extends TestCase
 
         $this->assertEquals("\x0\xC8\x01\x01", Registers::getRegisterArrayAsByteString([Types::toByte(200), Types::toUInt16BE(257)]));
         $this->assertEquals("\x0\x01\x0\xC8\x0\x0", Registers::getRegisterArrayAsByteString([Types::toUInt16BE(1), Types::toByte(200), null]));
+
+        $this->assertEquals("\x00\x03\x01\x02", Registers::getRegisterArrayAsByteString(["\x01\x02\x03"]));
+
+        $this->assertEquals("\x07\xd0\x00\x00", Registers::getRegisterArrayAsByteString([Types::toInt32BE(2000)]));
     }
 
 }

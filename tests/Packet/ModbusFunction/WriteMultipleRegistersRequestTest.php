@@ -11,7 +11,7 @@ class WriteMultipleRegistersRequestTest extends TestCase
     public function testPacketToString()
     {
         $this->assertEquals(
-            "\x01\x38\x00\x00\x00\x05\x11\x10\x04\x10\x00\x03\x06\x00\xC8\x00\x82\x87\x01",
+            "\x01\x38\x00\x00\x00\x0b\x11\x10\x04\x10\x00\x03\x06\x00\xC8\x00\x82\x87\x01",
             (new WriteMultipleRegistersRequest(0x0410, [Types::toByte(200), Types::toUInt16BE(130), Types::toUInt16BE(34561)], 0x11, 0x0138))->__toString()
         );
     }
@@ -36,7 +36,7 @@ class WriteMultipleRegistersRequestTest extends TestCase
         $header = $packet->getHeader();
         $this->assertEquals(1, $header->getTransactionId());
         $this->assertEquals(0, $header->getProtocolId());
-        $this->assertEquals(5, $header->getLength());
+        $this->assertEquals(11, $header->getLength());
         $this->assertEquals(17, $header->getUnitId());
     }
 }

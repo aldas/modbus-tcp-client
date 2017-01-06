@@ -19,10 +19,11 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest
 
     public function __construct($startAddress, array $coils, $unitId = 0, $transactionId = null)
     {
-        parent::__construct($startAddress, $unitId, $transactionId);
         $this->coils = $coils;
         $this->coilCount = count($this->coils);
-        $this->coilBytesSize = ($this->coilCount + 7) / 8;
+        $this->coilBytesSize = (int)(($this->coilCount + 7) / 8);
+
+        parent::__construct($startAddress, $unitId, $transactionId);
 
         $this->validate();
     }
@@ -46,7 +47,8 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest
     public function __toString()
     {
         return parent::__toString()
-            . Types::toByte($this->coilCount)
+            . Types::toUInt16BE($this->coilCount)
+            . Types::toByte($this->coilBytesSize)
             . Types::byteArrayToByte(Types::booleanArrayToByteArray($this->coils));
     }
 
@@ -60,6 +62,6 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest
 
     protected function getLengthInternal()
     {
-        return parent::getLengthInternal() + (1 + $this->coilBytesSize); // coil count + number of bytes coils need for data
+        return parent::getLengthInternal() + (3 + $this->coilBytesSize); // coilCount + coilBytesSize + number of bytes coils need for data
     }
 }

@@ -19,6 +19,11 @@ class Types
         return pack('n', $data);
     }
 
+    public static function toInt32BE($data)
+    {
+        return pack('N', $data);
+    }
+
     public static function parseUInt16BE($binaryData)
     {
         return unpack('n', $binaryData)[1];
@@ -72,7 +77,8 @@ class Types
         }, $ints);
     }
 
-    public static function binaryStringToBooleanArray($binary) {
+    public static function binaryStringToBooleanArray($binary)
+    {
         $result = [];
         $coilCount = 8 * strlen($binary);
 

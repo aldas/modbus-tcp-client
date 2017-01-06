@@ -7,6 +7,10 @@ namespace ModbusTcpClient\Packet;
 use ModbusTcpClient\ModbusException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
+use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsResponse;
+use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersResponse;
+use ModbusTcpClient\Packet\ModbusFunction\WriteSingleCoilResponse;
+use ModbusTcpClient\Packet\ModbusFunction\WriteSingleRegisterResponse;
 use ModbusTcpClient\Utils\Types;
 
 class ResponseFactory
@@ -44,6 +48,18 @@ class ResponseFactory
                 break;
             case IModbusPacket::READ_COILS:
                 return new ReadCoilsResponse($rawData, $unitId, $transactionId);
+                break;
+            case IModbusPacket::WRITE_SINGLE_COIL:
+                return new WriteSingleCoilResponse($rawData, $unitId, $transactionId);
+                break;
+            case IModbusPacket::WRITE_SINGLE_REGISTER:
+                return new WriteSingleRegisterResponse($rawData, $unitId, $transactionId);
+                break;
+            case IModbusPacket::WRITE_MULTIPLE_COILS:
+                return new WriteMultipleCoilsResponse($rawData, $unitId, $transactionId);
+                break;
+            case IModbusPacket::WRITE_MULTIPLE_REGISTERS:
+                return new WriteMultipleRegistersResponse($rawData, $unitId, $transactionId);
                 break;
             default:
                 throw new \InvalidArgumentException("Unknown function code '{$functionCode}' read from response packet");

@@ -22,10 +22,11 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest
 
     public function __construct($startAddress, array $registers, $unitId = 0, $transactionId = null)
     {
-        parent::__construct($startAddress, $unitId, $transactionId);
         $this->registers = $registers;
-        $this->registersCount = count($this->registers);
         $this->registersBytesSize = Registers::getRegisterArrayByteSize($this->registers);
+        $this->registersCount = $this->registersBytesSize / 2;
+
+        parent::__construct($startAddress, $unitId, $transactionId);
 
         $this->validate();
     }
