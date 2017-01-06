@@ -19,8 +19,7 @@ echo 'Packet to be sent (in hex): ' . $packet->toHex() . PHP_EOL;
 
 try {
     $binaryData = $connection->connect()
-        ->send($packet)
-        ->receive();
+        ->sendAndReceive($packet);
     echo 'Binary received (in hex):   ' . unpack('H*', $binaryData)[1] . PHP_EOL;
 
     /* @var $response ReadCoilsResponse */

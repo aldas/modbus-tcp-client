@@ -38,8 +38,7 @@ $packet = new ReadHoldingRegistersRequest($startAddress, $quantity);
 
 try {
     $binaryData = $connection->connect()
-        ->send($packet)
-        ->receive();
+        ->sendAndReceive($packet);
 
     //parse binary data to response object
     $response = ResponseFactory::parseResponse($binaryData);
