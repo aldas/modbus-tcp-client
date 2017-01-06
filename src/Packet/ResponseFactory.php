@@ -11,6 +11,10 @@ use ModbusTcpClient\Utils\Types;
 
 class ResponseFactory
 {
+    /**
+     * @param $binaryString
+     * @return IModbusPacket
+     */
     public static function parseResponse($binaryString)
     {
         if ($binaryString === null || strlen($binaryString) < 9) { // 7 bytes for MBAP header and at least 2 bytes for PDU

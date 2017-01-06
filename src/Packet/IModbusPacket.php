@@ -19,4 +19,5 @@ interface IModbusPacket
     public function getFunctionCode();
 
     public function __toString();
+    public function toHex();
 }

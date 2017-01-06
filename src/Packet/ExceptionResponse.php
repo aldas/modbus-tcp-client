@@ -63,8 +63,7 @@ class ExceptionResponse implements IModbusPacket
             . Types::toByte($this->getErrorCode());
     }
 
-    public static function parse($binaryString)
-    {
-        // TODO: Implement parse() method.
+    public function toHex() {
+        return unpack('H*', $this->__toString())[1];
     }
 }
