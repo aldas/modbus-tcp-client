@@ -33,4 +33,8 @@ abstract class ProtocolDataUnit implements IModbusPacket
     {
         return $this->header;
     }
+
+    public function toHex() {
+        return unpack('H*', $this->__toString())[1];
+    }
 }
