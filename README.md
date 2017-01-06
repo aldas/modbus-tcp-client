@@ -23,6 +23,10 @@ This library is influenced by [phpmodbus](https://github.com/adduc/phpmodbus) li
 ## Example (fc3 - read holding registers)
 
 ```php
+use ModbusTcpClient\Network\ModbusConnection;
+use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
+use ModbusTcpClient\Packet\ResponseFactory;
+
 $connection = ModbusConnection::getBuilder()
     ->setHost('192.168.0.1')
     ->build();
