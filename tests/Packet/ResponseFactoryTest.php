@@ -4,7 +4,7 @@
 namespace Tests\Packet;
 
 
-use ModbusTcpClient\Packet\ExceptionResponse;
+use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\IModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
@@ -31,17 +31,33 @@ class ResponseFactoryTest extends TestCase
         ResponseFactory::parseResponse(null);
     }
 
-    public function testShouldParseExceptionResponse()
+    public function testShouldParseErrorResponse()
     {
         //exception for read coils (FC1), error code 3
         $data = "\xda\x87\x00\x00\x00\x03\x00\x81\x03";
 
+        /* @var $response ErrorResponse */
         $response = ResponseFactory::parseResponse($data);
 
-        $this->assertInstanceOf(ExceptionResponse::class, $response);
+        $this->assertInstanceOf(ErrorResponse::class, $response);
         $this->assertEquals(IModbusPacket::READ_COILS, $response->getFunctionCode());
         $this->assertEquals(3, $response->getErrorCode());
+        $this->assertEquals('Illegal data value', $response->getErrorMessage());
     }
+
+
+    /**
+     * @expectedException \ModbusTcpClient\ModbusException
+     * @expectedExceptionMessage Illegal data value
+     */
+    public function testShouldThrowExceptionOnErrorResponse()
+    {
+        //exception for read coils (FC1), error code 3
+        $data = "\xda\x87\x00\x00\x00\x03\x00\x81\x03";
+
+        ResponseFactory::parseResponseOrThrow($data);
+    }
+
 
     public function testShouldParseReadHoldingRegistersResponse()
     {

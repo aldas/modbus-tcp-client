@@ -6,7 +6,7 @@ namespace ModbusTcpClient\Packet;
 
 use ModbusTcpClient\Utils\Types;
 
-class ExceptionResponse implements IModbusPacket
+class ErrorResponse implements IModbusPacket
 {
     /**
      * @var int Modbus exceptions are transfered in function code byte and have their high bit set (128)
@@ -48,6 +48,39 @@ class ExceptionResponse implements IModbusPacket
     public function getErrorCode()
     {
         return $this->errorCode;
+    }
+    public function getErrorMessage()
+    {
+        switch ($this->errorCode) {
+            case 1:
+                $message = 'Illegal function';
+                break;
+            case 2:
+                $message = 'Illegal data address';
+                break;
+            case 3:
+                $message = 'Illegal data value';
+                break;
+            case 4:
+                $message = 'Server failure';
+                break;
+            case 5:
+                $message = 'Acknowledge';
+                break;
+            case 6:
+                $message = 'Server busy';
+                break;
+            case 10:
+                $message = 'Gateway path unavailable';
+                break;
+            case 11:
+                $message = 'Gateway targeted device failed to respond';
+                break;
+            default:
+                $message = "Uknown error code ($this->errorCode)";
+                break;
+        }
+        return $message;
     }
 
     public function getLength()

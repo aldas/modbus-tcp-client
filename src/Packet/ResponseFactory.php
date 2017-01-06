@@ -23,12 +23,12 @@ class ResponseFactory
 
         $functionCode = ord($binaryString[7]);
 
-        if (($functionCode & ExceptionResponse::EXCEPTION_BITMASK) > 0) {
-            $functionCode -= ExceptionResponse::EXCEPTION_BITMASK; //function code is in low bits of exception
+        if (($functionCode & ErrorResponse::EXCEPTION_BITMASK) > 0) {
+            $functionCode -= ErrorResponse::EXCEPTION_BITMASK; //function code is in low bits of exception
             $exceptionCode = Types::parseByte($binaryString[8]);
 
             //TODO throw an exception already here?
-            return new ExceptionResponse(ModbusApplicationHeader::parse($binaryString), $functionCode, $exceptionCode);
+            return new ErrorResponse(ModbusApplicationHeader::parse($binaryString), $functionCode, $exceptionCode);
         }
 
         $transactionId = Types::parseUInt16BE($binaryString[0] . $binaryString[1]);
@@ -49,6 +49,14 @@ class ResponseFactory
                 throw new \InvalidArgumentException("Unknown function code '{$functionCode}' read from response packet");
 
         }
+    }
+
+    public static function parseResponseOrThrow($binaryString) {
+        $response = static::parseResponse($binaryString);
+        if ($response instanceof ErrorResponse) {
+            throw new ModbusException($response->getErrorMessage(), $response->getErrorCode());
+        }
+        return $response;
     }
 
 }

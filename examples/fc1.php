@@ -23,9 +23,8 @@ try {
         ->receive();
     echo 'Binary received (in hex):   ' . unpack('H*', $binaryData)[1] . PHP_EOL;
 
-
     /* @var $response ReadCoilsResponse */
-    $response = ResponseFactory::parseResponse($binaryData);
+    $response = ResponseFactory::parseResponseOrThrow($binaryData);
     echo 'Parsed packet (in hex):     ' . $response->toHex() . PHP_EOL;
     echo 'Data parsed from packet (bytes):' . PHP_EOL;
     print_r($response->getCoils());

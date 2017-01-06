@@ -24,6 +24,7 @@ This library is influenced by [phpmodbus](https://github.com/adduc/phpmodbus) li
 
 ```php
 use ModbusTcpClient\Network\ModbusConnection;
+use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ResponseFactory;
 
@@ -42,6 +43,11 @@ try {
 
     //parse binary data to response object
     $response = ResponseFactory::parseResponse($binaryData);
+    
+    //check if response contains modbus error or use ::parseResponseOrThrow() to throw exception on modbus error packets
+    if ($response instanceof ErrorResponse) { 
+        throw new \Exception($response->getErrorMessage(), $response->getErrorCode());
+    }
     
     echo 'Data parsed from packet (bytes):' . PHP_EOL;
     print_r($response->getData());
