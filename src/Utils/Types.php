@@ -21,7 +21,12 @@ class Types
 
     public static function toInt32BE($data)
     {
-        return pack('N', $data);
+        //http://www.simplymodbus.ca/FAQ.htm#Order
+        //dec: 2923517522 is in hex: AE415652, it is low word 5652, high word AE41
+        //so in network 5652 AE41 should be sent. low word first (Big endian)
+        $highWord = self::toUInt16BE(($data >> 16) & 0xFFFF); // get last 2 bytes
+        $lowWord = self::toUInt16BE($data & 0xFFFF); // get first 2 bytes
+        return $lowWord . $highWord;
     }
 
     public static function parseUInt16BE($binaryData)

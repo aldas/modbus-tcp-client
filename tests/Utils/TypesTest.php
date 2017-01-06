@@ -19,6 +19,12 @@ class TypesTest extends TestCase
         $this->assertEquals("\xFF\xFF", Types::toUInt16BE(65535));
     }
 
+    public function testShouldEncodeToBinaryInt32()
+    {
+        $this->assertEquals("\x00\x01\x00\x00", Types::toInt32BE(1));
+        $this->assertEquals("\x56\x52\xAE\x41", Types::toInt32BE(2923517522));
+    }
+
     public function testShouldConvertBooleanArrayToByteArrayOneByte()
     {
         $this->assertEquals([85], Types::booleanArrayToByteArray([1, 0, 1, 0, 1, 0, 1]));
