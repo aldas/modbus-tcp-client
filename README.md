@@ -23,6 +23,8 @@ This library is influenced by [phpmodbus](https://github.com/adduc/phpmodbus) li
 
 ## Example (fc3 - read holding registers)
 
+Some of the Modbus function examples are in `examples/` folder
+
 ```php
 use ModbusTcpClient\Network\BinaryStreamConnection;
 use ModbusTcpClient\Packet\ErrorResponse;
@@ -35,11 +37,10 @@ $connection = BinaryStreamConnection::getBuilder()
     
 $startAddress = 12288;
 $quantity = 6;
-$packet = new ReadHoldingRegistersRequest($startAddress, $quantity);
+$packet = new ReadHoldingRegistersRequest($startAddress, $quantity); //create FC3 request packet
 
 try {
-    $binaryData = $connection->connect()
-        ->sendAndReceive($packet);
+    $binaryData = $connection->connect()->sendAndReceive($packet);
 
     //parse binary data to response object
     $response = ResponseFactory::parseResponse($binaryData);
@@ -50,8 +51,8 @@ try {
     }
     
     echo 'Data parsed from packet (bytes):' . PHP_EOL;
-    // array of bytes. These are not modbus WORDs. 1 WORD is 2 bytes
-    print_r($response->getData());
+    print_r($response->getData()); // array of bytes. These are not modbus WORDs. 1 WORD is 2 bytes
+    print_r($response->getWords()); // array of words. Word in this case array of 2 bytes. [[0,100],[0,22]]
 
 } catch (Exception $exception) {
     echo $exception->getMessage() . PHP_EOL;

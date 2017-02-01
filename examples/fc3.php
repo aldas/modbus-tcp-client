@@ -25,6 +25,7 @@ try {
     echo 'Parsed packet (in hex):     ' . $response->toHex() . PHP_EOL;
     echo 'Data parsed from packet (bytes):' . PHP_EOL;
     print_r($response->getData());
+    print_r($response->getWords());
 
 } catch (Exception $exception) {
     echo 'An exception occurred' . PHP_EOL;
