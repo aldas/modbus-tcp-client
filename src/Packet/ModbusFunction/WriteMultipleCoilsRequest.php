@@ -31,9 +31,7 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest
     public function validate()
     {
         parent::validate();
-        if (null === $this->coils) {
-            throw new \OutOfRangeException('coils is not set');
-        }
+
         if ($this->coilCount === 0 || $this->coilCount > 2048) {
             throw new \OutOfRangeException("coils count out of range (1-2048): {$this->coilCount}");
         }

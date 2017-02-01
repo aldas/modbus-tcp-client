@@ -10,6 +10,9 @@ use ModbusTcpClient\Utils\Types;
  */
 class WriteSingleCoilResponse extends StartAddressResponse
 {
+    const ON = 0xFF;
+    const OFF = 0x0;
+
     /**
      * @var bool
      */
@@ -18,7 +21,7 @@ class WriteSingleCoilResponse extends StartAddressResponse
     public function __construct($rawData, $unitId = 0, $transactionId = null)
     {
         parent::__construct($rawData, $unitId, $transactionId);
-        $this->coil = ord($rawData[2]) === 0xFF;
+        $this->coil = ord($rawData[2]) === self::ON;
     }
 
     public function getFunctionCode()
@@ -29,8 +32,8 @@ class WriteSingleCoilResponse extends StartAddressResponse
     public function __toString()
     {
         return parent::__toString()
-            . Types::toByte($this->isCoil() ? 0xFF : 0x0)
-            . chr(0x0);
+            . Types::toByte($this->isCoil() ? self::ON : self::OFF)
+            . chr(self::OFF);
     }
 
     public function isCoil()

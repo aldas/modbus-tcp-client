@@ -37,6 +37,16 @@ class ReadHoldingRegistersResponse extends ByteCountResponse
         return $this->data;
     }
 
+    /**
+     * Return data as splitted into chunks. Each chunk contains 2 elements
+     *
+     * @return array array of arrays. each arrays cointain 2 elements (bytes)
+     */
+    public function getWords()
+    {
+        return array_chunk($this->data, 2);
+    }
+
     public function __toString()
     {
         return parent::__toString()

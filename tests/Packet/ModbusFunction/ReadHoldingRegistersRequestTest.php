@@ -59,4 +59,31 @@ class ReadHoldingRegistersRequestTest extends TestCase
         $this->assertEquals(0, $header->getUnitId());
     }
 
+    /**
+     * @expectedException \OutOfRangeException
+     * @expectedExceptionMessage quantity is not set or out of range (0-124):
+     */
+    public function testShouldThrowExceptionOnNullQuantity()
+    {
+        new ReadHoldingRegistersRequest(107, null);
+    }
+
+    /**
+     * @expectedException \OutOfRangeException
+     * @expectedExceptionMessage quantity is not set or out of range (0-124):
+     */
+    public function testShouldThrowExceptionOnBelowLimitQuantity()
+    {
+        new ReadHoldingRegistersRequest(107, 0);
+    }
+
+    /**
+     * @expectedException \OutOfRangeException
+     * @expectedExceptionMessage quantity is not set or out of range (0-124):
+     */
+    public function testShouldThrowExceptionOnOverLimitQuantity()
+    {
+        new ReadHoldingRegistersRequest(107, 125);
+    }
+
 }

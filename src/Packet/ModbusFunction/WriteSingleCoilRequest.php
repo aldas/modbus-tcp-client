@@ -11,6 +11,9 @@ use ModbusTcpClient\Utils\Types;
  */
 class WriteSingleCoilRequest extends ProtocolDataUnitRequest
 {
+    const ON = 0xFF;
+    const OFF = 0x0;
+
     /**
      * @var bool value to be sent to modbus
      */
@@ -40,7 +43,7 @@ class WriteSingleCoilRequest extends ProtocolDataUnitRequest
     public function __toString()
     {
         return parent::__toString()
-            . Types::toByte($this->isCoil() ? 0xFF : 0x0)
+            . Types::toByte($this->isCoil() ? self::ON : self::OFF)
             . chr(0x0);
     }
 

@@ -34,9 +34,7 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest
     public function validate()
     {
         parent::validate();
-        if (null === $this->registers) {
-            throw new \OutOfRangeException('registers is not set');
-        }
+
         if ($this->registersCount === 0 || $this->registersCount > 124) {
             // as request contain 1 byte field 'registersBytesSize' to indicate number of bytes to follow
             // there is no way more than 124 words (124*2 bytes) can be written as this field would overflow

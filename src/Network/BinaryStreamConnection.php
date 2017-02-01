@@ -39,11 +39,11 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
         $opts = [];
         if (strlen($this->getClient()) > 0) {
             // Bind the client stream to a specific local network interface and port
-            $opts = array(
-                'socket' => array(
+            $opts = [
+                'socket' => [
                     'bindto' => "{$this->getClient()}:{$this->getClientPort()}",
-                ),
-            );
+                ],
+            ];
         }
         $context = stream_context_create($opts);
 
@@ -83,7 +83,7 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
         $lastAccess = microtime(true);
 
         while (true) {
-            $read = array($this->streamSocket);
+            $read = [$this->streamSocket];
             $write = null;
             $except = null;
             $data = '';

@@ -18,6 +18,8 @@ class ResponseFactory
     /**
      * @param $binaryString
      * @return IModbusPacket
+     * @throws \ModbusTcpClient\ModbusException
+     * @throws \InvalidArgumentException
      */
     public static function parseResponse($binaryString)
     {

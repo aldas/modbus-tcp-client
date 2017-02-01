@@ -5,7 +5,7 @@ namespace ModbusTcpClient\Utils;
 
 class Types
 {
-    const MAX_VALUE_UINT16 = 0xFFFF;
+    const MAX_VALUE_UINT16 = 0xFFFF; //65535
     const MIN_VALUE_UINT16 = 0x0;
 
     const MAX_VALUE_INT16 = 0x7FFF;
