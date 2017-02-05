@@ -60,3 +60,14 @@ try {
     $connection->close();
 }
 ```
+
+## Tests
+
+* all `composer test`
+* unit tests `composer test-unit`
+* integration tests `composer test-integration`
+
+For Windows users:
+* all ` vendor/bin/phpunit`
+* unit tests ` vendor/bin/phpunit --testsuite 'unit-tests'`
+* integration tests ` vendor/bin/phpunit --testsuite 'integration-tests'`
