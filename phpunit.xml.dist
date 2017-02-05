@@ -11,9 +11,14 @@
          timeoutForMediumTests="10"
          timeoutForLargeTests="60"
          verbose="true">
-    <testsuite>
-        <directory suffix="Test.php">./tests/*</directory>
-    </testsuite>
+    <testsuites>
+        <testsuite name="unit-tests">
+            <directory suffix="Test.php">./tests/unit</directory>
+        </testsuite>
+        <testsuite name="integration-tests">
+            <directory suffix="Test.php">./tests/integration</directory>
+        </testsuite>
+    </testsuites>
 
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">

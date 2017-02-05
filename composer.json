@@ -11,7 +11,9 @@
     "psr/log": "^1.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^5.6"
+    "phpunit/phpunit": "^5.6",
+    "react/datagram": "^1.1",
+    "react/child-process": "^0.4.1"
   },
   "autoload": {
     "psr-4": {
@@ -25,6 +27,8 @@
   },
   "scripts": {
     "test": "vendor/bin/phpunit",
+    "test-unit": "vendor/bin/phpunit -testsuite 'unit-tests'",
+    "test-integration": "vendor/bin/phpunit -testsuite 'integration-tests'",
     "test-ci": "vendor/bin/phpunit --coverage-clover report/coverage.xml",
     "test-coverage": "vendor/bin/phpunit --coverage-html report/html"
   }

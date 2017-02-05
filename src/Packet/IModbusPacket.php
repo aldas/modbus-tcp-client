@@ -15,9 +15,23 @@ interface IModbusPacket
     const WRITE_MULTIPLE_REGISTERS = 16;
 
 
+    /**
+     * @return ModbusApplicationHeader
+     */
     public function getHeader();
+
+    /**
+     * @return int
+     */
     public function getFunctionCode();
 
+    /**
+     * @return string
+     */
     public function __toString();
+
+    /**
+     * @return string
+     */
     public function toHex();
 }
