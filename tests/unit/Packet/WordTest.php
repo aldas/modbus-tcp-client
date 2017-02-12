@@ -76,4 +76,15 @@ class WordTest extends TestCase
         $this->assertEquals(0x7F, $word->getHighByteAsInt());
     }
 
+    public function testShouldSeeIfBitIsSet()
+    {
+        $word = new Word("\x02\x05");
+        $this->assertTrue($word->isBitSet(0)); // 1 of low byte
+        $this->assertTrue($word->isBitSet(2)); // 4 of low byte
+        $this->assertTrue($word->isBitSet(9)); // 2 of high byte
+
+        $this->assertFalse($word->isBitSet(1));
+        $this->assertFalse($word->isBitSet(15));
+    }
+
 }

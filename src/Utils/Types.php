@@ -203,4 +203,40 @@ class Types
         return $result; //TODO refactor to generator?
     }
 
+    /**
+     * Check if N-th bit is set in data. NB: Bits are counted from 0 and right to left.
+     *
+     * @param $data int|string data from where bit is checked
+     * @param $bit int to be checked
+     * @return bool
+     * @throws \InvalidArgumentException
+     */
+    public static function isBitSet($data, $bit)
+    {
+        if (null === $data) {
+            return false;
+        } elseif (is_string($data)) {
+            $nthByte = (int)($bit / 8);
+            $bit %= 8;
+            $offset = (strlen($data) - 1) - $nthByte;
+            $data = ord($data[$offset]);
+        } elseif (is_int($data)) {
+            /**
+             * From: http://php.net/manual/en/language.operators.bitwise.php
+             * Warning: Shifting integers by values greater than or equal to the system long integer width results
+             * in undefined behavior. In other words, don't shift more than 31 bits on a 32-bit system,
+             * and don't shift more than 63 bits on a 64-bit system.
+             */
+            if (PHP_INT_SIZE === 4 && $bit > 31) {
+                throw new \InvalidArgumentException('On 32bit PHP bit shifting more than 31 bit is not possible as int size is 32 bytes');
+            } elseif (PHP_INT_SIZE === 8 && $bit > 63) {
+                throw new \InvalidArgumentException('On 64bit PHP bit shifting more than 63 bit is not possible as int size is 64 bytes');
+            }
+        }
+
+        return 1 === (($data >> $bit) & 1);
+    }
+
+    //TODO: add toREAL and parseFloat or parseDouble
+    //TODO: add parseUint64 and parseInt64 - return double/float on 32bit arch
 }

@@ -76,6 +76,15 @@ class Word
         return Types::parseByte($this->data[0]);
     }
 
-    //TODO add getNthBit(n) method
-
+    /**
+     * Check if N-th bit is set in data. NB: Bits are counted from 0 and right to left.
+     *
+     * @param $bit
+     * @return bool
+     * @throws \InvalidArgumentException
+     */
+    public function isBitSet($bit)
+    {
+        return Types::isBitSet($this->data, $bit);
+    }
 }

@@ -95,4 +95,39 @@ class TypesTest extends TestCase
         ], Types::binaryStringToBooleanArray("\x55\x09"));
     }
 
+    public function testShouldSeeIfBitIsSet()
+    {
+        $this->assertTrue(Types::isBitSet(bindec('011111111'), 0));
+        $this->assertTrue(Types::isBitSet(bindec('011111111'), 1));
+        $this->assertTrue(Types::isBitSet(bindec('011111111'), 7));
+
+        $this->assertTrue(Types::isBitSet("\xFF\x05", 0));
+        $this->assertTrue(Types::isBitSet("\xFF\x05", 2));
+        $this->assertTrue(Types::isBitSet("\x05\x01\xFF\x05", 2));
+        $this->assertTrue(Types::isBitSet("\x05\x01\x00\x05", 16));
+        $this->assertTrue(Types::isBitSet("\x05\x01\x00\x05", 26));
+    }
+
+    public function testShouldSeeIfBitIsNotSet()
+    {
+        $this->assertFalse(Types::isBitSet(null, 12));
+        $this->assertFalse(Types::isBitSet(bindec('000110011'), 2));
+        $this->assertFalse(Types::isBitSet(bindec('011111111'), 8));
+        $this->assertFalse(Types::isBitSet("\x05\x01\xFF\x05", 1));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessageRegExp  /On .*bit PHP bit shifting more than .* bit is not possible as int size is .* bytes/
+     */
+    public function testShouldExceptionWhenBitToHighNumber()
+    {
+        if (PHP_INT_SIZE === 4) {
+            Types::isBitSet(1000, 32);
+        } else {
+            Types::isBitSet(1000, 64);
+        }
+    }
+
+
 }
