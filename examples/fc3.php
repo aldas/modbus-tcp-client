@@ -2,6 +2,7 @@
 
 use ModbusTcpClient\Network\BinaryStreamConnection;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
+use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use ModbusTcpClient\Packet\ResponseFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -21,11 +22,16 @@ try {
         ->sendAndReceive($packet);
     echo 'Binary received (in hex):   ' . unpack('H*', $binaryData)[1] . PHP_EOL;
 
+    /**
+     * @var $response ReadHoldingRegistersResponse
+     */
     $response = ResponseFactory::parseResponseOrThrow($binaryData);
     echo 'Parsed packet (in hex):     ' . $response->toHex() . PHP_EOL;
     echo 'Data parsed from packet (bytes):' . PHP_EOL;
     print_r($response->getData());
-    print_r($response->getWords());
+    foreach ($response->getWords() as $word) {
+        print_r($word->getBytes());
+    }
 
 } catch (Exception $exception) {
     echo 'An exception occurred' . PHP_EOL;

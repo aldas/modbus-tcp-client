@@ -16,8 +16,8 @@ $connection = BinaryStreamConnection::getBuilder()
 $startAddress = 12288;
 
 $registers = [
-    Types::toUInt16BE(10), //000a as word
-    Types::toUInt16BE(-1000), //hex: FC18 as word
+    Types::toInt16BE(10), //000a as word
+    Types::toInt16BE(-1000), //hex: FC18 as word
     Types::toInt32BE(2000), //dec: 2000 -> hex: 7d00 is as 2 word 7D00 0000
 ];
 $packet = new WriteMultipleRegistersRequest($startAddress, $registers);

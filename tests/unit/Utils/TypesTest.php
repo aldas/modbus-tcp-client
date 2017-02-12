@@ -7,16 +7,57 @@ use PHPUnit\Framework\TestCase;
 
 class TypesTest extends TestCase
 {
-    public function testShouldParseUint16FromBinaryData()
+    public function testShouldParseUint16FromWord()
     {
         $this->assertEquals(1, Types::parseUInt16BE("\x00\x01"));
+        $this->assertEquals(32767, Types::parseUInt16BE("\x7F\xFF"));
+        $this->assertEquals(32768, Types::parseUInt16BE("\x80\x00"));
         $this->assertEquals(65535, Types::parseUInt16BE("\xFF\xFF"));
     }
 
-    public function testShouldEncodeToBinaryUint16()
+    public function testShouldParseInt16FromWord()
     {
-        $this->assertEquals("\x00\x01", Types::toUInt16BE(1));
-        $this->assertEquals("\xFF\xFF", Types::toUInt16BE(65535));
+        $this->assertEquals(0, Types::parseInt16BE("\x00\x00"));
+        $this->assertEquals(1, Types::parseInt16BE("\x00\x01"));
+        $this->assertEquals(-1, Types::parseInt16BE("\xFF\xFF"));
+        $this->assertEquals(-32768, Types::parseInt16BE("\x80\x00"));
+        $this->assertEquals(32767, Types::parseInt16BE("\x7F\xFF"));
+    }
+
+    public function testShouldParseUInt32FromDoubleWord()
+    {
+        $this->assertEquals(0, Types::parseUInt32BE("\x00\x00\x00\x00"));
+        $this->assertEquals(1, Types::parseUInt32BE("\x00\x01\x00\x00"));
+        $this->assertEquals(2147483647, Types::parseUInt32BE("\xFF\xFF\x7F\xFF"));
+        $this->assertEquals(2147483648, Types::parseUInt32BE("\x00\x00\x80\x00"));
+        $this->assertEquals(4294967295, Types::parseUInt32BE("\xFF\xFF\xFF\xFF"));
+    }
+
+    public function testShouldParseInt32FromDoubleWord()
+    {
+        $this->assertEquals(0, Types::parseInt32BE("\x00\x00\x00\x00"));
+        $this->assertEquals(1, Types::parseInt32BE("\x00\x01\x00\x00"));
+        $this->assertEquals(-1, Types::parseInt32BE("\xFF\xFF\xFF\xFF"));
+        $this->assertEquals(-2147483648, Types::parseInt32BE("\x00\x00\x80\x00"));
+        $this->assertEquals(2147483647, Types::parseInt32BE("\xFF\xFF\x7F\xFF"));
+    }
+
+    public function testShouldEncodeToBinaryint16()
+    {
+        $this->assertEquals("\x00\x01", Types::toInt16BE(1));
+        $this->assertEquals("\xFF\xFF", Types::toInt16BE(65535));
+    }
+
+    public function testShouldEncodeToBinaryByte()
+    {
+        $this->assertEquals("\x01", Types::toByte(1));
+        $this->assertEquals("\xFF", Types::toByte(65535));
+    }
+
+    public function testShouldParseByteFromBinaryData()
+    {
+        $this->assertEquals(1, Types::parseByte("\x01"));
+        $this->assertEquals(255, Types::parseByte("\xFF"));
     }
 
     public function testShouldEncodeToBinaryInt32()

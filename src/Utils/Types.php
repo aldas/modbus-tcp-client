@@ -14,39 +14,144 @@ class Types
     const MAX_VALUE_BYTE = 0xFF;
     const MIN_VALUE_BYTE = 0x0;
 
-    public static function toUInt16BE($data)
+    /**
+     * Convert Php data as it would be 16 bit integer to binary string with big endian byte order
+     *
+     * @param int $data 16 bit integer to be converted to binary string (1 word)
+     * @return string binary string with big endian byte order
+     */
+    public static function toInt16BE($data)
     {
         return pack('n', $data);
     }
 
+    /**
+     * Parse binary string (1 word) with big endian byte order to 16bit unsigned integer (2 bytes to uint16)
+     *
+     * @param string $word binary string to be converted to unsigned 16 bit integer
+     * @return int
+     */
+    public static function parseUInt16BE($word)
+    {
+        return unpack('n', $word)[1];
+    }
+
+    /**
+     * Parse binary string (1 word) with big endian byte order to 16bit signed integer (2 bytes to int16)
+     *
+     * @param string $word binary string to be converted to signed 16 bit integer
+     * @return int
+     */
+    public static function parseInt16BE($word)
+    {
+        //TODO raw bit operations would be faster than unpack + array accessing?
+        $byteArray = unpack('chigh/Clow', $word);
+        return ($byteArray['high'] << 8) + $byteArray['low'];
+    }
+
+    /**
+     * Parse binary string (double word) with big endian byte order to 32bit unsigned integer (4 bytes to uint32)
+     *
+     * @param string $doubleWord binary string to be converted to signed 16 bit integer
+     * @return int
+     * @throws \RuntimeException
+     */
+    public static function parseUInt32BE($doubleWord)
+    {
+        //in network low byte is sent first and after that high byte (Big endian)
+        $byteArray = unpack('Cb3/Cb2/Cb1/Cb0', $doubleWord);
+        $b1 = (float)($byteArray['b1'] << 23) * 2; //can not bit shift safely 24 bits on 32bit arch so multiply by 2
+        return $b1 + ($byteArray['b0'] << 16) + ($byteArray['b3'] << 8) + $byteArray['b2'];
+    }
+
+    /**
+     * Parse binary string (double word) with big endian byte order to 32bit signed integer (4 bytes to int32)
+     *
+     * @param string $doubleWord binary string to be converted to signed 16 bit integer
+     * @return int
+     */
+    public static function parseInt32BE($doubleWord)
+    {
+        //TODO raw bit operations would be faster than unpack + array accessing?
+        $byteArray = unpack('nlow/nhigh', $doubleWord);
+        $byteArray['high'] = self::uint16TosignedInt16($byteArray['high']);
+        //in network low byte is sent first and after that high byte (Big endian)
+        return ($byteArray['high'] << 16) + $byteArray['low'];
+    }
+
+    /**
+     * Convert 2 byte into a signed integer. This is needed to make code 32bit php and 64bit compatible
+     * taken from http://stackoverflow.com/q/13322327/2514290
+     * @return int
+     */
+    private static function uint16TosignedInt16($uint16)
+    {
+        if (($uint16 & 0x8000) > 0) {
+            // This is a negative number.  Invert the bits and add 1 and add negative sign
+            $uint16 = -((~$uint16 & 0xFFFF) + 1);
+        }
+        return $uint16;
+    }
+
+    /**
+     * Convert Php data as it would be 32 bit integer to binary string with big endian byte order
+     *
+     * @param int $data 32 bit integer to be converted to binary string (double word)
+     * @return string binary string with big endian byte order
+     */
     public static function toInt32BE($data)
     {
         //http://www.simplymodbus.ca/FAQ.htm#Order
         //dec: 2923517522 is in hex: AE415652, it is low word 5652, high word AE41
         //so in network 5652 AE41 should be sent. low word first (Big endian)
-        $highWord = self::toUInt16BE(($data >> 16) & 0xFFFF); // get last 2 bytes
-        $lowWord = self::toUInt16BE($data & 0xFFFF); // get first 2 bytes
+        $highWord = self::toInt16BE(($data >> 16) & 0xFFFF); // get last 2 bytes
+        $lowWord = self::toInt16BE($data & 0xFFFF); // get first 2 bytes
         return $lowWord . $highWord;
     }
 
-    public static function parseUInt16BE($binaryData)
-    {
-        return unpack('n', $binaryData)[1];
-    }
 
+    /**
+     * Convert Php data as it would be 1 byte to binary string (1 char)
+     *
+     * @param int $data 1 bit integer to be converted to binary byte string
+     * @return string binary string with length of 1 char
+     */
     public static function toByte($data)
     {
         return pack('C', $data);
     }
 
+    /**
+     * Parse binary string (1 char) to 8bit unsigned integer (1 bytes to uint8)
+     *
+     * @param string $char binary string to be converted to unsigned 8 bit unsigned integer
+     * @return int
+     */
+    public static function parseByte($char)
+    {
+        return unpack('C', $char)[1];
+    }
+
+    /**
+     * Parse binary string to array of unsigned integers (uint8)
+     *
+     * @param $binaryData string binary string to be converted to array of unsigned 8 bit unsigned integers
+     * @return int[]
+     */
+    public static function parseByteArray($binaryData)
+    {
+        return array_values(unpack('C*', $binaryData));
+    }
+
+    /**
+     * Convert array of PHP data to array of bytes. Each element of $data is converted to 1 byte (usigned int8)
+     *
+     * @param array $data
+     * @return string
+     */
     public static function byteArrayToByte(array $data)
     {
         return pack('C*', ...$data);
-    }
-
-    public static function parseByte($data)
-    {
-        return unpack('C', $data)[1];
     }
 
     public static function booleanArrayToByteArray(array $booleans)
@@ -76,7 +181,7 @@ class Types
     {
         return array_map(function ($elem) {
             if ($elem) {
-                return Types::toUInt16BE($elem);
+                return Types::toInt16BE($elem);
             }
             return null;
         }, $ints);

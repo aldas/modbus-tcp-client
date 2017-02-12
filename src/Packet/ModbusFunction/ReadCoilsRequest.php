@@ -42,7 +42,7 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest
     public function __toString()
     {
         return parent::__toString()
-            . Types::toUInt16BE($this->getQuantity());
+            . Types::toInt16BE($this->getQuantity());
     }
 
     /**

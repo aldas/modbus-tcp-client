@@ -42,6 +42,6 @@ class WriteSingleRegisterResponse extends StartAddressResponse
     public function __toString()
     {
         return parent::__toString()
-            . Types::toUInt16BE($this->value);
+            . Types::toInt16BE($this->value);
     }
 }

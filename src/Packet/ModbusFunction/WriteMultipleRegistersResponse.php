@@ -42,6 +42,6 @@ class WriteMultipleRegistersResponse extends StartAddressResponse
     public function __toString()
     {
         return parent::__toString()
-            . Types::toUInt16BE($this->registersCount);
+            . Types::toInt16BE($this->registersCount);
     }
 }

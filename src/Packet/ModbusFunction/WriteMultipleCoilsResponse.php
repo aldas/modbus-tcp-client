@@ -42,6 +42,6 @@ class WriteMultipleCoilsResponse extends StartAddressResponse
     public function __toString()
     {
         return parent::__toString()
-            . Types::toUInt16BE($this->coilCount);
+            . Types::toInt16BE($this->coilCount);
     }
 }

@@ -52,7 +52,9 @@ try {
     
     echo 'Data parsed from packet (bytes):' . PHP_EOL;
     print_r($response->getData()); // array of bytes. These are not modbus WORDs. 1 WORD is 2 bytes
-    print_r($response->getWords()); // array of words. Word in this case array of 2 bytes. [[0,100],[0,22]]
+    foreach ($response->getWords() as $word) {
+        print_r($word->getInt16BE());
+    }
 
 } catch (Exception $exception) {
     echo $exception->getMessage() . PHP_EOL;

@@ -50,7 +50,7 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest
     public function __toString()
     {
         return parent::__toString()
-            . Types::toUInt16BE($this->registersCount)
+            . Types::toInt16BE($this->registersCount)
             . Types::toByte($this->registersBytesSize)
             . Registers::getRegisterArrayAsByteString($this->registers);
     }

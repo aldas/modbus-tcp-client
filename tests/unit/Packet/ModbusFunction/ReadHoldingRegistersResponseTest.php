@@ -23,8 +23,8 @@ class ReadHoldingRegistersResponseTest extends TestCase
 
         $this->assertEquals([0xCD, 0x6B, 0x0, 0x0, 0x0, 0x1], $packet->getData());
 
-        $this->assertEquals([[0xCD, 0x6B], [0x0, 0x0], [0x0, 0x1]], $packet->getWords());
-        $this->assertEquals([0x0, 0x1], $packet->getWords()[2]);
+        $this->assertCount(3, $packet->getWords());
+        $this->assertEquals([0x0, 0x1], $packet->getWords()[2]->getBytes());
 
         $header = $packet->getHeader();
         $this->assertEquals(33152, $header->getTransactionId());
@@ -38,8 +38,13 @@ class ReadHoldingRegistersResponseTest extends TestCase
         $packet = new ReadHoldingRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01", 3, 33152);
 
         $words = $packet->getWords();
-        $this->assertEquals([[0xCD, 0x6B], [0x0, 0x0], [0x0, 0x1]], $words);
-        $this->assertEquals([0x0, 0x1], $words[2]);
+        $this->assertCount(3, $words);
+
+        $this->assertEquals("\xCD\x6B", $words[0]->getData());
+        $this->assertEquals([0xCD, 0x6B], $words[0]->getBytes());
+
+        $this->assertEquals([0x0, 0x0], $words[1]->getBytes());
+        $this->assertEquals([0x0, 0x1], $words[2]->getBytes());
     }
 
 }

@@ -23,7 +23,7 @@ abstract class StartAddressResponse extends ProtocolDataUnit
         return b''
             . $this->getHeader()->__toString()
             . Types::toByte($this->getFunctionCode())
-            . Types::toUInt16BE($this->startAddress);
+            . Types::toInt16BE($this->startAddress);
     }
 
     /**

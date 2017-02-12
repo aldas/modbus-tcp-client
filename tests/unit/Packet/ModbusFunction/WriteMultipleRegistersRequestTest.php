@@ -12,7 +12,7 @@ class WriteMultipleRegistersRequestTest extends TestCase
     {
         $this->assertEquals(
             "\x01\x38\x00\x00\x00\x0b\x11\x10\x04\x10\x00\x03\x06\x00\xC8\x00\x82\x87\x01",
-            (new WriteMultipleRegistersRequest(0x0410, [Types::toByte(200), Types::toUInt16BE(130), Types::toUInt16BE(34561)], 0x11, 0x0138))->__toString()
+            (new WriteMultipleRegistersRequest(0x0410, [Types::toByte(200), Types::toInt16BE(130), Types::toInt16BE(34561)], 0x11, 0x0138))->__toString()
         );
     }
 
@@ -27,7 +27,7 @@ class WriteMultipleRegistersRequestTest extends TestCase
 
     public function testPacketProperties()
     {
-        $registers = [Types::toByte(200), Types::toUInt16BE(130), Types::toUInt16BE(34561)];
+        $registers = [Types::toByte(200), Types::toInt16BE(130), Types::toInt16BE(34561)];
         $packet = new WriteMultipleRegistersRequest(107, $registers, 17, 1);
         $this->assertEquals(IModbusPacket::WRITE_MULTIPLE_REGISTERS, $packet->getFunctionCode());
         $this->assertEquals(107, $packet->getStartAddress());

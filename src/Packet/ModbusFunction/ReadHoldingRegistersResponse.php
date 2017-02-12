@@ -4,6 +4,7 @@ namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Packet\ByteCountResponse;
 use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\Word;
 use ModbusTcpClient\Utils\Types;
 
 /**
@@ -19,9 +20,7 @@ class ReadHoldingRegistersResponse extends ByteCountResponse
     public function __construct($rawData, $unitId = 0, $transactionId = null)
     {
         parent::__construct($rawData, $unitId, $transactionId);
-
-        $binaryData = substr($rawData, 1);
-        $this->data = array_values(unpack('C*', $binaryData));
+        $this->data = substr($rawData, 1); //first byte is byteCount. remove it
     }
 
     public function getFunctionCode()
@@ -34,23 +33,28 @@ class ReadHoldingRegistersResponse extends ByteCountResponse
      */
     public function getData()
     {
-        return $this->data;
+        return Types::parseByteArray($this->data);
     }
 
     /**
      * Return data as splitted into chunks. Each chunk contains 2 elements
      *
-     * @return array array of arrays. each arrays cointain 2 elements (bytes)
+     * @return Word[] array of Words. each arrays cointain 2 elements (bytes)
+     * @throws \ModbusTcpClient\ModbusException
      */
     public function getWords()
     {
-        return array_chunk($this->data, 2);
+        $words = [];
+        foreach (str_split($this->data, 2) as $str) {
+            $words[] = new Word($str);
+        }
+        return $words;
     }
 
     public function __toString()
     {
         return parent::__toString()
-            . Types::byteArrayToByte($this->data);
+            . $this->data;
     }
 
     protected function getLengthInternal()

@@ -13,8 +13,8 @@ class RegistersTest extends TestCase
         $this->assertEquals(2, Registers::getRegisterArrayByteSize([Types::toByte(200)]));
         $this->assertEquals(4, Registers::getRegisterArrayByteSize([null, Types::toByte(200)]));
 
-        $this->assertEquals(4, Registers::getRegisterArrayByteSize([Types::toByte(200), Types::toUInt16BE(1)]));
-        $this->assertEquals(6, Registers::getRegisterArrayByteSize([Types::toUInt16BE(1), Types::toByte(200), Types::toUInt16BE(1)]));
+        $this->assertEquals(4, Registers::getRegisterArrayByteSize([Types::toByte(200), Types::toInt16BE(1)]));
+        $this->assertEquals(6, Registers::getRegisterArrayByteSize([Types::toInt16BE(1), Types::toByte(200), Types::toInt16BE(1)]));
     }
 
     public function testRegisterArrayAsByteString()
@@ -22,8 +22,8 @@ class RegistersTest extends TestCase
         $this->assertEquals("\x0\xC8", Registers::getRegisterArrayAsByteString([Types::toByte(200)]));
         $this->assertEquals("\x0\x0\x0\xC8", Registers::getRegisterArrayAsByteString([null, Types::toByte(200)]));
 
-        $this->assertEquals("\x0\xC8\x01\x01", Registers::getRegisterArrayAsByteString([Types::toByte(200), Types::toUInt16BE(257)]));
-        $this->assertEquals("\x0\x01\x0\xC8\x0\x0", Registers::getRegisterArrayAsByteString([Types::toUInt16BE(1), Types::toByte(200), null]));
+        $this->assertEquals("\x0\xC8\x01\x01", Registers::getRegisterArrayAsByteString([Types::toByte(200), Types::toInt16BE(257)]));
+        $this->assertEquals("\x0\x01\x0\xC8\x0\x0", Registers::getRegisterArrayAsByteString([Types::toInt16BE(1), Types::toByte(200), null]));
 
         $this->assertEquals("\x00\x01\x02\x03", Registers::getRegisterArrayAsByteString(["\x01\x02\x03"])); //FIX should we allow odd bytes to be sent?
 

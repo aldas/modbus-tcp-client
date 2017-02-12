@@ -72,9 +72,9 @@ class ModbusApplicationHeader
     public function __toString()
     {
         return b''
-            . Types::toUInt16BE($this->getTransactionId())
-            . Types::toUInt16BE($this->getProtocolId())
-            . Types::toUInt16BE($this->getLength())
+            . Types::toInt16BE($this->getTransactionId())
+            . Types::toInt16BE($this->getProtocolId())
+            . Types::toInt16BE($this->getLength())
             . Types::toByte($this->getUnitId())
             ;
     }
