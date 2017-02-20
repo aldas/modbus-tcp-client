@@ -237,6 +237,19 @@ class Types
         return 1 === (($data >> $bit) & 1);
     }
 
-    //TODO: add toREAL and parseFloat or parseDouble
+    /**
+     * Convert Php data as it would be float to binary string with big endian order
+     *
+     * @param float $float float to be converted to binary byte string
+     * @return string binary string with big endian byte order
+     */
+    public static function toReal($float)
+    {
+        //pack to machine order float, unpack to machine order uint32, pack uint32 to binary big endian
+        //from php git seems that some day there will be 'g' and 'G' modifiers for float LE/BE conversion
+        return self::toInt32BE(unpack('L', pack('f', $float))[1]);
+    }
+
+    //TODO: add parseFloat or parseDouble
     //TODO: add parseUint64 and parseInt64 - return double/float on 32bit arch
 }

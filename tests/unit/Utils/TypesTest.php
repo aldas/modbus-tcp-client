@@ -129,5 +129,12 @@ class TypesTest extends TestCase
         }
     }
 
+    public function testShouldConvertFloatToReal()
+    {
+        $this->assertEquals("\xcc\xcd\x3f\xec", Types::toReal(1.85));
+        $this->assertEquals("\xaa\xab\x3f\x2a", Types::toReal(0.66666666666));
+        $this->assertEquals("\x00\x00\x00\x00", Types::toReal(null));
+        $this->assertEquals("\x00\x00\x00\x00", Types::toReal(0));
+    }
 
 }
