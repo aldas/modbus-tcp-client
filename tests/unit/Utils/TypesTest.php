@@ -31,6 +31,7 @@ class TypesTest extends TestCase
         $this->assertEquals(2147483647, Types::parseUInt32BE("\xFF\xFF\x7F\xFF"));
         $this->assertEquals(2147483648, Types::parseUInt32BE("\x00\x00\x80\x00"));
         $this->assertEquals(4294967295, Types::parseUInt32BE("\xFF\xFF\xFF\xFF"));
+        $this->assertEquals(133124, Types::parseUInt32BE("\x08\x04\x00\x02"));
     }
 
     public function testShouldParseInt32FromDoubleWord()
@@ -40,6 +41,56 @@ class TypesTest extends TestCase
         $this->assertEquals(-1, Types::parseInt32BE("\xFF\xFF\xFF\xFF"));
         $this->assertEquals(-2147483648, Types::parseInt32BE("\x00\x00\x80\x00"));
         $this->assertEquals(2147483647, Types::parseInt32BE("\xFF\xFF\x7F\xFF"));
+        $this->assertEquals(133124, Types::parseInt32BE("\x08\x04\x00\x02"));
+    }
+
+    public function testShouldParseUInt64FromQuadWord()
+    {
+        if (PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
+        }
+
+        $this->assertEquals(0, Types::parseUInt64("\x00\x00\x00\x00\x00\x00\x00\x00"));
+        $this->assertEquals(1, Types::parseUInt64("\x00\x00\x00\x00\x00\x01\x00\x00"));
+        $this->assertEquals(65536, Types::parseUInt64("\x00\x00\x00\x00\x00\x00\x00\x01"));
+        $this->assertEquals(2147483647, Types::parseUInt64("\x00\x00\x00\x00\xFF\xFF\x7F\xFF"));
+        $this->assertEquals(2147483648, Types::parseUInt64("\x00\x00\x00\x00\x00\x00\x80\x00"));
+
+        $this->assertEquals('72,057,594,180,534,272', number_format(Types::parseUInt64("\x00\x00\x01\x00\x00\x04\x08\x80")));
+        $this->assertEquals('9,223,372,036,854,775,808', number_format(Types::parseUInt64("\x00\x00\x80\x00\x00\x00\x00\x00")));
+    }
+
+    /**
+     * @expectedException \RangeException
+     * @expectedExceptionMessage  64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows
+     */
+    public function testShouldFailToParseUInt64FromQuadWord()
+    {
+        if (PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
+        }
+        Types::parseUInt64("\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+    }
+
+    /**
+     * @expectedException \LengthException
+     * @expectedExceptionMessage  binaryData must be 16 bytes in length
+     */
+    public function testShouldFailToParseUInt64FromTooShortString()
+    {
+        Types::parseUInt64("\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+    }
+
+    /**
+     * @expectedException \RangeException
+     * @expectedExceptionMessage  64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows
+     */
+    public function testShouldFailToParseUInt64FromQuadWord2()
+    {
+        if (PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
+        }
+        Types::parseUInt64("\x00\x00\x80\x00\x00\x01\x00\x00");
     }
 
     public function testShouldEncodeToBinaryint16()
@@ -135,6 +186,17 @@ class TypesTest extends TestCase
         $this->assertEquals("\xaa\xab\x3f\x2a", Types::toReal(0.66666666666));
         $this->assertEquals("\x00\x00\x00\x00", Types::toReal(null));
         $this->assertEquals("\x00\x00\x00\x00", Types::toReal(0));
+    }
+
+    public function testShouldParseFloat()
+    {
+        $float = Types::parseFloat("\xcc\xcd\x3f\xec");
+
+        $this->assertTrue(is_float($float));
+        $this->assertEquals(1.85, $float, null, 0.0000001);
+
+        $this->assertEquals(0.66666666666, Types::parseFloat("\xaa\xab\x3f\x2a"), null, 0.0000001);
+        $this->assertEquals(0, Types::parseFloat("\x00\x00\x00\x00"), null, 0.0000001);
     }
 
 }

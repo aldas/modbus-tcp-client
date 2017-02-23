@@ -250,6 +250,46 @@ class Types
         return self::toInt32BE(unpack('L', pack('f', $float))[1]);
     }
 
-    //TODO: add parseFloat or parseDouble
-    //TODO: add parseUint64 and parseInt64 - return double/float on 32bit arch
+    /**
+     * Parse binary string representing real in big endian order to float (double word/4 bytes to float)
+     *
+     * @param string $binaryData binary byte string to be parsed to float
+     * @return float
+     * @throws \RuntimeException
+     */
+    public static function parseFloat($binaryData)
+    {
+        // parse as uint32 to binary big endian, pack to machine order int 32, unpack to machine order float
+        $pack = self::parseUInt32BE($binaryData);
+        return unpack('f', pack('L', $pack))[1];
+    }
+
+    /**
+     * Parse binary string representing 64 bit unsigned integer in big endian order to 64bit unsigned integer (quad word/8 bytes to 64bit int)
+     *
+     * @param string $binaryData binary string representing 64 bit unsigned integer in big endian order
+     * @return int
+     * @throws \LengthException
+     * @throws \RuntimeException
+     * @throws \RangeException
+     * @throws \OutOfRangeException
+     */
+    public static function parseUInt64($binaryData)
+    {
+        if (strlen($binaryData) !== 8) {
+            throw new \LengthException('binaryData must be 16 bytes in length');
+        }
+        if (PHP_INT_SIZE !== 8) {
+            throw new \OutOfRangeException('64-bit format codes are not available for 32-bit versions of PHP');
+        }
+        $low = static::parseUInt32BE(substr($binaryData, 4));
+
+        $highestByte = ord($binaryData[2]);
+        if ($highestByte > 0x80 || ($highestByte === 0x80 && $low > 0)) {
+            throw new \RangeException('64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows');
+        }
+
+        $high = static::parseUInt32BE(substr($binaryData, 0, 4));
+        return (($high << 31) * 2) + $low;
+    }
 }
