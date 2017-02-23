@@ -74,7 +74,7 @@ class TypesTest extends TestCase
 
     /**
      * @expectedException \LengthException
-     * @expectedExceptionMessage  binaryData must be 16 bytes in length
+     * @expectedExceptionMessage  binaryData must be 8 bytes in length
      */
     public function testShouldFailToParseUInt64FromTooShortString()
     {

@@ -277,7 +277,7 @@ class Types
     public static function parseUInt64($binaryData)
     {
         if (strlen($binaryData) !== 8) {
-            throw new \LengthException('binaryData must be 16 bytes in length');
+            throw new \LengthException('binaryData must be 8 bytes in length');
         }
         if (PHP_INT_SIZE !== 8) {
             throw new \OutOfRangeException('64-bit format codes are not available for 32-bit versions of PHP');
