@@ -45,7 +45,7 @@ abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
 
     protected function validate()
     {
-        if ((null === $this->startAddress) || !($this->startAddress > 0 && $this->startAddress <= Types::MAX_VALUE_UINT16)) {
+        if ((null === $this->startAddress) || !($this->startAddress >= 0 && $this->startAddress <= Types::MAX_VALUE_UINT16)) {
             throw new \OutOfRangeException("startAddress is not set or out of range: {$this->startAddress}");
         }
     }

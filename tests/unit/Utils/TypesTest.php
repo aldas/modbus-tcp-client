@@ -32,6 +32,7 @@ class TypesTest extends TestCase
         $this->assertEquals(2147483648, Types::parseUInt32BE("\x00\x00\x80\x00"));
         $this->assertEquals(4294967295, Types::parseUInt32BE("\xFF\xFF\xFF\xFF"));
         $this->assertEquals(133124, Types::parseUInt32BE("\x08\x04\x00\x02"));
+        $this->assertEquals(565, Types::parseUInt32BE("\x02\x35\x00\x00"));
     }
 
     public function testShouldParseInt32FromDoubleWord()
