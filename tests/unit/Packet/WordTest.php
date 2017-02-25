@@ -15,7 +15,7 @@ class WordTest extends TestCase
 
     /**
      * @expectedException \ModbusTcpClient\ModbusException
-     * @expectedExceptionMessage Word can only be constructed from 1 or 2 bytes. Currently 3 bytes was given!
+     * @expectedExceptionMessage Word can only be constructed from 1 to 2 bytes. Currently 3 bytes was given!
      */
     public function testShouldThrowExceptionForHugeData()
     {
@@ -24,7 +24,7 @@ class WordTest extends TestCase
 
     /**
      * @expectedException \ModbusTcpClient\ModbusException
-     * @expectedExceptionMessage Word can only be constructed from 1 or 2 bytes. Currently 0 bytes was given!
+     * @expectedExceptionMessage Word can only be constructed from 1 to 2 bytes. Currently 0 bytes was given!
      */
     public function testShouldThrowExceptionForNullData()
     {
@@ -33,7 +33,7 @@ class WordTest extends TestCase
 
     /**
      * @expectedException \ModbusTcpClient\ModbusException
-     * @expectedExceptionMessage Word can only be constructed from 1 or 2 bytes. Currently 0 bytes was given!
+     * @expectedExceptionMessage Word can only be constructed from 1 to 2 bytes. Currently 0 bytes was given!
      */
     public function testShouldThrowExceptionForEmptyData()
     {
@@ -85,6 +85,16 @@ class WordTest extends TestCase
 
         $this->assertFalse($word->isBitSet(1));
         $this->assertFalse($word->isBitSet(15));
+    }
+
+    public function testShouldCombineToDoubleWord()
+    {
+        $lowWord = new Word("\x01\x00");
+        $highWord = new Word("\x03\x02");
+
+        $doubleWord = $highWord->combine($lowWord);
+
+        $this->assertEquals("\x03\x02\x01\x00", $doubleWord->getData());
     }
 
 }

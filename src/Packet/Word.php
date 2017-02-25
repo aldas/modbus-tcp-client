@@ -2,46 +2,13 @@
 
 namespace ModbusTcpClient\Packet;
 
-
-use ModbusTcpClient\ModbusException;
 use ModbusTcpClient\Utils\Types;
 
-class Word
+class Word extends AbstractWord
 {
-    /**
-     * @var string
-     */
-    private $data;
-
-    /**
-     * @param string $data
-     * @throws \ModbusTcpClient\ModbusException
-     */
-    public function __construct($data)
+    protected function getByteLength()
     {
-        $length = strlen($data);
-        if ($length === 1) {
-            $data = "\x00$data";
-        } elseif ($length > 2 || $length === 0) {
-            throw new ModbusException("Word can only be constructed from 1 or 2 bytes. Currently $length bytes was given!");
-        }
-        $this->data = $data;
-    }
-
-    /**
-     * @return string
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
-     * @return array
-     */
-    public function getBytes()
-    {
-        return Types::parseByteArray($this->data);
+        return 2;
     }
 
     /**
@@ -77,14 +44,14 @@ class Word
     }
 
     /**
-     * Check if N-th bit is set in data. NB: Bits are counted from 0 and right to left.
+     * Combine Words (2x2 bytes) into Double Word (4 bytes). This Word is used as highest bytes and argument $lowWord as lowest bytes
      *
-     * @param $bit
-     * @return bool
-     * @throws \InvalidArgumentException
+     * @param Word $lowWord
+     * @return DoubleWord
+     * @throws \ModbusTcpClient\ModbusException
      */
-    public function isBitSet($bit)
+    public function combine(Word $lowWord)
     {
-        return Types::isBitSet($this->data, $bit);
+        return new DoubleWord($this->getData() . $lowWord->getData());
     }
 }
