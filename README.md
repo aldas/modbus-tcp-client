@@ -26,36 +26,21 @@ This library is influenced by [phpmodbus](https://github.com/adduc/phpmodbus) li
 Some of the Modbus function examples are in `examples/` folder
 
 ```php
-use ModbusTcpClient\Network\BinaryStreamConnection;
-use ModbusTcpClient\Packet\ErrorResponse;
-use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
-use ModbusTcpClient\Packet\ResponseFactory;
-
 $connection = BinaryStreamConnection::getBuilder()
     ->setHost('192.168.0.1')
     ->build();
     
-$startAddress = 12288;
-$quantity = 6;
-$packet = new ReadHoldingRegistersRequest($startAddress, $quantity); //create FC3 request packet
+$packet = new ReadHoldingRegistersRequest(12288, 6); //create FC3 request packet
 
 try {
     $binaryData = $connection->connect()->sendAndReceive($packet);
 
     //parse binary data to response object
-    $response = ResponseFactory::parseResponse($binaryData);
+    $response = ResponseFactory::parseResponseOrThrow($binaryData);
     
-    //check if response contains modbus error or use ::parseResponseOrThrow() to throw exception on modbus error packets
-    if ($response instanceof ErrorResponse) { 
-        throw new \Exception($response->getErrorMessage(), $response->getErrorCode());
-    }
-    
-    echo 'Data parsed from packet (bytes):' . PHP_EOL;
-    print_r($response->getData()); // array of bytes. These are not modbus WORDs. 1 WORD is 2 bytes
     foreach ($response->getWords() as $word) {
         print_r($word->getInt16BE());
     }
-
 } catch (Exception $exception) {
     echo $exception->getMessage() . PHP_EOL;
 } finally {

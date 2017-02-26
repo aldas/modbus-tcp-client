@@ -43,6 +43,7 @@ class TypesTest extends TestCase
         $this->assertEquals(-2147483648, Types::parseInt32BE("\x00\x00\x80\x00"));
         $this->assertEquals(2147483647, Types::parseInt32BE("\xFF\xFF\x7F\xFF"));
         $this->assertEquals(133124, Types::parseInt32BE("\x08\x04\x00\x02"));
+        $this->assertEquals(67305985, Types::parseInt32BE("\x02\x01\x04\x03"));
     }
 
     public function testShouldParseUInt64FromQuadWord()
@@ -116,6 +117,7 @@ class TypesTest extends TestCase
     {
         $this->assertEquals("\x00\x01\x00\x00", Types::toInt32BE(1));
         $this->assertEquals("\x56\x52\xAE\x41", Types::toInt32BE(2923517522));
+        $this->assertEquals("\x02\x01\x04\x3", Types::toInt32BE(67305985));
     }
 
     public function testShouldConvertBooleanArrayToByteArrayOneByte()

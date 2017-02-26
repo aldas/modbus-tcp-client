@@ -102,13 +102,12 @@ class Types
     public static function toInt32BE($data)
     {
         //http://www.simplymodbus.ca/FAQ.htm#Order
-        //dec: 2923517522 is in hex: AE415652, it is low word 5652, high word AE41
+        //dec: 2923517522 is in hex: AE415652, low word being 5652, high word AE41
         //so in network 5652 AE41 should be sent. low word first (Big endian)
         $highWord = self::toInt16BE(($data >> 16) & 0xFFFF); // get last 2 bytes
         $lowWord = self::toInt16BE($data & 0xFFFF); // get first 2 bytes
         return $lowWord . $highWord;
     }
-
 
     /**
      * Convert Php data as it would be 1 byte to binary string (1 char)
@@ -292,14 +291,4 @@ class Types
         $high = static::parseUInt32BE(substr($binaryData, 0, 4));
         return (($high << 31) * 2) + $low;
     }
-
-    /* QUOTE: http://www.digi.com/wiki/developer/index.php/Modbus_Floating_Points
-     * Still other vendors used a gray area within the Modbus standard, encoding 32-bit floating points in a manner neither allowed nor forbidden by the standard. They reasoned that since the read response
-     * includes a byte count, the master/client could understand that a read of 10 registers resulting in 40 bytes of data meant that the registers were 32-bit and not 16-bit. Thus these vendors return
-     * 32-bit floating points as double-sized (32-bit) registers in true big-endian format. These vendors tend to predefine ranges of registers types, so while reading 10 holding registers
-     * starting at 4x00001 returns 20 bytes, reading 10 holding registers starting at 4x07001 returns 40 bytes.
-     *
-     * TODO: add support for Word (16 bit), Double Word (32bit) and Quad word (64bit) endiannesses
-     * TODO:  1) true Big Endian (ABCD),  2) high-word first Big Endian (CDAB), 3) little endian???
-     *  */
 }
