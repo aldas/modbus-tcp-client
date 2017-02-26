@@ -33,10 +33,21 @@ class TypesTest extends TestCase
         $this->assertEquals(4294967295, Types::parseUInt32BE("\xFF\xFF\xFF\xFF"));
         $this->assertEquals(133124, Types::parseUInt32BE("\x08\x04\x00\x02"));
         $this->assertEquals(565, Types::parseUInt32BE("\x02\x35\x00\x00"));
+
+        if (PHP_INT_SIZE === 8) {
+            $this->assertTrue(is_int(Types::parseUInt32BE("\xFF\xFF\xFF\xFF")));
+            $this->assertTrue(is_int(Types::parseUInt32BE("\x00\x01\x00\x00")));
+        } else {
+            $this->assertTrue(is_float(Types::parseUInt32BE("\xFF\xFF\xFF\xFF"))); // is converted to float to hold this big value
+
+            $this->assertTrue(is_int(Types::parseUInt32BE("\xFF\xFF\x7F\xFF")));
+            $this->assertTrue(is_int(Types::parseUInt32BE("\x00\x01\x00\x00")));
+        }
     }
 
     public function testShouldParseInt32FromDoubleWord()
     {
+        $this->assertTrue(is_int(Types::parseInt32BE("\xFF\xFF\x7F\xFF")));
         $this->assertEquals(0, Types::parseInt32BE("\x00\x00\x00\x00"));
         $this->assertEquals(1, Types::parseInt32BE("\x00\x01\x00\x00"));
         $this->assertEquals(-1, Types::parseInt32BE("\xFF\xFF\xFF\xFF"));

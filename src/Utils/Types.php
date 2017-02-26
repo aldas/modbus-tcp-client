@@ -52,16 +52,22 @@ class Types
     /**
      * Parse binary string (double word) with big endian byte order to 32bit unsigned integer (4 bytes to uint32)
      *
+     * NB: On 32bit php and having highest bit set method will return float instead of int value. This is due 32bit php supports only 32bit signed integers
+     *
      * @param string $doubleWord binary string to be converted to signed 16 bit integer
-     * @return int
+     * @return int|float
      * @throws \RuntimeException
      */
     public static function parseUInt32BE($doubleWord)
     {
-        //in network low byte is sent first and after that high byte (Big endian high word first)
-        $byteArray = unpack('Cb3/Cb2/Cb1/Cb0', $doubleWord);
-        $b1 = (float)($byteArray['b1'] << 23) * 2; //can not bit shift safely (for unsigneds) 24 bits on 32bit arch so multiply by 2
-        return $b1 + ($byteArray['b0'] << 16) + ($byteArray['b3'] << 8) + $byteArray['b2'];
+        $byteArray = unpack('nlow/nhigh', $doubleWord);
+        if (PHP_INT_SIZE === 4) {
+            //can not bit shift safely (for unsigneds) already 16bit value by 16 bits on 32bit arch so shift 15 and multiply by 2
+            $byteArray['high'] = ($byteArray['high'] << 15) * 2;
+        } else {
+            $byteArray['high'] <<= 16;
+        }
+        return $byteArray['high'] + $byteArray['low'];
     }
 
     /**
@@ -72,10 +78,8 @@ class Types
      */
     public static function parseInt32BE($doubleWord)
     {
-        //TODO raw bit operations would be faster than unpack + array accessing?
         $byteArray = unpack('nlow/nhigh', $doubleWord);
         $byteArray['high'] = self::uint16TosignedInt16($byteArray['high']);
-        //in network low byte is sent first and after that high byte (Big endian)
         return ($byteArray['high'] << 16) + $byteArray['low'];
     }
 
