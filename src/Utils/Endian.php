@@ -26,7 +26,15 @@ namespace ModbusTcpClient\Utils;
  */
 class Endian
 {
-    const BIG_ENDIAN = 0;
+    const BIG_ENDIAN = 1;
+    const LITTLE_ENDIAN = 2;
+
+    /**
+     * Double words (32bit types) consist of two 16bit words. Different PLCs send double words differently over wire
+     * So 0xDCBA can be sent low word (0xBA) first 0xBADC or high word (0xDC) first 0xDCBA. High word first on true big/little endian
+     * and does not have separate flag
+     */
+    const LOW_WORD_FIRST = 4;
 
     /**
      * Used by WAGO 750-XXX as endianness.
@@ -34,9 +42,12 @@ class Endian
      * When bytes for little endian are in 'ABCD' order then Big Endian Low Word First is in 'BADC' order
      * This mean that high word (BA) is first and low word (DC) for double word is last and bytes in words are in big endian order.
      */
-    const BIG_ENDIAN_LOW_WORD_FIRST = 1;
+    const BIG_ENDIAN_LOW_WORD_FIRST = self::BIG_ENDIAN | self::LOW_WORD_FIRST;
 
     public static $defaultEndian = self::BIG_ENDIAN_LOW_WORD_FIRST;
 
-    // TODO: add support for Double Word (32bit) and Quad word (64bit) endiannesses - int32/int64 and real types
+    public static function getCurrentEndianness($endianness = null)
+    {
+        return $endianness === null ? static::$defaultEndian : $endianness;
+    }
 }

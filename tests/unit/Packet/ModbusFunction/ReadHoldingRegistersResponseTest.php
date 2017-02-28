@@ -47,4 +47,37 @@ class ReadHoldingRegistersResponseTest extends TestCase
         $this->assertEquals([0x0, 0x1], $words[2]->getBytes());
     }
 
+    /**
+     * @expectedException \ModbusTcpClient\ModbusException
+     * @expectedExceptionMessage getWords needs packet byte count to be multiple of 2
+     */
+    public function testGetWordsFailsWhenByteCountIsNotMod2()
+    {
+        $packet = new ReadHoldingRegistersResponse("\x07\xCD\x6B\x0\x0\x0\x01\x00", 3, 33152);
+        $packet->getWords();
+    }
+
+    public function testGetDoubleWords()
+    {
+        $packet = new ReadHoldingRegistersResponse("\x08\xCD\x6B\x0\x0\x0\x01\x00\x00", 3, 33152);
+
+        $dWords = $packet->getDoubleWords();
+        $this->assertCount(2, $dWords);
+
+        $this->assertEquals("\xCD\x6B\x00\x00", $dWords[0]->getData());
+        $this->assertEquals([0xCD, 0x6B, 0x0, 0x0], $dWords[0]->getBytes());
+
+        $this->assertEquals([0x0, 0x01, 0x0 ,0x0], $dWords[1]->getBytes());
+    }
+
+    /**
+     * @expectedException \ModbusTcpClient\ModbusException
+     * @expectedExceptionMessage getDoubleWords needs packet byte count to be multiple of 4
+     */
+    public function testGetDoubleWordsFailsWhenByteCountIsNotMod4()
+    {
+        $packet = new ReadHoldingRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01", 3, 33152);
+        $packet->getDoubleWords();
+    }
+
 }

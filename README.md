@@ -30,7 +30,7 @@ $connection = BinaryStreamConnection::getBuilder()
     ->setHost('192.168.0.1')
     ->build();
     
-$packet = new ReadHoldingRegistersRequest(12288, 6); //create FC3 request packet
+$packet = new ReadHoldingRegistersRequest(12288, 8); //create FC3 request packet
 
 try {
     $binaryData = $connection->connect()->sendAndReceive($packet);
@@ -40,6 +40,10 @@ try {
     
     foreach ($response->getWords() as $word) {
         print_r($word->getInt16BE());
+    }
+    // print registers as double words in big endian low word first order (as WAGO-750 does)
+    foreach ($response->getDoubleWords() as $dword) {
+        print_r($dword->getInt32(Endian::BIG_ENDIAN_LOW_WORD_FIRST));
     }
 } catch (Exception $exception) {
     echo $exception->getMessage() . PHP_EOL;

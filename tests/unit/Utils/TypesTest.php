@@ -2,9 +2,11 @@
 namespace Tests\Utils;
 
 
+use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
 use PHPUnit\Framework\TestCase;
 
+//TODO add little endian tests for 32bit/64bit methods
 class TypesTest extends TestCase
 {
     public function testShouldParseUint16FromWord()
@@ -24,53 +26,101 @@ class TypesTest extends TestCase
         $this->assertEquals(32767, Types::parseInt16BE("\x7F\xFF"));
     }
 
-    public function testShouldParseUInt32FromDoubleWord()
+    public function testShouldParseUInt32FromDoubleWordAsBigEndianLowWordFirst()
     {
-        $this->assertEquals(0, Types::parseUInt32BE("\x00\x00\x00\x00"));
-        $this->assertEquals(1, Types::parseUInt32BE("\x00\x01\x00\x00"));
-        $this->assertEquals(2147483647, Types::parseUInt32BE("\xFF\xFF\x7F\xFF"));
-        $this->assertEquals(2147483648, Types::parseUInt32BE("\x00\x00\x80\x00"));
-        $this->assertEquals(4294967295, Types::parseUInt32BE("\xFF\xFF\xFF\xFF"));
-        $this->assertEquals(133124, Types::parseUInt32BE("\x08\x04\x00\x02"));
-        $this->assertEquals(565, Types::parseUInt32BE("\x02\x35\x00\x00"));
+        $this->assertEquals(0, Types::parseUInt32BE("\x00\x00\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(1, Types::parseUInt32BE("\x00\x01\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(2147483647, Types::parseUInt32BE("\xFF\xFF\x7F\xFF", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(2147483648, Types::parseUInt32BE("\x00\x00\x80\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(4294967295, Types::parseUInt32BE("\xFF\xFF\xFF\xFF", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(133124, Types::parseUInt32BE("\x08\x04\x00\x02", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(565, Types::parseUInt32BE("\x02\x35\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
 
         if (PHP_INT_SIZE === 8) {
-            $this->assertTrue(is_int(Types::parseUInt32BE("\xFF\xFF\xFF\xFF")));
-            $this->assertTrue(is_int(Types::parseUInt32BE("\x00\x01\x00\x00")));
+            $this->assertTrue(is_int(Types::parseUInt32BE("\xFF\xFF\xFF\xFF", Endian::BIG_ENDIAN_LOW_WORD_FIRST)));
+            $this->assertTrue(is_int(Types::parseUInt32BE("\x00\x01\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST)));
         } else {
-            $this->assertTrue(is_float(Types::parseUInt32BE("\xFF\xFF\xFF\xFF"))); // is converted to float to hold this big value
+            $this->assertTrue(is_float(Types::parseUInt32BE("\xFF\xFF\xFF\xFF", Endian::BIG_ENDIAN_LOW_WORD_FIRST))); // is converted to float to hold this big value
 
-            $this->assertTrue(is_int(Types::parseUInt32BE("\xFF\xFF\x7F\xFF")));
-            $this->assertTrue(is_int(Types::parseUInt32BE("\x00\x01\x00\x00")));
+            $this->assertTrue(is_int(Types::parseUInt32BE("\xFF\xFF\x7F\xFF", Endian::BIG_ENDIAN_LOW_WORD_FIRST)));
+            $this->assertTrue(is_int(Types::parseUInt32BE("\x00\x01\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST)));
         }
     }
 
-    public function testShouldParseInt32FromDoubleWord()
+    public function testShouldParseUInt32FromDoubleWordAsBigEndian()
     {
-        $this->assertTrue(is_int(Types::parseInt32BE("\xFF\xFF\x7F\xFF")));
-        $this->assertEquals(0, Types::parseInt32BE("\x00\x00\x00\x00"));
-        $this->assertEquals(1, Types::parseInt32BE("\x00\x01\x00\x00"));
-        $this->assertEquals(-1, Types::parseInt32BE("\xFF\xFF\xFF\xFF"));
-        $this->assertEquals(-2147483648, Types::parseInt32BE("\x00\x00\x80\x00"));
-        $this->assertEquals(2147483647, Types::parseInt32BE("\xFF\xFF\x7F\xFF"));
-        $this->assertEquals(133124, Types::parseInt32BE("\x08\x04\x00\x02"));
-        $this->assertEquals(67305985, Types::parseInt32BE("\x02\x01\x04\x03"));
+        $this->assertEquals(0, Types::parseUInt32BE("\x00\x00\x00\x00", Endian::BIG_ENDIAN));
+        $this->assertEquals(1, Types::parseUInt32BE("\x00\x00\x00\x01", Endian::BIG_ENDIAN));
+        $this->assertEquals(2147483647, Types::parseUInt32BE("\x7F\xFF\xFF\xFF", Endian::BIG_ENDIAN));
+        $this->assertEquals(2147483648, Types::parseUInt32BE("\x80\x00\x00\x00", Endian::BIG_ENDIAN));
+        $this->assertEquals(4294967295, Types::parseUInt32BE("\xFF\xFF\xFF\xFF", Endian::BIG_ENDIAN));
+        $this->assertEquals(133124, Types::parseUInt32BE("\x00\x02\x08\x04", Endian::BIG_ENDIAN));
+        $this->assertEquals(565, Types::parseUInt32BE("\x00\x00\x02\x35", Endian::BIG_ENDIAN));
+
+        if (PHP_INT_SIZE === 8) {
+            $this->assertTrue(is_int(Types::parseUInt32BE("\xFF\xFF\xFF\xFF", Endian::BIG_ENDIAN)));
+            $this->assertTrue(is_int(Types::parseUInt32BE("\x00\x00\x00\x01", Endian::BIG_ENDIAN)));
+        } else {
+            $this->assertTrue(is_float(Types::parseUInt32BE("\xFF\xFF\xFF\xFF", Endian::BIG_ENDIAN))); // is converted to float to hold this big value
+
+            $this->assertTrue(is_int(Types::parseUInt32BE("\x7F\xFF\xFF\xFF", Endian::BIG_ENDIAN)));
+            $this->assertTrue(is_int(Types::parseUInt32BE("\x00\x00\x00\x01", Endian::BIG_ENDIAN)));
+        }
     }
 
-    public function testShouldParseUInt64FromQuadWord()
+    public function testShouldParseInt32FromDoubleWordBigEndianLowWordFirst()
+    {
+        $this->assertTrue(is_int(Types::parseInt32BE("\xFF\xFF\x7F\xFF", Endian::BIG_ENDIAN_LOW_WORD_FIRST)));
+        $this->assertEquals(0, Types::parseInt32BE("\x00\x00\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(1, Types::parseInt32BE("\x00\x01\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(-1, Types::parseInt32BE("\xFF\xFF\xFF\xFF", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(-2147483648, Types::parseInt32BE("\x00\x00\x80\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(2147483647, Types::parseInt32BE("\xFF\xFF\x7F\xFF", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(133124, Types::parseInt32BE("\x08\x04\x00\x02", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(67305985, Types::parseInt32BE("\x02\x01\x04\x03", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+    }
+
+    public function testShouldParseInt32FromDoubleWordBigEndian()
+    {
+        $this->assertTrue(is_int(Types::parseInt32BE("\x7F\xFF\xFF\xFF", Endian::BIG_ENDIAN)));
+        $this->assertEquals(0, Types::parseInt32BE("\x00\x00\x00\x00", Endian::BIG_ENDIAN));
+        $this->assertEquals(1, Types::parseInt32BE("\x00\x00\x00\x01", Endian::BIG_ENDIAN));
+        $this->assertEquals(-1, Types::parseInt32BE("\xFF\xFF\xFF\xFF", Endian::BIG_ENDIAN));
+        $this->assertEquals(-2147483648, Types::parseInt32BE("\x80\x00\x00\x00", Endian::BIG_ENDIAN));
+        $this->assertEquals(2147483647, Types::parseInt32BE("\x7F\xFF\xFF\xFF", Endian::BIG_ENDIAN));
+        $this->assertEquals(133124, Types::parseInt32BE("\x00\x02\x08\x04", Endian::BIG_ENDIAN));
+        $this->assertEquals(67305985, Types::parseInt32BE("\x04\x03\x02\x01", Endian::BIG_ENDIAN));
+    }
+
+    public function testShouldParseUInt64FromQuadWordBigEndianLowWordFirst()
     {
         if (PHP_INT_SIZE === 4) {
             $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
         }
 
-        $this->assertEquals(0, Types::parseUInt64("\x00\x00\x00\x00\x00\x00\x00\x00"));
-        $this->assertEquals(1, Types::parseUInt64("\x00\x00\x00\x00\x00\x01\x00\x00"));
-        $this->assertEquals(65536, Types::parseUInt64("\x00\x00\x00\x00\x00\x00\x00\x01"));
-        $this->assertEquals(2147483647, Types::parseUInt64("\x00\x00\x00\x00\xFF\xFF\x7F\xFF"));
-        $this->assertEquals(2147483648, Types::parseUInt64("\x00\x00\x00\x00\x00\x00\x80\x00"));
+        $this->assertEquals(0, Types::parseUInt64("\x00\x00\x00\x00\x00\x00\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(1, Types::parseUInt64("\x00\x01\x00\x00\x00\x00\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(65536, Types::parseUInt64("\x00\x00\x00\x01\x00\x00\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(2147483647, Types::parseUInt64("\xFF\xFF\x7F\xFF\x00\x00\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals(2147483648, Types::parseUInt64("\x00\x00\x80\x00\x00\x00\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
 
-        $this->assertEquals('72,057,594,180,534,272', number_format(Types::parseUInt64("\x00\x00\x01\x00\x00\x04\x08\x80")));
-        $this->assertEquals('9,223,372,036,854,775,808', number_format(Types::parseUInt64("\x00\x00\x80\x00\x00\x00\x00\x00")));
+        $this->assertEquals(0x0708050603040102, Types::parseUInt64("\x01\x02\x03\x04\x05\x06\x07\x08", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+    }
+
+    public function testShouldParseUInt64FromQuadWordBigEndian()
+    {
+        if (PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
+        }
+
+        $this->assertEquals(0, Types::parseUInt64("\x00\x00\x00\x00\x00\x00\x00\x00", Endian::BIG_ENDIAN));
+        $this->assertEquals(1, Types::parseUInt64("\x00\x00\x00\x00\x00\x00\x00\x01", Endian::BIG_ENDIAN));
+        $this->assertEquals(65536, Types::parseUInt64("\x00\x00\x00\x00\x00\x01\x00\x00", Endian::BIG_ENDIAN));
+        $this->assertEquals(2147483647, Types::parseUInt64("\x00\x00\x00\x00\x7F\xFF\xFF\xFF", Endian::BIG_ENDIAN));
+        $this->assertEquals(2147483648, Types::parseUInt64("\x00\x00\x00\x00\x80\x00\x00\x00", Endian::BIG_ENDIAN));
+
+        $this->assertEquals(72623859790382856, Types::parseUInt64("\x01\x02\x03\x04\x05\x06\x07\x08", Endian::BIG_ENDIAN));
+        $this->assertEquals(0x0102030405060708, Types::parseUInt64("\x01\x02\x03\x04\x05\x06\x07\x08", Endian::BIG_ENDIAN));
     }
 
     /**
@@ -82,7 +132,7 @@ class TypesTest extends TestCase
         if (PHP_INT_SIZE === 4) {
             $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
         }
-        Types::parseUInt64("\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+        echo Types::parseUInt64("\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", Endian::BIG_ENDIAN);
     }
 
     /**
@@ -91,7 +141,7 @@ class TypesTest extends TestCase
      */
     public function testShouldFailToParseUInt64FromTooShortString()
     {
-        Types::parseUInt64("\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+        Types::parseUInt64("\xFF\xFF\xFF\xFF\xFF\xFF\xFF", Endian::BIG_ENDIAN);
     }
 
     /**
@@ -103,7 +153,7 @@ class TypesTest extends TestCase
         if (PHP_INT_SIZE === 4) {
             $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
         }
-        Types::parseUInt64("\x00\x00\x80\x00\x00\x01\x00\x00");
+        Types::parseUInt64("\x00\x01\x00\x00\x00\x00\x80\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST);
     }
 
     public function testShouldEncodeToBinaryint16()
@@ -202,15 +252,26 @@ class TypesTest extends TestCase
         $this->assertEquals("\x00\x00\x00\x00", Types::toReal(0));
     }
 
-    public function testShouldParseFloat()
+    public function testShouldParseFloatAsBigEndianLowWordFirst()
     {
-        $float = Types::parseFloat("\xcc\xcd\x3f\xec");
+        $float = Types::parseFloat("\xcc\xcd\x3f\xec", Endian::BIG_ENDIAN_LOW_WORD_FIRST);
 
         $this->assertTrue(is_float($float));
         $this->assertEquals(1.85, $float, null, 0.0000001);
 
-        $this->assertEquals(0.66666666666, Types::parseFloat("\xaa\xab\x3f\x2a"), null, 0.0000001);
-        $this->assertEquals(0, Types::parseFloat("\x00\x00\x00\x00"), null, 0.0000001);
+        $this->assertEquals(0.66666666666, Types::parseFloat("\xaa\xab\x3f\x2a", Endian::BIG_ENDIAN_LOW_WORD_FIRST), null, 0.0000001);
+        $this->assertEquals(0, Types::parseFloat("\x00\x00\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST), null, 0.0000001);
+    }
+
+    public function testShouldParseFloatAsBigEndian()
+    {
+        $float = Types::parseFloat("\x3f\xec\xcc\xcd", Endian::BIG_ENDIAN);
+
+        $this->assertTrue(is_float($float));
+        $this->assertEquals(1.85, $float, null, 0.0000001);
+
+        $this->assertEquals(0.66666666666, Types::parseFloat("\x3f\x2a\xaa\xab", Endian::BIG_ENDIAN), null, 0.0000001);
+        $this->assertEquals(0, Types::parseFloat("\x00\x00\x00\x00", Endian::BIG_ENDIAN), null, 0.0000001);
     }
 
 }

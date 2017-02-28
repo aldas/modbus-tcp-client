@@ -3,6 +3,8 @@
 namespace ModbusTcpClient\Utils;
 
 
+use ModbusTcpClient\ModbusException;
+
 class Types
 {
     const MAX_VALUE_UINT16 = 0xFFFF; //65535
@@ -44,7 +46,6 @@ class Types
      */
     public static function parseInt16BE($word)
     {
-        //TODO raw bit operations would be faster than unpack + array accessing?
         $byteArray = unpack('chigh/Clow', $word);
         return ($byteArray['high'] << 8) + $byteArray['low'];
     }
@@ -55,12 +56,13 @@ class Types
      * NB: On 32bit php and having highest bit set method will return float instead of int value. This is due 32bit php supports only 32bit signed integers
      *
      * @param string $doubleWord binary string to be converted to signed 16 bit integer
+     * @param int $endianness byte and word order for modbus binary data
      * @return int|float
      * @throws \RuntimeException
      */
-    public static function parseUInt32BE($doubleWord)
+    public static function parseUInt32BE($doubleWord, $endianness = null)
     {
-        $byteArray = unpack('nlow/nhigh', $doubleWord);
+        $byteArray = self::getBytesForInt32Parse($doubleWord, $endianness);
         if (PHP_INT_SIZE === 4) {
             //can not bit shift safely (for unsigneds) already 16bit value by 16 bits on 32bit arch so shift 15 and multiply by 2
             $byteArray['high'] = ($byteArray['high'] << 15) * 2;
@@ -74,13 +76,37 @@ class Types
      * Parse binary string (double word) with big endian byte order to 32bit signed integer (4 bytes to int32)
      *
      * @param string $doubleWord binary string to be converted to signed 16 bit integer
+     * @param int $endianness byte and word order for modbus binary data
      * @return int
+     * @throws \ModbusTcpClient\ModbusException
      */
-    public static function parseInt32BE($doubleWord)
+    public static function parseInt32BE($doubleWord, $endianness = null)
     {
-        $byteArray = unpack('nlow/nhigh', $doubleWord);
+        $byteArray = self::getBytesForInt32Parse($doubleWord, $endianness);
         $byteArray['high'] = self::uint16TosignedInt16($byteArray['high']);
         return ($byteArray['high'] << 16) + $byteArray['low'];
+    }
+
+    private static function getBytesForInt32Parse($doubleWord, $endianness)
+    {
+        $endianness = Endian::getCurrentEndianness($endianness);
+
+        $left = 'high';
+        $right = 'low';
+        if ($endianness & Endian::LOW_WORD_FIRST) {
+            $left = 'low';
+            $right = 'high';
+        }
+
+        if ($endianness & Endian::BIG_ENDIAN) {
+            $format = 'n';
+        } elseif ($endianness & Endian::LITTLE_ENDIAN) {
+            $format = 'v';
+        } else {
+            throw new ModbusException('Unsupported endianness given!');
+        }
+
+        return unpack("{$format}{$left}/{$format}{$right}", $doubleWord);
     }
 
     /**
@@ -254,30 +280,47 @@ class Types
     }
 
     /**
-     * Parse binary string representing real in big endian order to float (double word/4 bytes to float)
+     * Parse binary string representing real in given endianness to float (double word/4 bytes to float)
      *
      * @param string $binaryData binary byte string to be parsed to float
+     * @param int $endianness byte and word order for modbus binary data
      * @return float
      * @throws \RuntimeException
      */
-    public static function parseFloat($binaryData)
+    public static function parseFloat($binaryData, $endianness = null)
     {
-        // parse as uint32 to binary big endian, pack to machine order int 32, unpack to machine order float
-        $pack = self::parseUInt32BE($binaryData);
+        $endianness = Endian::getCurrentEndianness($endianness);
+        if ($endianness & Endian::LOW_WORD_FIRST) {
+            $binaryData = substr($binaryData, 2,2) . substr($binaryData, 0,2);
+        }
+
+        if ($endianness & Endian::BIG_ENDIAN) {
+            $format = 'N';
+        } elseif ($endianness & Endian::LITTLE_ENDIAN) {
+            $format = 'V';
+        } else {
+            throw new ModbusException('Unsupported endianness given!');
+        }
+        // reverse words if needed
+        // parse as uint32 to binary big/little endian,
+        // pack to machine order int 32,
+        // unpack to machine order float
+        $pack = unpack($format, $binaryData)[1];
         return unpack('f', pack('L', $pack))[1];
     }
 
     /**
-     * Parse binary string representing 64 bit unsigned integer in big endian order to 64bit unsigned integer (quad word/8 bytes to 64bit int)
+     * Parse binary string representing 64 bit unsigned integer in given endianness to 64bit unsigned integer (quad word/8 bytes to 64bit int)
      *
      * @param string $binaryData binary string representing 64 bit unsigned integer in big endian order
+     * @param int $endianness byte and word order for modbus binary data
      * @return int
-     * @throws \LengthException
-     * @throws \RuntimeException
      * @throws \RangeException
+     * @throws \LengthException
      * @throws \OutOfRangeException
+     * @throws \ModbusTcpClient\ModbusException
      */
-    public static function parseUInt64($binaryData)
+    public static function parseUInt64($binaryData, $endianness = null)
     {
         if (strlen($binaryData) !== 8) {
             throw new \LengthException('binaryData must be 8 bytes in length');
@@ -285,14 +328,26 @@ class Types
         if (PHP_INT_SIZE !== 8) {
             throw new \OutOfRangeException('64-bit format codes are not available for 32-bit versions of PHP');
         }
-        $low = static::parseUInt32BE(substr($binaryData, 4));
 
-        $highestByte = ord($binaryData[2]);
-        if ($highestByte > 0x80 || ($highestByte === 0x80 && $low > 0)) {
-            throw new \RangeException('64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows');
+        $endianness = Endian::getCurrentEndianness($endianness);
+        if ($endianness & Endian::LOW_WORD_FIRST) {
+            $binaryData = implode('', array_reverse(str_split($binaryData, 2)));
         }
 
-        $high = static::parseUInt32BE(substr($binaryData, 0, 4));
-        return (($high << 31) * 2) + $low;
+        if ($endianness & Endian::BIG_ENDIAN) {
+            $format = 'J';
+        } elseif ($endianness & Endian::LITTLE_ENDIAN) {
+            $format = 'P';
+        } else {
+            throw new ModbusException('Unsupported endianness given!');
+        }
+
+        $result = unpack($format, $binaryData)[1];
+
+        if ($result < 0) {
+            throw new \RangeException('64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows');
+        }
+        return $result;
     }
+
 }

@@ -4,6 +4,9 @@ namespace ModbusTcpClient\Packet;
 
 use ModbusTcpClient\Utils\Types;
 
+/**
+ * Double word - 4 bytes, 32bits of data
+ */
 class DoubleWord extends AbstractWord
 {
     protected function getByteLength()
@@ -12,29 +15,33 @@ class DoubleWord extends AbstractWord
     }
 
     /**
+     * @param int $endianness byte and word order for modbus binary data
      * @return int
      * @throws \RuntimeException
      */
-    public function getUInt32()
+    public function getUInt32($endianness = null)
     {
-        return Types::parseUInt32BE($this->getData());
+        return Types::parseUInt32BE($this->getData(), $endianness);
     }
 
     /**
+     * @param int $endianness byte and word order for modbus binary data
      * @return int
+     * @throws \ModbusTcpClient\ModbusException
      */
-    public function getInt32()
+    public function getInt32($endianness = null)
     {
-        return Types::parseInt32BE($this->getData());
+        return Types::parseInt32BE($this->getData(), $endianness);
     }
 
     /**
+     * @param int $endianness byte and word order for modbus binary data
      * @return float
      * @throws \RuntimeException
      */
-    public function getFloat()
+    public function getFloat($endianness = null)
     {
-        return Types::parseFloat($this->getData());
+        return Types::parseFloat($this->getData(), $endianness);
     }
 
     /**

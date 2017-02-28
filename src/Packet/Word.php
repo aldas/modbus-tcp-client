@@ -4,6 +4,9 @@ namespace ModbusTcpClient\Packet;
 
 use ModbusTcpClient\Utils\Types;
 
+/**
+ * Word - 2 bytes, 16bits of data
+ */
 class Word extends AbstractWord
 {
     protected function getByteLength()

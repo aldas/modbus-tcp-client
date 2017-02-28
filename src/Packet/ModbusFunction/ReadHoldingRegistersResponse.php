@@ -2,7 +2,9 @@
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 
+use ModbusTcpClient\ModbusException;
 use ModbusTcpClient\Packet\ByteCountResponse;
+use ModbusTcpClient\Packet\DoubleWord;
 use ModbusTcpClient\Packet\IModbusPacket;
 use ModbusTcpClient\Packet\Word;
 use ModbusTcpClient\Utils\Types;
@@ -37,16 +39,39 @@ class ReadHoldingRegistersResponse extends ByteCountResponse
     }
 
     /**
-     * Return data as splitted into chunks. Each chunk contains 2 elements
+     * Return data as splitted into words. Each word contains 2 bytes
      *
-     * @return Word[] array of Words. each arrays cointain 2 elements (bytes)
+     * @return Word[] array of Words. each arrays cointains 2 bytes
      * @throws \ModbusTcpClient\ModbusException
      */
     public function getWords()
     {
+        if ($this->getByteCount() % 2 !== 0) {
+            throw new ModbusException('getWords needs packet byte count to be multiple of 2');
+        }
         $words = [];
         foreach (str_split($this->data, 2) as $str) {
             $words[] = new Word($str);
+        }
+        return $words;
+    }
+
+    /**
+     * Return data as splitted into double words. Each dword contains 4 bytes
+     *
+     * @return DoubleWord[] array of Double Words. each arrays cointains 4 bytes
+     * @throws \ModbusTcpClient\ModbusException
+     */
+    public function getDoubleWords()
+    {
+        $byteCount = $this->getByteCount();
+        if ($byteCount % 4 !== 0) {
+            throw new ModbusException('getDoubleWords needs packet byte count to be multiple of 4');
+        }
+
+        $words = [];
+        foreach (str_split($this->data, 4) as $str) {
+            $words[] = new DoubleWord($str);
         }
         return $words;
     }
