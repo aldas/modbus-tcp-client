@@ -27,8 +27,8 @@
   },
   "scripts": {
     "test": "vendor/bin/phpunit",
-    "test-unit": "vendor/bin/phpunit -testsuite 'unit-tests'",
-    "test-integration": "vendor/bin/phpunit -testsuite 'integration-tests'",
+    "test-unit": "vendor/bin/phpunit --testsuite 'unit-tests'",
+    "test-integration": "vendor/bin/phpunit --testsuite 'integration-tests'",
     "test-ci": "vendor/bin/phpunit --coverage-clover report/coverage.xml",
     "test-coverage": "vendor/bin/phpunit --coverage-html report/html"
   }
