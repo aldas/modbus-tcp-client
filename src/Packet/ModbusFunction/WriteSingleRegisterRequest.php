@@ -42,7 +42,7 @@ class WriteSingleRegisterRequest extends ProtocolDataUnitRequest
     public function __toString()
     {
         return parent::__toString()
-            . Types::toInt16BE($this->getValue());
+            . Types::toInt16($this->getValue());
     }
 
     /**

@@ -15,19 +15,23 @@ class Word extends AbstractWord
     }
 
     /**
+     * @param int $endianness byte and word order for modbus binary data
      * @return int
+     * @throws \ModbusTcpClient\ModbusException
      */
-    public function getInt16BE()
+    public function getInt16($endianness = null)
     {
-        return Types::parseInt16BE($this->data);
+        return Types::parseInt16($this->data, $endianness);
     }
 
     /**
+     * @param int $endianness byte and word order for modbus binary data
      * @return int
+     * @throws \ModbusTcpClient\ModbusException
      */
-    public function getUInt16BE()
+    public function getUInt16($endianness = null)
     {
-        return Types::parseUInt16BE($this->data);
+        return Types::parseUInt16($this->data, $endianness);
     }
 
     /**

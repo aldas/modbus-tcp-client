@@ -72,9 +72,9 @@ class ModbusApplicationHeader
     public function __toString()
     {
         return b''
-            . Types::toInt16BE($this->getTransactionId())
-            . Types::toInt16BE($this->getProtocolId())
-            . Types::toInt16BE($this->getLength())
+            . Types::toInt16($this->getTransactionId())
+            . Types::toInt16($this->getProtocolId())
+            . Types::toInt16($this->getLength())
             . Types::toByte($this->getUnitId())
             ;
     }
@@ -86,8 +86,8 @@ class ModbusApplicationHeader
             throw new ModbusException('Data length too short to be valid header!');
         }
 
-        $transactionId = Types::parseUInt16BE($binaryString[0] . $binaryString[1]);
-        $length = Types::parseUInt16BE($binaryString[4] . $binaryString[5]);
+        $transactionId = Types::parseUInt16($binaryString[0] . $binaryString[1]);
+        $length = Types::parseUInt16($binaryString[4] . $binaryString[5]);
         $unitId = Types::parseByte($binaryString[6]);
 
         self::validate($length, $unitId, $transactionId);

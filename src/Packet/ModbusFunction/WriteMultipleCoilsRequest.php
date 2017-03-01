@@ -45,7 +45,7 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest
     public function __toString()
     {
         return parent::__toString()
-            . Types::toInt16BE($this->coilCount)
+            . Types::toInt16($this->coilCount)
             . Types::toByte($this->coilBytesSize)
             . Types::byteArrayToByte(Types::booleanArrayToByteArray($this->coils));
     }

@@ -21,6 +21,15 @@
 ## Intention
 This library is influenced by [phpmodbus](https://github.com/adduc/phpmodbus) library and meant to be provide decoupled Modbus protocol (request/response packets) and networking related features so you could build modbus client with our own choice of networking code (ext_sockets/streams/Reactphp asynchronous streams) or use library provided networking classes (php Streams)
 
+## Endianness
+Library supports following byte and word orders:
+* Big endian (ABCD)
+* Big endian low word first (CDAB) (used by Wago-750)
+* Little endian (DCBA)
+* Little endian low word first (BADC)
+
+See [Endian.php](src/Utils/Endian.php) for additional info and [Types.php](src/Utils/Types.php) for supported data types.
+
 ## Example (fc3 - read holding registers)
 
 Some of the Modbus function examples are in `examples/` folder
@@ -39,7 +48,7 @@ try {
     $response = ResponseFactory::parseResponseOrThrow($binaryData);
     
     foreach ($response->getWords() as $word) {
-        print_r($word->getInt16BE());
+        print_r($word->getInt16());
     }
     // print registers as double words in big endian low word first order (as WAGO-750 does)
     foreach ($response->getDoubleWords() as $dword) {

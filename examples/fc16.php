@@ -16,9 +16,9 @@ $connection = BinaryStreamConnection::getBuilder()
 $startAddress = 12288;
 
 $registers = [
-    Types::toInt16BE(10), //000a as word
-    Types::toInt16BE(-1000), //hex: FC18 as word
-    Types::toInt32BE(2000), //dec: 2000 -> hex: 7d00 is as 2 word 7D00 0000
+    Types::toInt16(10), //000a as word
+    Types::toInt16(-1000), //hex: FC18 as word
+    Types::toInt32(2000), //dec: 2000 -> hex: 7d00 is as 2 word 7D00 0000
 ];
 $packet = new WriteMultipleRegistersRequest($startAddress, $registers);
 echo 'Packet to be sent (in hex): ' . $packet->toHex() . PHP_EOL;

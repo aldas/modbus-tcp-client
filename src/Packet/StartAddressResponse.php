@@ -15,7 +15,7 @@ abstract class StartAddressResponse extends ProtocolDataUnit
     public function __construct($rawData, $unitId = 0, $transactionId = null)
     {
         parent::__construct($unitId, $transactionId);
-        $this->startAddress = Types::parseUInt16BE(substr($rawData, 0, 2));
+        $this->startAddress = Types::parseUInt16(substr($rawData, 0, 2));
     }
 
     public function __toString()
@@ -23,7 +23,7 @@ abstract class StartAddressResponse extends ProtocolDataUnit
         return b''
             . $this->getHeader()->__toString()
             . Types::toByte($this->getFunctionCode())
-            . Types::toInt16BE($this->startAddress);
+            . Types::toInt16($this->startAddress);
     }
 
     /**

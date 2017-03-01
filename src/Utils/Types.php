@@ -5,7 +5,7 @@ namespace ModbusTcpClient\Utils;
 
 use ModbusTcpClient\ModbusException;
 
-class Types
+final class Types
 {
     const MAX_VALUE_UINT16 = 0xFFFF; //65535
     const MIN_VALUE_UINT16 = 0x0;
@@ -16,37 +16,68 @@ class Types
     const MAX_VALUE_BYTE = 0xFF;
     const MIN_VALUE_BYTE = 0x0;
 
+    private function __construct()
+    {
+        // no access, this is an utility class
+    }
+
     /**
      * Convert Php data as it would be 16 bit integer to binary string with big endian byte order
      *
      * @param int $data 16 bit integer to be converted to binary string (1 word)
+     * @param int $endianness byte and word order for modbus binary data
      * @return string binary string with big endian byte order
+     * @throws \ModbusTcpClient\ModbusException
      */
-    public static function toInt16BE($data)
+    public static function toInt16($data, $endianness = null)
     {
-        return pack('n', $data);
+        return pack(self::getInt16Format($endianness), $data);
     }
 
     /**
-     * Parse binary string (1 word) with big endian byte order to 16bit unsigned integer (2 bytes to uint16)
+     * Parse binary string (1 word) with given endianness byte order to 16bit unsigned integer (2 bytes to uint16)
      *
      * @param string $word binary string to be converted to unsigned 16 bit integer
+     * @param int $endianness byte and word order for modbus binary data
      * @return int
+     * @throws \ModbusTcpClient\ModbusException
      */
-    public static function parseUInt16BE($word)
+    public static function parseUInt16($word, $endianness = null)
     {
-        return unpack('n', $word)[1];
+        return unpack(self::getInt16Format($endianness), $word)[1];
+    }
+
+    private static function getInt16Format($endianness)
+    {
+        $endianness = Endian::getCurrentEndianness($endianness);
+        if ($endianness & Endian::BIG_ENDIAN) {
+            return 'n';
+        } elseif ($endianness & Endian::LITTLE_ENDIAN) {
+            return 'v';
+        } else {
+            throw new ModbusException('Unsupported endianness given!');
+        }
     }
 
     /**
-     * Parse binary string (1 word) with big endian byte order to 16bit signed integer (2 bytes to int16)
+     * Parse binary string (1 word) with given endianness byte order to 16bit signed integer (2 bytes to int16)
      *
      * @param string $word binary string to be converted to signed 16 bit integer
+     * @param int $endianness byte and word order for modbus binary data
      * @return int
+     * @throws \ModbusTcpClient\ModbusException
      */
-    public static function parseInt16BE($word)
+    public static function parseInt16($word, $endianness = null)
     {
-        $byteArray = unpack('chigh/Clow', $word);
+        $endianness = Endian::getCurrentEndianness($endianness);
+        if ($endianness & Endian::BIG_ENDIAN) {
+            $format = 'chigh/Clow';
+        } elseif ($endianness & Endian::LITTLE_ENDIAN) {
+            $format = 'Clow/chigh';
+        } else {
+            throw new ModbusException('Unsupported endianness given!');
+        }
+        $byteArray = unpack($format, $word);
         return ($byteArray['high'] << 8) + $byteArray['low'];
     }
 
@@ -60,7 +91,7 @@ class Types
      * @return int|float
      * @throws \RuntimeException
      */
-    public static function parseUInt32BE($doubleWord, $endianness = null)
+    public static function parseUInt32($doubleWord, $endianness = null)
     {
         $byteArray = self::getBytesForInt32Parse($doubleWord, $endianness);
         if (PHP_INT_SIZE === 4) {
@@ -80,7 +111,7 @@ class Types
      * @return int
      * @throws \ModbusTcpClient\ModbusException
      */
-    public static function parseInt32BE($doubleWord, $endianness = null)
+    public static function parseInt32($doubleWord, $endianness = null)
     {
         $byteArray = self::getBytesForInt32Parse($doubleWord, $endianness);
         $byteArray['high'] = self::uint16TosignedInt16($byteArray['high']);
@@ -112,6 +143,7 @@ class Types
     /**
      * Convert 2 byte into a signed integer. This is needed to make code 32bit php and 64bit compatible
      * taken from http://stackoverflow.com/q/13322327/2514290
+     * @param $uint16
      * @return int
      */
     private static function uint16TosignedInt16($uint16)
@@ -124,19 +156,23 @@ class Types
     }
 
     /**
-     * Convert Php data as it would be 32 bit integer to binary string with big endian byte order
+     * Convert Php data as it would be 32 bit integer to binary string with given endianness order
      *
      * @param int $data 32 bit integer to be converted to binary string (double word)
+     * @param int $endianness byte and word order for modbus binary data
      * @return string binary string with big endian byte order
+     * @throws \ModbusTcpClient\ModbusException
      */
-    public static function toInt32BE($data)
+    public static function toInt32($data, $endianness = null)
     {
-        //http://www.simplymodbus.ca/FAQ.htm#Order
-        //dec: 2923517522 is in hex: AE415652, low word being 5652, high word AE41
-        //so in network 5652 AE41 should be sent. low word first (Big endian)
-        $highWord = self::toInt16BE(($data >> 16) & 0xFFFF); // get last 2 bytes
-        $lowWord = self::toInt16BE($data & 0xFFFF); // get first 2 bytes
-        return $lowWord . $highWord;
+        $highWord = self::toInt16(($data >> 16) & 0xFFFF, $endianness);
+        $lowWord = self::toInt16($data & 0xFFFF, $endianness);
+
+        $endianness = Endian::getCurrentEndianness($endianness);
+        if ($endianness & Endian::LOW_WORD_FIRST) {
+            return $lowWord . $highWord;
+        }
+        return $highWord . $lowWord;
     }
 
     /**
@@ -210,7 +246,7 @@ class Types
     {
         return array_map(function ($elem) {
             if ($elem) {
-                return Types::toInt16BE($elem);
+                return Types::toInt16($elem);
             }
             return null;
         }, $ints);
@@ -267,16 +303,18 @@ class Types
     }
 
     /**
-     * Convert Php data as it would be float to binary string with big endian order
+     * Convert Php data as it would be float to binary string with given endian order
      *
      * @param float $float float to be converted to binary byte string
+     * @param int $endianness byte and word order for modbus binary data
      * @return string binary string with big endian byte order
+     * @throws \ModbusTcpClient\ModbusException
      */
-    public static function toReal($float)
+    public static function toReal($float, $endianness = null)
     {
         //pack to machine order float, unpack to machine order uint32, pack uint32 to binary big endian
         //from php git seems that some day there will be 'g' and 'G' modifiers for float LE/BE conversion
-        return self::toInt32BE(unpack('L', pack('f', $float))[1]);
+        return self::toInt32(unpack('L', pack('f', $float))[1], $endianness);
     }
 
     /**

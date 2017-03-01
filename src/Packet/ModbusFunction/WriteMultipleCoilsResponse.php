@@ -18,7 +18,7 @@ class WriteMultipleCoilsResponse extends StartAddressResponse
     public function __construct($rawData, $unitId = 0, $transactionId = null)
     {
         parent::__construct($rawData, $unitId, $transactionId);
-        $this->coilCount = Types::parseUInt16BE(substr($rawData, 2, 2));
+        $this->coilCount = Types::parseUInt16(substr($rawData, 2, 2));
     }
 
     public function getFunctionCode()
@@ -42,6 +42,6 @@ class WriteMultipleCoilsResponse extends StartAddressResponse
     public function __toString()
     {
         return parent::__toString()
-            . Types::toInt16BE($this->coilCount);
+            . Types::toInt16($this->coilCount);
     }
 }

@@ -37,7 +37,7 @@ class ResponseFactory
             return new ErrorResponse(ModbusApplicationHeader::parse($binaryString), $functionCode, $exceptionCode);
         }
 
-        $transactionId = Types::parseUInt16BE($binaryString[0] . $binaryString[1]);
+        $transactionId = Types::parseUInt16($binaryString[0] . $binaryString[1]);
         $unitId = Types::parseByte($binaryString[6]);
 
         $rawData = substr($binaryString, 8);

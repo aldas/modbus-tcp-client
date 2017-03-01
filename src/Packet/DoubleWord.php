@@ -21,7 +21,7 @@ class DoubleWord extends AbstractWord
      */
     public function getUInt32($endianness = null)
     {
-        return Types::parseUInt32BE($this->getData(), $endianness);
+        return Types::parseUInt32($this->getData(), $endianness);
     }
 
     /**
@@ -31,7 +31,7 @@ class DoubleWord extends AbstractWord
      */
     public function getInt32($endianness = null)
     {
-        return Types::parseInt32BE($this->getData(), $endianness);
+        return Types::parseInt32($this->getData(), $endianness);
     }
 
     /**

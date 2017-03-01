@@ -10,7 +10,7 @@ class WordTest extends TestCase
     public function testShouldConstructEvenFrom1ByteOfData()
     {
         $word = new Word("\xFF");
-        $this->assertEquals(255, $word->getUInt16BE());
+        $this->assertEquals(255, $word->getUInt16());
     }
 
     /**
@@ -43,13 +43,13 @@ class WordTest extends TestCase
     public function testShouldGetUint16BE()
     {
         $word = new Word("\x80\x00");
-        $this->assertEquals(32768, $word->getUInt16BE());
+        $this->assertEquals(32768, $word->getUInt16());
     }
 
     public function testShouldGetint16BE()
     {
         $word = new Word("\x80\x00");
-        $this->assertEquals(-32768, $word->getInt16BE());
+        $this->assertEquals(-32768, $word->getInt16());
     }
 
     public function testShouldGetData()

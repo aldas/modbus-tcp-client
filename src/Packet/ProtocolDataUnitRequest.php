@@ -30,7 +30,7 @@ abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
         return b''
             . $this->getHeader()->__toString()
             . Types::toByte($this->getFunctionCode())
-            . Types::toInt16BE($this->getStartAddress());
+            . Types::toInt16($this->getStartAddress());
     }
 
     public function getStartAddress()

@@ -18,7 +18,7 @@ class WriteMultipleRegistersResponse extends StartAddressResponse
     public function __construct($rawData, $unitId = 0, $transactionId = null)
     {
         parent::__construct($rawData, $unitId, $transactionId);
-        $this->registersCount = Types::parseUInt16BE(substr($rawData, 2, 2));
+        $this->registersCount = Types::parseUInt16(substr($rawData, 2, 2));
     }
 
     public function getFunctionCode()
@@ -42,6 +42,6 @@ class WriteMultipleRegistersResponse extends StartAddressResponse
     public function __toString()
     {
         return parent::__toString()
-            . Types::toInt16BE($this->registersCount);
+            . Types::toInt16($this->registersCount);
     }
 }
