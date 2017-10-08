@@ -48,7 +48,8 @@ try {
     //parse binary data to response object
     $response = ResponseFactory::parseResponseOrThrow($binaryData);
     
-    foreach ($response->getWords() as $word) {
+    //same as 'foreach ($response->getWords() as $word) {'
+    foreach ($response as $word) { 
         print_r($word->getInt16());
     }
     // print registers as double words in big endian low word first order (as WAGO-750 does)

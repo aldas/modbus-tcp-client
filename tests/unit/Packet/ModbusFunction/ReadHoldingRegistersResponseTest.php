@@ -47,6 +47,52 @@ class ReadHoldingRegistersResponseTest extends TestCase
         $this->assertEquals([0x0, 0x1], $words[2]->getBytes());
     }
 
+    public function testAsWords()
+    {
+        $packet = new ReadHoldingRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01", 3, 33152);
+
+        $words = [];
+        foreach ($packet->asWords() as $index => $word) {
+            $words[$index] = $word;
+        }
+        $this->assertCount(3, $words);
+
+        $this->assertEquals("\xCD\x6B", $words[0]->getData());
+        $this->assertEquals([0xCD, 0x6B], $words[0]->getBytes());
+
+        $this->assertEquals([0x0, 0x0], $words[1]->getBytes());
+        $this->assertEquals([0x0, 0x1], $words[2]->getBytes());
+    }
+
+    public function testIterator()
+    {
+        $packet = (new ReadHoldingRegistersResponse(
+            "\x06\xCD\x6B\x0\x0\x0\x01",
+            3,
+            33152
+        ))->withStartAddress(50);
+
+        $wordsAssoc = [];
+        foreach ($packet as $address => $word) {
+            $wordsAssoc[$address] = $word;
+        }
+
+        $words = [];
+        foreach ($packet as $word) {
+            $words[] = $word;
+        }
+        $this->assertCount(3, $words);
+
+        $this->assertEquals("\xCD\x6B", $wordsAssoc[50]->getData());
+        $this->assertEquals([0xCD, 0x6B], $wordsAssoc[50]->getBytes());
+
+        $this->assertEquals([0x0, 0x0], $wordsAssoc[51]->getBytes());
+        $this->assertEquals([0x0, 0x1], $wordsAssoc[52]->getBytes());
+
+        $this->assertEquals([0x0, 0x0], $words[1]->getBytes());
+        $this->assertEquals([0x0, 0x1], $words[2]->getBytes());
+    }
+
     /**
      * @expectedException \ModbusTcpClient\ModbusException
      * @expectedExceptionMessage getWords needs packet byte count to be multiple of 2
@@ -67,7 +113,94 @@ class ReadHoldingRegistersResponseTest extends TestCase
         $this->assertEquals("\xCD\x6B\x00\x00", $dWords[0]->getData());
         $this->assertEquals([0xCD, 0x6B, 0x0, 0x0], $dWords[0]->getBytes());
 
-        $this->assertEquals([0x0, 0x01, 0x0 ,0x0], $dWords[1]->getBytes());
+        $this->assertEquals([0x0, 0x01, 0x0, 0x0], $dWords[2]->getBytes());
+    }
+
+    public function testAsDoubleWords()
+    {
+        $packet = (new ReadHoldingRegistersResponse(
+            "\x08\xCD\x6B\x0\x0\x0\x01\x00\x00",
+            3,
+            33152
+        ))->withStartAddress(50);
+
+        $dWordsAssoc = [];
+        foreach ($packet->asDoubleWords() as $address => $doubleWord) {
+            $dWordsAssoc[$address] = $doubleWord;
+        }
+
+        $dWords =[];
+        foreach ($packet->asDoubleWords() as $doubleWord) {
+            $dWords[] = $doubleWord;
+        }
+        $this->assertCount(2, $dWordsAssoc);
+
+        $this->assertEquals("\xCD\x6B\x00\x00", $dWordsAssoc[50]->getData());
+
+        $this->assertEquals([0xCD, 0x6B, 0x0, 0x0], $dWordsAssoc[50]->getBytes());
+        $this->assertEquals([0x0, 0x01, 0x0, 0x0], $dWordsAssoc[52]->getBytes());
+
+        $this->assertEquals([0xCD, 0x6B, 0x0, 0x0], $dWords[0]->getBytes());
+        $this->assertEquals([0x0, 0x01, 0x0, 0x0], $dWords[1]->getBytes());
+    }
+
+    public function testOffsetExists()
+    {
+        $packet = (new ReadHoldingRegistersResponse(
+            "\x08\xCD\x6B\x0\x0\x0\x01\x00\x00",
+            3,
+            33152
+        ))->withStartAddress(50);
+
+        $this->assertFalse(isset($packet[49]));
+        $this->assertTrue(isset($packet[50]));
+        $this->assertTrue(isset($packet[51]));
+        $this->assertTrue(isset($packet[52]));
+        $this->assertTrue(isset($packet[53]));
+        $this->assertFalse(isset($packet[54]));
+    }
+
+    public function testOffsetGet()
+    {
+        $packet = (new ReadHoldingRegistersResponse(
+            "\x06\xCD\x6B\x4\x3\x2\x01",
+            3,
+            33152
+        ))->withStartAddress(50);
+
+        $this->assertEquals([0xCD, 0x6B], $packet[50]->getBytes());
+        $this->assertEquals([0x4, 0x3], $packet[51]->getBytes());
+        $this->assertEquals([0x2, 0x1], $packet[52]->getBytes());
+    }
+
+    /**
+     * @expectedException \OutOfBoundsException
+     * @expectedExceptionMessage offset out of bounds
+     */
+    public function testOffsetGetOutOfBoundsUnder()
+    {
+        $packet = (new ReadHoldingRegistersResponse(
+            "\x06\xCD\x6B\x4\x3\x2\x01",
+            3,
+            33152
+        ))->withStartAddress(50);
+
+        $packet[49];
+    }
+
+    /**
+     * @expectedException \OutOfBoundsException
+     * @expectedExceptionMessage offset out of bounds
+     */
+    public function testOffsetGetOutOfBoundsOver()
+    {
+        $packet = (new ReadHoldingRegistersResponse(
+            "\x06\xCD\x6B\x04\x03\x02\x01",
+            3,
+            33152
+        ))->withStartAddress(50);
+
+       $packet[53];
     }
 
     /**

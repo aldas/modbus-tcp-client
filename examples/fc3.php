@@ -29,8 +29,12 @@ try {
     echo 'Parsed packet (in hex):     ' . $response->toHex() . PHP_EOL;
     echo 'Data parsed from packet (bytes):' . PHP_EOL;
     print_r($response->getData());
-    foreach ($response->getWords() as $word) {
+
+    foreach ($response as $word) {
         print_r($word->getBytes());
+    }
+    foreach ($response->asDoubleWords() as $doubleWord) {
+        print_r($doubleWord->getBytes());
     }
 
 } catch (Exception $exception) {

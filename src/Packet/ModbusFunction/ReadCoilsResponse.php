@@ -1,4 +1,5 @@
 <?php
+
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Packet\ByteCountResponse;
@@ -8,7 +9,7 @@ use ModbusTcpClient\Utils\Types;
 /**
  * Response for Read Coils (FC=01)
  */
-class ReadCoilsResponse extends ByteCountResponse
+class ReadCoilsResponse extends ByteCountResponse implements \ArrayAccess, \IteratorAggregate
 {
     /**
      * @var array
@@ -36,7 +37,7 @@ class ReadCoilsResponse extends ByteCountResponse
 
     public function getCoils()
     {
-        return $this->coils;
+        return iterator_to_array($this->getIterator());
     }
 
     public function __toString()
@@ -48,5 +49,47 @@ class ReadCoilsResponse extends ByteCountResponse
     protected function getLengthInternal()
     {
         return parent::getLengthInternal() + $this->coilsBytesLength;
+    }
+
+    public function getIterator()
+    {
+        $index = $this->getStartAddress();
+        foreach ($this->coils as $coil) {
+            yield $index++ => $coil;
+        }
+    }
+
+    /**
+     * @param $offset
+     * @param $value
+     * @throws \LogicException
+     */
+    public function offsetSet($offset, $value)
+    {
+        throw new \LogicException('setting value in response is not supported!');
+    }
+
+    /**
+     * @param $offset
+     * @throws \LogicException
+     */
+    public function offsetUnset($offset)
+    {
+        throw new \LogicException('unsetting value in response is not supported!');
+    }
+
+    public function offsetExists($offset)
+    {
+        return isset($this->coils[$offset - $this->getStartAddress()]);
+    }
+
+    public function offsetGet($offset)
+    {
+        $address = ($offset - $this->getStartAddress()) * 2;
+        $byteCount = $this->getByteCount();
+        if ($address < 0 || $address >= $byteCount) {
+            throw new \OutOfBoundsException('offset out of bounds');
+        }
+        return $this->coils[$offset - $this->getStartAddress()];
     }
 }
