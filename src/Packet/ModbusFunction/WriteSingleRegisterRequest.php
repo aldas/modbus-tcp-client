@@ -1,7 +1,7 @@
 <?php
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Utils\Types;
 
@@ -36,7 +36,7 @@ class WriteSingleRegisterRequest extends ProtocolDataUnitRequest
 
     public function getFunctionCode()
     {
-        return IModbusPacket::WRITE_SINGLE_REGISTER;
+        return ModbusPacket::WRITE_SINGLE_REGISTER;
     }
 
     public function __toString()

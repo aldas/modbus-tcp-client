@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -40,7 +40,7 @@ class WriteMultipleCoilsRequestTest extends TestCase
     {
         $coils = [true, false, true];
         $packet = new WriteMultipleCoilsRequest(107, $coils, 17, 1);
-        $this->assertEquals(IModbusPacket::WRITE_MULTIPLE_COILS, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::WRITE_MULTIPLE_COILS, $packet->getFunctionCode());
         $this->assertEquals(107, $packet->getStartAddress());
         $this->assertEquals($coils, $packet->getCoils());
 

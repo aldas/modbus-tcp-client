@@ -4,7 +4,7 @@
 * Modbus TCP/IP specification: http://www.modbus.org/specs.php
 * Modbus TCP/IP simpler description: http://www.simplymodbus.ca/TCP.htm
 
-##Supported functions
+## Supported functions
 
 * FC1 - Read Coils ([ReadCoilsRequest](src/Packet/ModbusFunction/ReadCoilsRequest.php) / [ReadCoilsResponse](src/Packet/ModbusFunction/ReadCoilsResponse.php))
 * FC2 - Read Input Discretes ([ReadInputDiscretesRequest](src/Packet/ModbusFunction/ReadInputDiscretesRequest.php) / [ReadInputDiscretesResponse](src/Packet/ModbusFunction/ReadInputDiscretesResponse.php))

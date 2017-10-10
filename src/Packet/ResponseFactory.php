@@ -17,7 +17,7 @@ class ResponseFactory
 {
     /**
      * @param $binaryString
-     * @return IModbusPacket
+     * @return ModbusPacket
      * @throws \ModbusTcpClient\ModbusException
      * @throws \InvalidArgumentException
      */
@@ -45,22 +45,22 @@ class ResponseFactory
         //TODO add all response types
         //TODO should responses parse all their data themselves?
         switch ($functionCode) {
-            case IModbusPacket::READ_HOLDING_REGISTERS:
+            case ModbusPacket::READ_HOLDING_REGISTERS:
                 return new ReadHoldingRegistersResponse($rawData, $unitId, $transactionId);
                 break;
-            case IModbusPacket::READ_COILS:
+            case ModbusPacket::READ_COILS:
                 return new ReadCoilsResponse($rawData, $unitId, $transactionId);
                 break;
-            case IModbusPacket::WRITE_SINGLE_COIL:
+            case ModbusPacket::WRITE_SINGLE_COIL:
                 return new WriteSingleCoilResponse($rawData, $unitId, $transactionId);
                 break;
-            case IModbusPacket::WRITE_SINGLE_REGISTER:
+            case ModbusPacket::WRITE_SINGLE_REGISTER:
                 return new WriteSingleRegisterResponse($rawData, $unitId, $transactionId);
                 break;
-            case IModbusPacket::WRITE_MULTIPLE_COILS:
+            case ModbusPacket::WRITE_MULTIPLE_COILS:
                 return new WriteMultipleCoilsResponse($rawData, $unitId, $transactionId);
                 break;
-            case IModbusPacket::WRITE_MULTIPLE_REGISTERS:
+            case ModbusPacket::WRITE_MULTIPLE_REGISTERS:
                 return new WriteMultipleRegistersResponse($rawData, $unitId, $transactionId);
                 break;
             default:

@@ -2,7 +2,7 @@
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Utils\Types;
 
@@ -36,7 +36,7 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest
 
     public function getFunctionCode()
     {
-        return IModbusPacket::READ_COILS;
+        return ModbusPacket::READ_COILS;
     }
 
     public function __toString()

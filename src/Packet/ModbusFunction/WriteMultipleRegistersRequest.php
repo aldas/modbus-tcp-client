@@ -3,7 +3,7 @@
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Utils\Registers;
 use ModbusTcpClient\Utils\Types;
@@ -44,7 +44,7 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest
 
     public function getFunctionCode()
     {
-        return IModbusPacket::WRITE_MULTIPLE_REGISTERS;
+        return ModbusPacket::WRITE_MULTIPLE_REGISTERS;
     }
 
     public function __toString()

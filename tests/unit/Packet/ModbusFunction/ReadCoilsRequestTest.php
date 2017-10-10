@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsRequest;
 use ModbusTcpClient\Utils\Types;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +19,7 @@ class ReadCoilsRequestTest extends TestCase
     public function testPacketProperties()
     {
         $packet = new ReadCoilsRequest(107, 3, 17, 1);
-        $this->assertEquals(IModbusPacket::READ_COILS, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::READ_COILS, $packet->getFunctionCode());
         $this->assertEquals(107, $packet->getStartAddress());
         $this->assertEquals(3, $packet->getQuantity());
 

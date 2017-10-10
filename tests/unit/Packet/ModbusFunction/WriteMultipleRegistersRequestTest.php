@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersRequest;
 use ModbusTcpClient\Utils\Types;
 use PHPUnit\Framework\TestCase;
@@ -29,7 +29,7 @@ class WriteMultipleRegistersRequestTest extends TestCase
     {
         $registers = [Types::toByte(200), Types::toInt16(130), Types::toInt16(34561)];
         $packet = new WriteMultipleRegistersRequest(107, $registers, 17, 1);
-        $this->assertEquals(IModbusPacket::WRITE_MULTIPLE_REGISTERS, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::WRITE_MULTIPLE_REGISTERS, $packet->getFunctionCode());
         $this->assertEquals(107, $packet->getStartAddress());
         $this->assertEquals($registers, $packet->getRegisters());
 

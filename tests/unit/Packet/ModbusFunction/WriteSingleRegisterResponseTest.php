@@ -3,7 +3,7 @@
 namespace Tests\Packet\ModbusFunction;
 
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleRegisterResponse;
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +20,7 @@ class WriteSingleRegisterResponseTest extends TestCase
     public function testOnPacketProperties()
     {
         $packet = new WriteSingleRegisterResponse("\x00\x02\xFF\x00", 3, 33152);
-        $this->assertEquals(IModbusPacket::WRITE_SINGLE_REGISTER, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::WRITE_SINGLE_REGISTER, $packet->getFunctionCode());
 
         $this->assertEquals(0xFF00, $packet->getValue());
 

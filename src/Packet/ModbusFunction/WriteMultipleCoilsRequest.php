@@ -1,7 +1,7 @@
 <?php
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Utils\Types;
 
@@ -39,7 +39,7 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest
 
     public function getFunctionCode()
     {
-        return IModbusPacket::WRITE_MULTIPLE_COILS;
+        return ModbusPacket::WRITE_MULTIPLE_COILS;
     }
 
     public function __toString()

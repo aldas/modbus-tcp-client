@@ -3,7 +3,7 @@
 namespace ModbusTcpClient\Packet;
 
 
-interface IModbusPacket
+interface ModbusPacket
 {
     const READ_COILS = 1;
     const READ_INPUT_DISCRETES = 2;

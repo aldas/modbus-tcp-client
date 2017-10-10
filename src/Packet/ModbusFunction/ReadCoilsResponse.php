@@ -3,7 +3,7 @@
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Packet\ByteCountResponse;
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Utils\Types;
 
 /**
@@ -32,7 +32,7 @@ class ReadCoilsResponse extends ByteCountResponse implements \ArrayAccess, \Iter
 
     public function getFunctionCode()
     {
-        return IModbusPacket::READ_COILS;
+        return ModbusPacket::READ_COILS;
     }
 
     public function getCoils()

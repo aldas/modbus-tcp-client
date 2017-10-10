@@ -1,7 +1,7 @@
 <?php
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Utils\Types;
 
@@ -36,7 +36,7 @@ class ReadHoldingRegistersRequest extends ProtocolDataUnitRequest
 
     public function getFunctionCode()
     {
-        return IModbusPacket::READ_HOLDING_REGISTERS;
+        return ModbusPacket::READ_HOLDING_REGISTERS;
     }
 
     public function __toString()

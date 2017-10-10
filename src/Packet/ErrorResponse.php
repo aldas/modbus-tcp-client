@@ -6,7 +6,7 @@ namespace ModbusTcpClient\Packet;
 
 use ModbusTcpClient\Utils\Types;
 
-class ErrorResponse implements IModbusPacket
+class ErrorResponse implements ModbusPacket
 {
     /**
      * @var int Modbus exceptions are transfered in function code byte and have their high bit set (128)

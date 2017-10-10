@@ -3,7 +3,7 @@
 namespace Tests\Packet\ModbusFunction;
 
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersResponse;
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +20,7 @@ class WriteMultipleRegistersResponseTest extends TestCase
     public function testPacketProperties()
     {
         $packet = new WriteMultipleRegistersResponse("\x04\x10\x01\x01", 3, 33152);
-        $this->assertEquals(IModbusPacket::WRITE_MULTIPLE_REGISTERS, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::WRITE_MULTIPLE_REGISTERS, $packet->getFunctionCode());
 
         $this->assertEquals(0x0410, $packet->getStartAddress());
         $this->assertEquals(0x0101, $packet->getRegistersCount());

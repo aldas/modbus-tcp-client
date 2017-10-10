@@ -12,7 +12,7 @@ namespace ModbusTcpClient\Packet;
  * 0003: The total number of registers requested. (read 3 registers 40108 to 40110)
  */
 
-abstract class ProtocolDataUnit implements IModbusPacket
+abstract class ProtocolDataUnit implements ModbusPacket
 {
     /**
      * @var ModbusApplicationHeader

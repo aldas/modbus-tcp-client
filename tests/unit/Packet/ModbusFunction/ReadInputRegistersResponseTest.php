@@ -2,7 +2,7 @@
 
 namespace Tests\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersResponse;
@@ -21,7 +21,7 @@ class ReadInputRegistersResponseTest extends TestCase
     public function testPacketProperties()
     {
         $packet = new ReadInputRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01", 3, 33152);
-        $this->assertEquals(IModbusPacket::READ_INPUT_REGISTERS, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::READ_INPUT_REGISTERS, $packet->getFunctionCode());
 
         $this->assertEquals([0xCD, 0x6B, 0x0, 0x0, 0x0, 0x1], $packet->getData()); //TODO get data as array of words (2 bytes)
 

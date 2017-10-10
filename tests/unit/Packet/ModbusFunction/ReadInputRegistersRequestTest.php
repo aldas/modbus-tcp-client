@@ -3,7 +3,7 @@
 namespace Tests\Packet\ModbusFunction;
 
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +20,7 @@ class ReadInputRegistersRequestTest extends TestCase
     public function testPacketProperties()
     {
         $packet = new ReadInputRegistersRequest(107, 3, 17, 1);
-        $this->assertEquals(IModbusPacket::READ_INPUT_REGISTERS, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::READ_INPUT_REGISTERS, $packet->getFunctionCode());
         $this->assertEquals(107, $packet->getStartAddress());
         $this->assertEquals(3, $packet->getQuantity());
 
@@ -35,7 +35,7 @@ class ReadInputRegistersRequestTest extends TestCase
     {
         $packet = new ReadInputRegistersRequest(107, 3);
 
-        $this->assertEquals(IModbusPacket::READ_INPUT_REGISTERS, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::READ_INPUT_REGISTERS, $packet->getFunctionCode());
         $this->assertEquals(107, $packet->getStartAddress());
         $this->assertEquals(3, $packet->getQuantity());
 

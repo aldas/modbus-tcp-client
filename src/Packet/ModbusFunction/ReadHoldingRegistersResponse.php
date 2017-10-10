@@ -6,7 +6,7 @@ namespace ModbusTcpClient\Packet\ModbusFunction;
 use ModbusTcpClient\ModbusException;
 use ModbusTcpClient\Packet\ByteCountResponse;
 use ModbusTcpClient\Packet\DoubleWord;
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\Word;
 use ModbusTcpClient\Utils\Types;
 use Traversable;
@@ -33,7 +33,7 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
 
     public function getFunctionCode()
     {
-        return IModbusPacket::READ_HOLDING_REGISTERS;
+        return ModbusPacket::READ_HOLDING_REGISTERS;
     }
 
     /**

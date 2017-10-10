@@ -5,7 +5,7 @@ namespace Tests\Packet;
 
 
 use ModbusTcpClient\Packet\ErrorResponse;
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use ModbusTcpClient\Packet\ResponseFactory;
@@ -40,7 +40,7 @@ class ResponseFactoryTest extends TestCase
         $response = ResponseFactory::parseResponse($data);
 
         $this->assertInstanceOf(ErrorResponse::class, $response);
-        $this->assertEquals(IModbusPacket::READ_COILS, $response->getFunctionCode());
+        $this->assertEquals(ModbusPacket::READ_COILS, $response->getFunctionCode());
         $this->assertEquals(3, $response->getErrorCode());
         $this->assertEquals('Illegal data value', $response->getErrorMessage());
     }
@@ -68,7 +68,7 @@ class ResponseFactoryTest extends TestCase
         $response = ResponseFactory::parseResponse($data);
 
         $this->assertInstanceOf(ReadHoldingRegistersResponse::class, $response);
-        $this->assertEquals(IModbusPacket::READ_HOLDING_REGISTERS, $response->getFunctionCode());
+        $this->assertEquals(ModbusPacket::READ_HOLDING_REGISTERS, $response->getFunctionCode());
         $this->assertEquals([0, 3], $response->getData());
 
         $header = $response->getHeader();
@@ -86,7 +86,7 @@ class ResponseFactoryTest extends TestCase
         $response = ResponseFactory::parseResponse($data);
 
         $this->assertInstanceOf(ReadCoilsResponse::class, $response);
-        $this->assertEquals(IModbusPacket::READ_COILS, $response->getFunctionCode());
+        $this->assertEquals(ModbusPacket::READ_COILS, $response->getFunctionCode());
         $this->assertEquals([
             1, 0, 1, 1, 0, 0, 1, 1,  // hex: CD -> bin: 1100 1101 -> reverse for user input: 1011 0011
             1, 1, 0, 1, 0, 1, 1, 0   // hex: 6B -> bin: 0110 1011 -> reverse for user input: 1101 0110

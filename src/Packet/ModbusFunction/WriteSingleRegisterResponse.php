@@ -1,7 +1,7 @@
 <?php
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\StartAddressResponse;
 use ModbusTcpClient\Utils\Types;
 
@@ -23,7 +23,7 @@ class WriteSingleRegisterResponse extends StartAddressResponse
 
     public function getFunctionCode()
     {
-        return IModbusPacket::WRITE_SINGLE_REGISTER;
+        return ModbusPacket::WRITE_SINGLE_REGISTER;
     }
 
     /**

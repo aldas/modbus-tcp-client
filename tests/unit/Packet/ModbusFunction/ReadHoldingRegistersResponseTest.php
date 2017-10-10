@@ -2,7 +2,7 @@
 
 namespace Tests\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +19,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
     public function testPacketProperties()
     {
         $packet = new ReadHoldingRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01", 3, 33152);
-        $this->assertEquals(IModbusPacket::READ_HOLDING_REGISTERS, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::READ_HOLDING_REGISTERS, $packet->getFunctionCode());
 
         $this->assertEquals([0xCD, 0x6B, 0x0, 0x0, 0x0, 0x1], $packet->getData());
 

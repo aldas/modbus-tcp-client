@@ -2,7 +2,7 @@
 
 namespace Tests\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesResponse;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +20,7 @@ class ReadInputDiscretesResponseTest extends TestCase
     public function testPacketProperties()
     {
         $packet = new ReadInputDiscretesResponse("\x02\xCD\x6B", 3, 33152);
-        $this->assertEquals(IModbusPacket::READ_INPUT_DISCRETES, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::READ_INPUT_DISCRETES, $packet->getFunctionCode());
 
         $this->assertEquals([
             1, 0, 1, 1, 0, 0, 1, 1,  // hex: CD -> bin: 1100 1101 -> reverse for user input: 1011 0011

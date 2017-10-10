@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -33,7 +33,7 @@ class ReadHoldingRegistersRequestTest extends TestCase
     public function testPacketProperties()
     {
         $packet = new ReadHoldingRegistersRequest(107, 3, 17, 1);
-        $this->assertEquals(IModbusPacket::READ_HOLDING_REGISTERS, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::READ_HOLDING_REGISTERS, $packet->getFunctionCode());
         $this->assertEquals(107, $packet->getStartAddress());
         $this->assertEquals(3, $packet->getQuantity());
 
@@ -48,7 +48,7 @@ class ReadHoldingRegistersRequestTest extends TestCase
     {
         $packet = new ReadHoldingRegistersRequest(107, 3);
 
-        $this->assertEquals(IModbusPacket::READ_HOLDING_REGISTERS, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::READ_HOLDING_REGISTERS, $packet->getFunctionCode());
         $this->assertEquals(107, $packet->getStartAddress());
         $this->assertEquals(3, $packet->getQuantity());
 

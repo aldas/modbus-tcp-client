@@ -1,7 +1,7 @@
 <?php
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\StartAddressResponse;
 use ModbusTcpClient\Utils\Types;
 
@@ -26,7 +26,7 @@ class WriteSingleCoilResponse extends StartAddressResponse
 
     public function getFunctionCode()
     {
-        return IModbusPacket::WRITE_SINGLE_COIL;
+        return ModbusPacket::WRITE_SINGLE_COIL;
     }
 
     public function __toString()

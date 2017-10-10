@@ -3,7 +3,7 @@
 namespace Tests\Packet\ModbusFunction;
 
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsResponse;
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +20,7 @@ class WriteMultipleCoilsResponseTest extends TestCase
     public function testPacketProperties()
     {
         $packet = new WriteMultipleCoilsResponse("\x04\x10\x00\x03", 3, 33152);
-        $this->assertEquals(IModbusPacket::WRITE_MULTIPLE_COILS, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::WRITE_MULTIPLE_COILS, $packet->getFunctionCode());
 
         $this->assertEquals(0x0410, $packet->getStartAddress());
         $this->assertEquals(0x03, $packet->getCoilCount());

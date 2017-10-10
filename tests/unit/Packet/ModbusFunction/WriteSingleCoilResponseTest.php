@@ -2,7 +2,7 @@
 namespace Tests\Packet\ModbusFunction;
 
 
-use ModbusTcpClient\Packet\IModbusPacket;
+use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleCoilResponse;
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +19,7 @@ class WriteSingleCoilResponseTest extends TestCase
     public function testOnPacketProperties()
     {
         $packet = new WriteSingleCoilResponse("\x00\x02\xFF\x00", 3, 33152);
-        $this->assertEquals(IModbusPacket::WRITE_SINGLE_COIL, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::WRITE_SINGLE_COIL, $packet->getFunctionCode());
 
         $this->assertEquals(true, $packet->isCoil());
 
@@ -33,7 +33,7 @@ class WriteSingleCoilResponseTest extends TestCase
     public function testOffPacketProperties()
     {
         $packet = new WriteSingleCoilResponse("\x00\x02\x00\x00", 3, 33152);
-        $this->assertEquals(IModbusPacket::WRITE_SINGLE_COIL, $packet->getFunctionCode());
+        $this->assertEquals(ModbusPacket::WRITE_SINGLE_COIL, $packet->getFunctionCode());
 
         $this->assertEquals(false, $packet->isCoil());
 
