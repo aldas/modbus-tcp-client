@@ -213,4 +213,93 @@ class ReadHoldingRegistersResponseTest extends TestCase
         $packet->getDoubleWords();
     }
 
+    public function testGetDoubleWordAt()
+    {
+        $packet = (new ReadHoldingRegistersResponse(
+            "\x06\xCD\x6B\x04\x03\x02\x01",
+            3,
+            33152
+        ))->withStartAddress(50);
+
+        $this->assertEquals([0xCD, 0x6B, 0x04, 0x03], $packet->getDoubleWordAt(50)->getBytes());
+        $this->assertEquals([0x04, 0x03, 0x02, 0x01], $packet->getDoubleWordAt(51)->getBytes());
+    }
+
+    /**
+     * @expectedException \OutOfBoundsException
+     * @expectedExceptionMessage address out of bounds
+     */
+    public function testGetDoubleWordAtOutOfBounderUnder()
+    {
+        $packet = (new ReadHoldingRegistersResponse(
+            "\x06\xCD\x6B\x04\x03\x02\x01",
+            3,
+            33152
+        ))->withStartAddress(50);
+
+        $packet->getDoubleWordAt(49);
+    }
+
+    /**
+     * @expectedException \OutOfBoundsException
+     * @expectedExceptionMessage address out of bounds
+     */
+    public function testGetDoubleWordAtOutOfBounderOver()
+    {
+        $packet = (new ReadHoldingRegistersResponse(
+            "\x06\xCD\x6B\x04\x03\x02\x01",
+            3,
+            33152
+        ))->withStartAddress(50);
+
+        $packet->getDoubleWordAt(52);
+    }
+
+    public function testGetQuadWordAt()
+    {
+        $packet = (new ReadHoldingRegistersResponse(
+            "\x08\x08\x07\x06\x05\x04\x03\x02\x01",
+            3,
+            33152
+        ))->withStartAddress(50);
+
+        $this->assertEquals(
+            [0x08, 0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01],
+            $packet->getQuadWordAt(50)->getBytes()
+        );
+    }
+
+    /**
+     * @expectedException \OutOfBoundsException
+     * @expectedExceptionMessage address out of bounds
+     */
+    public function testGetQuadWordAtOutOfBounderUnder()
+    {
+
+        $packet = (new ReadHoldingRegistersResponse(
+            "\x08\x08\x07\x06\x05\x04\x03\x02\x01",
+            3,
+            33152
+        ))->withStartAddress(50);
+
+        $this->assertNotNull($packet->getQuadWordAt(50));
+        $packet->getQuadWordAt(49);
+    }
+
+    /**
+     * @expectedException \OutOfBoundsException
+     * @expectedExceptionMessage address out of bounds
+     */
+    public function testGetQuadWordAtOutOfBounderOver()
+    {
+        $packet = (new ReadHoldingRegistersResponse(
+            "\x08\x08\x07\x06\x05\x04\x03\x02\x01",
+            3,
+            33152
+        ))->withStartAddress(50);
+
+        $this->assertNotNull($packet->getQuadWordAt(50));
+        $packet->getQuadWordAt(51);
+    }
+
 }

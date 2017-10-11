@@ -7,6 +7,7 @@ use ModbusTcpClient\ModbusException;
 use ModbusTcpClient\Packet\ByteCountResponse;
 use ModbusTcpClient\Packet\DoubleWord;
 use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Packet\QuadWord;
 use ModbusTcpClient\Packet\Word;
 use ModbusTcpClient\Utils\Types;
 use Traversable;
@@ -146,5 +147,33 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
     public function getIterator()
     {
         return $this->asWords();
+    }
+
+    /**
+     * @param $firstWordAddress
+     * @return DoubleWord
+     */
+    public function getDoubleWordAt($firstWordAddress)
+    {
+        $address = ($firstWordAddress - $this->getStartAddress()) * 2;
+        $byteCount = $this->getByteCount();
+        if ($address < 0 || ($address+4) > $byteCount) {
+            throw new \OutOfBoundsException('address out of bounds');
+        }
+        return new DoubleWord(substr($this->data, $address, 4));
+    }
+
+    /**
+     * @param $firstWordAddress
+     * @return QuadWord
+     */
+    public function getQuadWordAt($firstWordAddress)
+    {
+        $address = ($firstWordAddress - $this->getStartAddress()) * 2;
+        $byteCount = $this->getByteCount();
+        if ($address < 0 || ($address+8) > $byteCount) {
+            throw new \OutOfBoundsException('address out of bounds');
+        }
+        return new QuadWord(substr($this->data, $address, 8));
     }
 }

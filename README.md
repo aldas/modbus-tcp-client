@@ -40,7 +40,7 @@ $connection = BinaryStreamConnection::getBuilder()
     ->setHost('192.168.0.1')
     ->build();
     
-$packet = new ReadHoldingRegistersRequest(12288, 8); //create FC3 request packet
+$packet = new ReadHoldingRegistersRequest(256, 8); //create FC3 request packet
 
 try {
     $binaryData = $connection->connect()->sendAndReceive($packet);
@@ -56,6 +56,11 @@ try {
     foreach ($response->getDoubleWords() as $dword) {
         print_r($dword->getInt32(Endian::BIG_ENDIAN_LOW_WORD_FIRST));
     }
+        
+    // set internal index to match start address to simplify array access
+    $responseWithStartAddress = $response->withStartAddress(256);
+    print_r($responseWithStartAddress[256]->getBytes()); // use array access to get word
+    print_r($responseWithStartAddress->getDoubleWordAt(257)->getFloat());
 } catch (Exception $exception) {
     echo $exception->getMessage() . PHP_EOL;
 } finally {

@@ -12,7 +12,7 @@ $connection = BinaryStreamConnection::getBuilder()
     ->setHost('127.0.0.1')
     ->build();
 
-$startAddress = 12288;
+$startAddress = 256;
 $quantity = 6;
 $packet = new ReadHoldingRegistersRequest($startAddress, $quantity);
 echo 'Packet to be sent (in hex): ' . $packet->toHex() . PHP_EOL;
@@ -36,6 +36,11 @@ try {
     foreach ($response->asDoubleWords() as $doubleWord) {
         print_r($doubleWord->getBytes());
     }
+
+    // set internal index to match start address to simplify array access
+    $responseWithStartAddress = $response->withStartAddress($startAddress);
+    print_r($responseWithStartAddress[256]->getBytes()); // use array access to get word
+    print_r($responseWithStartAddress->getDoubleWordAt(257)->getFloat());
 
 } catch (Exception $exception) {
     echo 'An exception occurred' . PHP_EOL;
