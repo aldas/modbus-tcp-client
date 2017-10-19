@@ -68,7 +68,7 @@ try {
 }
 ```
 
-## Try comminication with PLCs quickly with php built-in web server
+## Try communication with PLCs quickly using php built-in web server
 
 Examples folder has [index.php](examples/index.php) which can be used with php built-in web server to test
 out communication with our own PLCs.
