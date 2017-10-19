@@ -68,6 +68,21 @@ try {
 }
 ```
 
+## Try comminication with PLCs quickly with php built-in web server
+
+Examples folder has [index.php](examples/index.php) which can be used with php built-in web server to test
+out communication with our own PLCs.
+
+```
+git clone https://github.com/aldas/modbus-tcp-client.git
+cd modbus-tcp-client
+composer install
+php -S localhost:8080 -t examples/
+```
+
+Now open <http://localhost:8080> in browser. See additional query parameters from [index.php](examples/index.php).
+
+
 ## Tests
 
 * all `composer test`
