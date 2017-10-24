@@ -46,7 +46,7 @@ abstract class MockServerTestCase extends TestCase
 
             $connection = BinaryStreamConnection::getBuilder()
                 ->setPort($port)
-                ->setHost('127.0.0.1')
+                ->setHost(getenv('MOCKSERVER_BIND_ADDRESS') ?: '127.0.0.1')
                 ->build();
 
             $responseBinary = $connection->connect()

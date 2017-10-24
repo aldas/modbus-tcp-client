@@ -51,14 +51,15 @@ class MockResponseServer
             });
         });
 
-        $socket->listen($this->port);
+        $socket->listen($this->port, getenv('MOCKSERVER_BIND_ADDRESS') ?: '127.0.0.1');
     }
 
     private function startUdpServer($loop, $answerTimeout, $responsePacket)
     {
         $factory = new \React\Datagram\Factory($loop);
 
-        $factory->createServer('127.0.0.1:' . $this->port)->then(function (Socket $server) use ($loop, $answerTimeout, $responsePacket) {
+        $address = (getenv('MOCKSERVER_BIND_ADDRESS') ?: '127.0.0.1') . ':' . $this->port;
+        $factory->createServer($address)->then(function (Socket $server) use ($loop, $answerTimeout, $responsePacket) {
             $server->on('message', function ($message, $address, Socket $server) use ($loop, $answerTimeout, $responsePacket) {
                 if ($answerTimeout > 0) {
                     sleep($answerTimeout);
