@@ -19,3 +19,5 @@ install:
 
 script:
     - composer test-unit
+after_success:
+    - bash <(curl -s https://codecov.io/bash)
