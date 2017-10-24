@@ -15,7 +15,7 @@ abstract class MockServerTestCase extends TestCase
     {
         $loop = Factory::create();
 
-        $port = $port ?: mt_rand(40000, 50000);
+        $port = $port ?: mt_rand(10000, 50000);
         $process = new Process(PHP_BINARY . ' ' . __DIR__ . DIRECTORY_SEPARATOR . "MockResponseServer.php {$protocol} {$port} {$answerTimeout} {$packetToRespond}");
 
         $clientData = [];
