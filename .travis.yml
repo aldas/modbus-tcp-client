@@ -18,6 +18,6 @@ install:
     - travis_retry composer update --no-interaction
 
 script:
-    - composer test-ci
+    - vendor/bin/phpunit --testsuite 'unit-tests' --coverage-clover=coverage.xml
 after_success:
     - bash <(curl -s https://codecov.io/bash)
