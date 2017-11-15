@@ -3,6 +3,7 @@
 namespace Tests\Packet;
 
 use ModbusTcpClient\Packet\QuadWord;
+use ModbusTcpClient\Packet\Word;
 use ModbusTcpClient\Utils\Endian;
 use PHPUnit\Framework\TestCase;
 
@@ -43,5 +44,30 @@ class QuadWordTest extends TestCase
         $quadWord = new QuadWord("\xFF\xFF\x7F\xFF\x00\x00\x00\x00");
 
         $this->assertEquals("\xFF\xFF\x7F\xFF", $quadWord->getHighBytesAsDoubleWord()->getData());
+    }
+
+    public function testShouldCreateFromWords()
+    {
+        $quadWord = QuadWord::fromWords(
+            new Word("\x01\x02"),
+            new Word("\x03\x04"),
+            new Word("\x05\x06"),
+            new Word("\x07\x08")
+        );
+
+        $this->assertEquals("\x01\x02\x03\x04\x05\x06\x07\x08", $quadWord->getData());
+    }
+
+    /**
+     * @expectedException \TypeError
+     */
+    public function testShouldNotCreateFromWordsWhenParamNotWord()
+    {
+        QuadWord::fromWords(
+            new Word("\x01\x02"),
+            new Word("\x03\x04"),
+            new Word("\x05\x06"),
+            null
+        );
     }
 }

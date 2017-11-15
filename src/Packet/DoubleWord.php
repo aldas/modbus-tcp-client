@@ -61,4 +61,16 @@ class DoubleWord extends AbstractWord
     {
         return new Word(substr($this->getData(), 0, 2));
     }
+
+    /**
+     * Combine DoubleWords (2x(2x2) bytes) into Quad Word (8 bytes). This Double Word is used as highest bytes and argument $lowDoubleWord as lowest bytes
+     *
+     * @param DoubleWord $lowDoubleWord
+     * @return QuadWord
+     * @throws \ModbusTcpClient\ModbusException
+     */
+    public function combine(DoubleWord $lowDoubleWord)
+    {
+        return new QuadWord($this->getData() . $lowDoubleWord->getData());
+    }
 }

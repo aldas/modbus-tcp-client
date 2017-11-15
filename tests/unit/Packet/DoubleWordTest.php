@@ -59,4 +59,14 @@ class DoubleWordTest extends TestCase
         $this->assertEquals("\xaa\xab", $dWord->getHighBytesAsWord()->getData());
     }
 
+    public function testShouldCombineToQuadWord()
+    {
+        $lowDoubleWord = new DoubleWord("\xaa\xab\x3f\x2a");
+        $highDoubleWord = new DoubleWord("\x01\x02\x03\x04");
+
+        $quadWord = $highDoubleWord->combine($lowDoubleWord);
+
+        $this->assertEquals("\x01\x02\x03\x04\xaa\xab\x3f\x2a", $quadWord->getData());
+    }
+
 }

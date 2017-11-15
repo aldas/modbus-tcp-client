@@ -40,4 +40,20 @@ class QuadWord extends AbstractWord
     {
         return new DoubleWord(substr($this->getData(), 0, 4));
     }
+
+    /**
+     * Create Quad Word of 4 words. word1 is highest bytes amd word4 lowest bytes
+     *
+     * @return QuadWord
+     * @throws \ModbusTcpClient\ModbusException
+     */
+    public static function fromWords(Word $word1, Word $word2, Word $word3, Word $word4)
+    {
+        return new QuadWord(
+            $word1->getData() .
+            $word2->getData() .
+            $word3->getData() .
+            $word4->getData()
+        );
+    }
 }
