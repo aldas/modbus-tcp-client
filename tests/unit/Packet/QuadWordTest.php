@@ -6,6 +6,7 @@ use ModbusTcpClient\Packet\QuadWord;
 use ModbusTcpClient\Packet\Word;
 use ModbusTcpClient\Utils\Endian;
 use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_Error;
 
 class QuadWordTest extends TestCase
 {
@@ -59,6 +60,7 @@ class QuadWordTest extends TestCase
     }
 
     /**
+     * @requires PHP 7
      * @expectedException \TypeError
      */
     public function testShouldNotCreateFromWordsWhenParamNotWord()
@@ -69,5 +71,25 @@ class QuadWordTest extends TestCase
             new Word("\x05\x06"),
             null
         );
+    }
+
+    public function testShouldNotCreateFromWordsWhenParamNotWord56()
+    {
+        if (PHP_VERSION_ID >= 70000) {
+            $this->markTestSkipped('is for PHP 5.6.x');
+        }
+
+        $ok = false;
+        try {
+            QuadWord::fromWords(
+                new Word("\x01\x02"),
+                new Word("\x03\x04"),
+                new Word("\x05\x06"),
+                null
+            );
+        } catch (PHPUnit_Framework_Error $exception) {
+            $ok = true;
+        }
+        $this->assertTrue($ok);
     }
 }
