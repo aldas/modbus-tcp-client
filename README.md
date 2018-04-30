@@ -23,11 +23,18 @@
 This library is influenced by [phpmodbus](https://github.com/adduc/phpmodbus) library and meant to be provide decoupled Modbus protocol (request/response packets) and networking related features so you could build modbus client with our own choice of networking code (ext_sockets/streams/Reactphp asynchronous streams) or use library provided networking classes (php Streams)
 
 ## Endianness
+Applies to multibyte data that are stored in Word/Double/Quad word registers basically everything
+that is not (u)int16/byte/char. 
+
+So if we receive from network 0x12345678 (bytes: ABCD) and want to convert that to a 32 bit register there could be 4 different 
+ways to interpret bytes and word order depending on modbus server architecture and client architecture.
+NB: TCP, and UDP, are transmitted in big-endian order so we choose this as base for examples
+
 Library supports following byte and word orders:
-* Big endian (ABCD)
-* Big endian low word first (CDAB) (used by Wago-750)
-* Little endian (DCBA)
-* Little endian low word first (BADC)
+* Big endian (ABCD - word1 = 0x1234, word2 = 0x5678) 
+* Big endian low word first (CDAB - word1 = 0x5678, word2 = 0x1234) (used by Wago-750)
+* Little endian (DCBA - word1 = 0x3412, word2 = 0x7856)
+* Little endian low word first (BADC - word1 = 0x7856, word2 = 0x3412)
 
 See [Endian.php](src/Utils/Endian.php) for additional info and [Types.php](src/Utils/Types.php) for supported data types.
 
