@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Utils;
 
 
@@ -387,6 +388,39 @@ class TypesTest extends TestCase
 
         $this->assertEquals(0.66666666666, Types::parseFloat("\xab\xaa\x2a\x3f", Endian::LITTLE_ENDIAN), null, 0.0000001);
         $this->assertEquals(0, Types::parseFloat("\x00\x00\x00\x00", Endian::LITTLE_ENDIAN), null, 0.0000001);
+    }
+
+    public function testShouldParseStringFromRegisterAsLittleEndian()
+    {
+        // null terminated data
+        $string = Types::parseAsciiStringFromRegister("\x53\xF8\x72\x65\x6E\x00", 0, Endian::LITTLE_ENDIAN);
+        $this->assertEquals('Søren', $string);
+
+        $string = Types::parseAsciiStringFromRegister("\x53\xF8\x72\x65\x6E", 0, Endian::LITTLE_ENDIAN);
+        $this->assertEquals('Søren', $string);
+
+        // parse substring from data
+        $string = Types::parseAsciiStringFromRegister("\x53\xF8\x72\x65\x6E\x00", 3, Endian::LITTLE_ENDIAN);
+        $this->assertEquals('Sør', $string);
+    }
+
+    public function testShouldParseStringFromRegisterAsBigEndian()
+    {
+        // null terminated data
+        $string = Types::parseAsciiStringFromRegister("\x00\x6E", 10, Endian::BIG_ENDIAN);
+        $this->assertEquals('n', $string);
+
+        // null terminated data
+        $string = Types::parseAsciiStringFromRegister("\xF8\x53\x65\x72\x00\x6E", 0, Endian::BIG_ENDIAN);
+        $this->assertEquals('Søren', $string);
+
+        // odd number of bytes in data
+        $string = Types::parseAsciiStringFromRegister("\xF8\x53\x65\x72\x00", 0, Endian::BIG_ENDIAN);
+        $this->assertEquals('Søre', $string);
+
+        // parse substring from data
+        $string = Types::parseAsciiStringFromRegister("\xF8\x53\x65\x72\x00\x6E", 3, Endian::BIG_ENDIAN);
+        $this->assertEquals('Sør', $string);
     }
 
 }

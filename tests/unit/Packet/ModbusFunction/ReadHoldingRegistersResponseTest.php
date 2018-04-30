@@ -302,4 +302,47 @@ class ReadHoldingRegistersResponseTest extends TestCase
         $packet->getQuadWordAt(51);
     }
 
+    public function testGetAsciiString()
+    {
+        $packet = (new ReadHoldingRegistersResponse("\x08\x01\x00\xF8\x53\x65\x72\x00\x6E", 3, 33152))->withStartAddress(50);
+        $this->assertCount(4, $packet->getWords());
+
+        $this->assertEquals('Søren', $packet->getAsciiStringAt(51,5));
+    }
+
+    /**
+     * @expectedException \OutOfBoundsException
+     * @expectedExceptionMessage startFromWord out of bounds
+     */
+    public function testGetAsciiStringInvalidAddressLow()
+    {
+        $packet = (new ReadHoldingRegistersResponse("\x08\x01\x00\xF8\x53\x65\x72\x00\x6E", 3, 33152))->withStartAddress(50);
+        $this->assertCount(4, $packet->getWords());
+
+        $packet->getAsciiStringAt(49,5);
+    }
+
+    /**
+     * @expectedException \OutOfBoundsException
+     * @expectedExceptionMessage startFromWord out of bounds
+     */
+    public function testGetAsciiStringInvalidAddressHigh()
+    {
+        $packet = (new ReadHoldingRegistersResponse("\x08\x01\x00\xF8\x53\x65\x72\x00\x6E", 3, 33152))->withStartAddress(50);
+        $this->assertCount(4, $packet->getWords());
+
+        $packet->getAsciiStringAt(54,5);
+    }
+
+    /**
+     * @expectedException \OutOfBoundsException
+     * @expectedExceptionMessage length out of bounds
+     */
+    public function testGetAsciiStringInvalidLength()
+    {
+        $packet = (new ReadHoldingRegistersResponse("\x08\x01\x00\xF8\x53\x65\x72\x00\x6E", 3, 33152))->withStartAddress(50);
+        $this->assertCount(4, $packet->getWords());
+
+        $packet->getAsciiStringAt(50,0);
+    }
 }
