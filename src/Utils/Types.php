@@ -329,7 +329,7 @@ final class Types
     {
         $endianness = Endian::getCurrentEndianness($endianness);
         if ($endianness & Endian::LOW_WORD_FIRST) {
-            $binaryData = substr($binaryData, 2,2) . substr($binaryData, 0,2);
+            $binaryData = substr($binaryData, 2, 2) . substr($binaryData, 0, 2);
         }
 
         if ($endianness & Endian::BIG_ENDIAN) {
@@ -385,6 +385,44 @@ final class Types
         if ($result < 0) {
             throw new \RangeException('64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows');
         }
+        return $result;
+    }
+
+    /**
+     * Parse ascii string from registers to utf-8 string. Supports extended ascii codes ala 'ø' (decimal 248)
+     *
+     * @param string $binaryData binary string representing register (words) contents
+     * @param int $length number of characters to parse from data
+     * @param int $endianness byte and word order for modbus binary data
+     * @return string
+     */
+    public static function parseAsciiStringFromRegister($binaryData, $length = 0, $endianness = null)
+    {
+        $data = $binaryData;
+
+        $endianness = Endian::getCurrentEndianness($endianness);
+        if ($endianness & Endian::BIG_ENDIAN) {
+
+            $data = '';
+            // big endian needs bytes in word reversed
+            foreach (str_split($binaryData, 2) as $word) {
+                if (isset($word[1])) {
+                    $data .= $word[1] . $word[0]; // low byte + high byte
+                } else {
+                    $data .= $word[0]; // assume that last single byte is in correct place
+                }
+            }
+        }
+
+        if (!$length) {
+            $length = strlen($data);
+        }
+
+        $result = unpack("Z{$length}", $data)[1];
+
+        // needed to for extended ascii characters as 'ø' (decimal 248)
+        $result = mb_convert_encoding($result, 'UTF-8', 'ASCII');
+
         return $result;
     }
 
