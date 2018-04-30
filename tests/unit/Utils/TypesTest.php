@@ -407,6 +407,10 @@ class TypesTest extends TestCase
     public function testShouldParseStringFromRegisterAsBigEndian()
     {
         // null terminated data
+        $string = Types::parseAsciiStringFromRegister("\x00\x6E", 10, Endian::BIG_ENDIAN);
+        $this->assertEquals('n', $string);
+
+        // null terminated data
         $string = Types::parseAsciiStringFromRegister("\xF8\x53\x65\x72\x00\x6E", 0, Endian::BIG_ENDIAN);
         $this->assertEquals('Søren', $string);
 

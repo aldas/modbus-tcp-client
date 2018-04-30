@@ -157,7 +157,7 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
     {
         $address = ($firstWordAddress - $this->getStartAddress()) * 2;
         $byteCount = $this->getByteCount();
-        if ($address < 0 || ($address+4) > $byteCount) {
+        if ($address < 0 || ($address + 4) > $byteCount) {
             throw new \OutOfBoundsException('address out of bounds');
         }
         return new DoubleWord(substr($this->data, $address, 4));
@@ -171,9 +171,34 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
     {
         $address = ($firstWordAddress - $this->getStartAddress()) * 2;
         $byteCount = $this->getByteCount();
-        if ($address < 0 || ($address+8) > $byteCount) {
+        if ($address < 0 || ($address + 8) > $byteCount) {
             throw new \OutOfBoundsException('address out of bounds');
         }
         return new QuadWord(substr($this->data, $address, 8));
+    }
+
+    /**
+     * Parse ascii string from registers to utf-8 string
+     *
+     * @param $startFromWord int start parsing string from that word/register
+     * @param $length int count of characters to parse
+     * @param int $endianness byte and word order for modbus binary data
+     * @return string
+     */
+    public function getAsciiStringAt($startFromWord, $length, $endianness = null)
+    {
+        $address = ($startFromWord - $this->getStartAddress()) * 2;
+
+        $byteCount = $this->getByteCount();
+        if ($address < 0 || $address >= $byteCount) {
+            throw new \OutOfBoundsException('startFromWord out of bounds');
+        }
+        if ($length < 1) {
+            // length can be bigger than bytes count - we will just parse less as there is nothing to parse
+            throw new \OutOfBoundsException('length out of bounds');
+        }
+
+        $binaryData = substr($this->data, $address);
+        return Types::parseAsciiStringFromRegister($binaryData, $length, $endianness);
     }
 }

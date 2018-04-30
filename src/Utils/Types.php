@@ -414,7 +414,8 @@ final class Types
             }
         }
 
-        if (!$length) {
+        $rawLen = strlen($data);
+        if (!$length || $length > $rawLen) {
             $length = strlen($data);
         }
 
