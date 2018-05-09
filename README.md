@@ -4,6 +4,12 @@
 * Modbus TCP/IP specification: http://www.modbus.org/specs.php
 * Modbus TCP/IP simpler description: http://www.simplymodbus.ca/TCP.htm
 
+## Installation
+
+```bash
+composer require aldas/modbus-tcp-client
+```
+
 ## Supported functions
 
 * FC1 - Read Coils ([ReadCoilsRequest](src/Packet/ModbusFunction/ReadCoilsRequest.php) / [ReadCoilsResponse](src/Packet/ModbusFunction/ReadCoilsResponse.php))
@@ -20,7 +26,7 @@
 * PHP 5.6+ (64bit PHP! 32bit php does not support 64bit ints and overflows with 32bit unsigned integers when 32th bit is set)
 
 ## Intention
-This library is influenced by [phpmodbus](https://github.com/adduc/phpmodbus) library and meant to be provide decoupled Modbus protocol (request/response packets) and networking related features so you could build modbus client with our own choice of networking code (ext_sockets/streams/Reactphp asynchronous streams) or use library provided networking classes (php Streams)
+This library is influenced by [phpmodbus](https://github.com/adduc/phpmodbus) library and meant to be provide decoupled Modbus protocol (request/response packets) and networking related features so you could build modbus client with our own choice of networking code (ext_sockets/streams/Reactphp/Amp asynchronous streams) or use library provided networking classes (php Streams)
 
 ## Endianness
 Applies to multibyte data that are stored in Word/Double/Quad word registers basically everything
@@ -72,6 +78,58 @@ try {
     echo $exception->getMessage() . PHP_EOL;
 } finally {
     $connection->close();
+}
+```
+
+## Example of non-blocking socket IO (i.e. modbus request are run in 'parallel')
+
+Example of non-blocking socket IO with https://github.com/amphp/socket
+
+```php
+/**
+ * Install dependency with 'composer require amphp/socket'
+ *
+ * This will do 'parallel' socket request with help of Amp socket library
+ */
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
+use ModbusTcpClient\Packet\ResponseFactory;
+use function Amp\Socket\connect;
+
+
+$uri = 'tcp://127.0.0.1:502';
+$packets = [
+    new ReadHoldingRegistersRequest(256, 10),
+    new ReadHoldingRegistersRequest(266, 10),
+];
+
+$promises = [];
+foreach ($packets as $packet) {
+    $promises[] = Amp\call(function () use ($packet, $uri) {
+        /** @var \Amp\Socket\ClientSocket $socket */
+        $socket = yield connect($uri);
+        try {
+            yield $socket->write($packet);
+
+            $chunk = yield $socket->read(); // modbus packet is so small that one read is enough
+            if ($chunk === null) {
+                return null;
+            }
+            return ResponseFactory::parseResponse($chunk);
+        } finally {
+            $socket->close();
+        }
+    });
+}
+
+try {
+    // will run multiple request in parallel using non-blocking php stream io
+    $responses = Amp\Promise\wait(Amp\Promise\all($promises));
+    print_r($responses);
+} catch (Throwable $e) {
+    print_r($e);
 }
 ```
 
