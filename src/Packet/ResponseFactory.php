@@ -7,6 +7,7 @@ namespace ModbusTcpClient\Packet;
 use ModbusTcpClient\ModbusException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleCoilResponse;
@@ -48,6 +49,8 @@ class ResponseFactory
             case ModbusPacket::READ_HOLDING_REGISTERS:
                 return new ReadHoldingRegistersResponse($rawData, $unitId, $transactionId);
                 break;
+            case ModbusPacket::READ_INPUT_REGISTERS:
+                return new ReadInputRegistersResponse($rawData, $unitId, $transactionId);
             case ModbusPacket::READ_COILS:
                 return new ReadCoilsResponse($rawData, $unitId, $transactionId);
                 break;

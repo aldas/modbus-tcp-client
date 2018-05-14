@@ -103,7 +103,7 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
                     $data .= fread($this->streamSocket, 2048); // read max 2048 bytes
                     if (!empty($data)) {
                         if ($this->logger) {
-                            $this->logger->debug('Data received: ' . unpack('H*', $data));
+                            $this->logger->debug('Data received', unpack('H*', $data));
                         }
                         return $data;
                     }
@@ -126,7 +126,7 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
         fwrite($this->streamSocket, $packet, strlen($packet));
 
         if ($this->logger) {
-            $this->logger->debug('Data sent: ' . unpack('H*', $packet));
+            $this->logger->debug('Data sent.', unpack('H*', $packet));
         }
 
         return $this;
