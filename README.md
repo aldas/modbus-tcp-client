@@ -1,5 +1,6 @@
 # Modbus TCP protocol client
 [![Build Status](https://travis-ci.org/aldas/modbus-tcp-client.svg?branch=master)](https://travis-ci.org/aldas/modbus-tcp-client)
+[![codecov](https://codecov.io/gh/aldas/modbus-tcp-client/branch/master/graph/badge.svg)](https://codecov.io/gh/aldas/modbus-tcp-client)
 
 * Modbus TCP/IP specification: http://www.modbus.org/specs.php
 * Modbus TCP/IP simpler description: http://www.simplymodbus.ca/TCP.htm
