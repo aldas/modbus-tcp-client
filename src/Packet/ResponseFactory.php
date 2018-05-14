@@ -7,6 +7,7 @@ namespace ModbusTcpClient\Packet;
 use ModbusTcpClient\ModbusException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersResponse;
@@ -43,36 +44,30 @@ class ResponseFactory
 
         $rawData = substr($binaryString, 8);
 
-        //TODO add all response types
-        //TODO should responses parse all their data themselves?
         switch ($functionCode) {
             case ModbusPacket::READ_HOLDING_REGISTERS:
                 return new ReadHoldingRegistersResponse($rawData, $unitId, $transactionId);
-                break;
             case ModbusPacket::READ_INPUT_REGISTERS:
                 return new ReadInputRegistersResponse($rawData, $unitId, $transactionId);
             case ModbusPacket::READ_COILS:
                 return new ReadCoilsResponse($rawData, $unitId, $transactionId);
-                break;
+            case ModbusPacket::READ_INPUT_DISCRETES:
+                return new ReadInputDiscretesResponse($rawData, $unitId, $transactionId);
             case ModbusPacket::WRITE_SINGLE_COIL:
                 return new WriteSingleCoilResponse($rawData, $unitId, $transactionId);
-                break;
             case ModbusPacket::WRITE_SINGLE_REGISTER:
                 return new WriteSingleRegisterResponse($rawData, $unitId, $transactionId);
-                break;
             case ModbusPacket::WRITE_MULTIPLE_COILS:
                 return new WriteMultipleCoilsResponse($rawData, $unitId, $transactionId);
-                break;
             case ModbusPacket::WRITE_MULTIPLE_REGISTERS:
                 return new WriteMultipleRegistersResponse($rawData, $unitId, $transactionId);
-                break;
             default:
                 throw new \InvalidArgumentException("Unknown function code '{$functionCode}' read from response packet");
-
         }
     }
 
-    public static function parseResponseOrThrow($binaryString) {
+    public static function parseResponseOrThrow($binaryString)
+    {
         $response = static::parseResponse($binaryString);
         if ($response instanceof ErrorResponse) {
             throw new ModbusException($response->getErrorMessage(), $response->getErrorCode());
