@@ -1,17 +1,21 @@
 <?php
+
 namespace ModbusTcpClient\Network;
 
 use InvalidArgumentException;
 
 class BinaryStreamConnection extends BinaryStreamConnectionProperties
 {
+    use StreamHandler;
+
     /**
-     * @var resource communication socket
+     * @var resource communication stream
      */
-    private $streamSocket;
+    private $stream;
 
     public function __construct(BinaryStreamConnectionBuilder $builder)
     {
+        $this->uri = $builder->getUri();
         $this->host = $builder->getHost();
         $this->port = $builder->getPort();
         $this->client = $builder->getClient();
@@ -31,9 +35,13 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
 
     public function connect()
     {
-        $protocol = strtolower($this->getProtocol());
-        if (!($protocol === 'tcp' || $protocol === 'udp')) {
-            throw new InvalidArgumentException("Unknown protocol, should be 'TCP' or 'UDP'");
+        $uri = $this->uri;
+        if ($uri === null) {
+            $protocol = strtolower($this->getProtocol());
+            if (!($protocol === 'tcp' || $protocol === 'udp')) {
+                throw new InvalidArgumentException("Unknown protocol, should be 'TCP' or 'UDP'");
+            }
+            $uri = "{$protocol}://{$this->host}:{$this->port}";
         }
 
         $opts = [];
@@ -47,8 +55,8 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
         }
         $context = stream_context_create($opts);
 
-        $this->streamSocket = @stream_socket_client(
-            "$protocol://$this->host:$this->port",
+        $this->stream = @stream_socket_client(
+            $uri,
             $errno,
             $errstr,
             $this->connectTimeoutSec,
@@ -56,8 +64,8 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
             $context
         );
 
-        if (false === $this->streamSocket) {
-            $message = "Unable to create client socket to {$protocol}://{$this->host}:{$this->port}: {$errstr}";
+        if (false === $this->stream) {
+            $message = "Unable to create client socket to {$uri}: {$errstr}";
             throw new IOException($message, $errno);
         }
 
@@ -65,12 +73,12 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
             $this->logger->debug('Connected');
         }
 
-        stream_set_blocking($this->streamSocket, false); // use non-blocking stream
+        stream_set_blocking($this->stream, false); // use non-blocking stream
 
         // set as stream timeout as we use 'stream_select' to read data and this method has its own timeout
         // this call will only affect our fwrite parts (send data method)
         stream_set_timeout(
-            $this->streamSocket,
+            $this->stream,
             (int)$this->getWriteTimeoutSec(),
             $this->extractUsec($this->getWriteTimeoutSec())
         );
@@ -80,53 +88,20 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
 
     public function receive()
     {
-        $lastAccess = microtime(true);
-
-        while (true) {
-            $read = [$this->streamSocket];
-            $write = null;
-            $except = null;
-            $data = '';
-            if (false !== stream_select(
-                    $read,
-                    $write,
-                    $except,
-                    (int)$this->getReadTimeoutSec(),
-                    $this->extractUsec($this->getReadTimeoutSec())
-                )
-            ) {
-                if ($this->logger) {
-                    $this->logger->debug('Polling data');
-                }
-
-                if (in_array($this->streamSocket, $read, false)) {
-                    $data .= fread($this->streamSocket, 2048); // read max 2048 bytes
-                    if (!empty($data)) {
-                        if ($this->logger) {
-                            $this->logger->debug('Data received', unpack('H*', $data));
-                        }
-                        return $data;
-                    }
-                    $lastAccess = microtime(true);
-                } else {
-                    $timeSpentWaiting = microtime(true) - $lastAccess;
-                    if ($timeSpentWaiting >= $this->getTimeoutSec()) {
-                        throw new IOException('Read total timeout expired');
-                    }
-                }
-            } else {
-                throw new IOException("Failed to read data from {$this->host}:{$this->port}.");
-            }
-        }
-        return null;
+        $result = $this->receiveFrom([$this->stream], $this->getReadTimeoutSec(), $this->getLogger());
+        return reset($result);
     }
 
     public function send($packet)
     {
-        fwrite($this->streamSocket, $packet, strlen($packet));
+        if (!\is_resource($this->stream) || @\feof($this->stream)) {
+            throw new IOException('Can not write - stream closed by the peer');
+        }
+
+        fwrite($this->stream, $packet, strlen($packet));
 
         if ($this->logger) {
-            $this->logger->debug('Data sent.', unpack('H*', $packet));
+            $this->logger->debug('Data sent', unpack('H*', $packet));
         }
 
         return $this;
@@ -139,8 +114,9 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
 
     public function close()
     {
-        if (is_resource($this->streamSocket)) {
-            fclose($this->streamSocket);
+        if (is_resource($this->stream)) {
+            fclose($this->stream);
+            $this->stream = null;
         }
     }
 
@@ -156,5 +132,9 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
     private function extractUsec($seconds)
     {
         return (int)(($seconds - (int)$seconds) * 1e6);
+    }
+
+    public function getStream() {
+        return $this->stream;
     }
 }

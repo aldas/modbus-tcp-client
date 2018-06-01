@@ -16,7 +16,7 @@ class WriteSingleRegisterRequestTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfRangeException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage value is not set or out of range (int16): 213213123
      */
     public function testValueValidationException()

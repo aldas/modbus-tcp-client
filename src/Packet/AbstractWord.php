@@ -2,7 +2,7 @@
 
 namespace ModbusTcpClient\Packet;
 
-use ModbusTcpClient\ModbusException;
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Utils\Types;
 
 /**
@@ -17,15 +17,15 @@ abstract class AbstractWord
 
     /**
      * @param string $data
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public function __construct($data)
+    public function __construct(string $data)
     {
         $length = strlen($data);
         $wordByteLength = $this->getByteLength();
 
         if ($length === 0 || $length > $wordByteLength) {
-            throw new ModbusException(static::class . " can only be constructed from 1 to {$this->getByteLength()} bytes. Currently $length bytes was given!");
+            throw new InvalidArgumentException(static::class . " can only be constructed from 1 to {$this->getByteLength()} bytes. Currently $length bytes was given!");
         } elseif ($length < $wordByteLength) {
             $data = str_pad($data, $wordByteLength, "\x00", STR_PAD_LEFT);
         }

@@ -1,7 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Utils\Types;
 
@@ -9,7 +13,7 @@ use ModbusTcpClient\Utils\Types;
 /**
  * Request for Write Single Coil (FC=05)
  */
-class WriteSingleCoilRequest extends ProtocolDataUnitRequest
+class WriteSingleCoilRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {
     const ON = 0xFF;
     const OFF = 0x0;
@@ -19,20 +23,12 @@ class WriteSingleCoilRequest extends ProtocolDataUnitRequest
      */
     private $coil;
 
-    public function __construct($startAddress, $coil, $unitId = 0, $transactionId = null)
+    public function __construct(int $startAddress, bool $coil, int $unitId = 0, int $transactionId = null)
     {
         parent::__construct($startAddress, $unitId, $transactionId);
         $this->coil = $coil;
 
         $this->validate();
-    }
-
-    public function validate()
-    {
-        parent::validate();
-        if (!is_bool($this->coil)) {
-            throw new \InvalidArgumentException('coil must be boolean value');
-        }
     }
 
     public function getFunctionCode()

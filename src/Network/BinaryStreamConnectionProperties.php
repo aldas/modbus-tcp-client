@@ -1,7 +1,6 @@
 <?php
-namespace ModbusTcpClient\Network;
 
-use Psr\Log\LoggerInterface;
+namespace ModbusTcpClient\Network;
 
 /**
  * BinaryStreamConnection immutable properties base class
@@ -34,6 +33,11 @@ abstract class BinaryStreamConnectionProperties
      * @var float maximum timeout for write operation on connection (seconds, decimals allowed)
      */
     protected $writeTimeoutSec = 1;
+
+    /**
+     * @var string uri to connect to. Has higher priority than $protocol/$host/$port. Example: 'tcp://192.168.0.1:502'
+     */
+    protected $uri;
     /**
      * @var string network protocol (TCP, UDP)
      */
@@ -48,10 +52,9 @@ abstract class BinaryStreamConnectionProperties
     protected $port = 502;
 
     /**
-     * @var LoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
-
 
 
     /**
@@ -127,11 +130,18 @@ abstract class BinaryStreamConnectionProperties
     }
 
     /**
-     * @return LoggerInterface
+     * @return \Psr\Log\LoggerInterface
      */
     public function getLogger()
     {
         return $this->logger;
     }
 
+    /**
+     * @return string
+     */
+    public function getUri()
+    {
+        return $this->uri;
+    }
 }

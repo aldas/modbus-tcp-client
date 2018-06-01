@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Packet\ModbusPacket;
@@ -15,7 +17,7 @@ class WriteMultipleCoilsResponse extends StartAddressResponse
      */
     private $coilCount;
 
-    public function __construct($rawData, $unitId = 0, $transactionId = null)
+    public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {
         parent::__construct($rawData, $unitId, $transactionId);
         $this->coilCount = Types::parseUInt16(substr($rawData, 2, 2));
@@ -42,6 +44,6 @@ class WriteMultipleCoilsResponse extends StartAddressResponse
     public function __toString()
     {
         return parent::__toString()
-            . Types::toInt16($this->coilCount);
+            . Types::toRegister($this->coilCount);
     }
 }

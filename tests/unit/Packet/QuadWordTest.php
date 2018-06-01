@@ -18,7 +18,7 @@ class QuadWordTest extends TestCase
     }
 
     /**
-     * @expectedException \ModbusTcpClient\ModbusException
+     * @expectedException \ModbusTcpClient\Exception\ModbusException
      * @expectedExceptionMessage QuadWord can only be constructed from 1 to 8 bytes. Currently 9 bytes was given!
      */
     public function testShouldNotConstructFromLongerData()
@@ -26,11 +26,30 @@ class QuadWordTest extends TestCase
         new QuadWord("\x01\x02\x03\x04\x05\x06\x07\x08\x09");
     }
 
+    /**
+     * @expectedException \ModbusTcpClient\Exception\OverflowException
+     * @expectedExceptionMessage 64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows. Hex: ffffffffffffffff
+     */
+    public function testShouldOverflow()
+    {
+        // 64-bit PHP supports only up to 63-bit signed integers. Parsing this value results '-1' which is overflow
+        $quadWord = new QuadWord("\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+
+        $this->assertEquals(2147483647, $quadWord->getUInt64(Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+    }
+
     public function testShouldGetUInt64()
     {
         $quadWord = new QuadWord("\xFF\xFF\x7F\xFF\x00\x00\x00\x00");
 
         $this->assertEquals(2147483647, $quadWord->getUInt64(Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+    }
+
+    public function testShouldGetInt64()
+    {
+        $quadWord = new QuadWord("\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+
+        $this->assertEquals(-1, $quadWord->getInt64(Endian::BIG_ENDIAN_LOW_WORD_FIRST));
     }
 
     public function testShouldGetLowBytesAsDoubleWord()
@@ -71,25 +90,5 @@ class QuadWordTest extends TestCase
             new Word("\x05\x06"),
             null
         );
-    }
-
-    public function testShouldNotCreateFromWordsWhenParamNotWord56()
-    {
-        if (PHP_VERSION_ID >= 70000) {
-            $this->markTestSkipped('is for PHP 5.6.x');
-        }
-
-        $ok = false;
-        try {
-            QuadWord::fromWords(
-                new Word("\x01\x02"),
-                new Word("\x03\x04"),
-                new Word("\x05\x06"),
-                null
-            );
-        } catch (PHPUnit_Framework_Error $exception) {
-            $ok = true;
-        }
-        $this->assertTrue($ok);
     }
 }

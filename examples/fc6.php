@@ -26,7 +26,7 @@ try {
     $response = ResponseFactory::parseResponseOrThrow($binaryData);
     echo 'Parsed packet (in hex):     ' . $response->toHex() . PHP_EOL;
     echo 'Register value parsed from packet:' . PHP_EOL;
-    print_r($response->getValue());
+    print_r($response->getWord()->getInt16());
 
 } catch (Exception $exception) {
     echo 'An exception occurred' . PHP_EOL;

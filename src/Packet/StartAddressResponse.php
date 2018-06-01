@@ -5,14 +5,14 @@ namespace ModbusTcpClient\Packet;
 
 use ModbusTcpClient\Utils\Types;
 
-abstract class StartAddressResponse extends ProtocolDataUnit
+abstract class StartAddressResponse extends ProtocolDataUnit implements ModbusResponse
 {
     /**
      * @var int
      */
     private $startAddress;
 
-    public function __construct($rawData, $unitId = 0, $transactionId = null)
+    public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {
         parent::__construct($unitId, $transactionId);
         $this->startAddress = Types::parseUInt16(substr($rawData, 0, 2));
@@ -23,7 +23,7 @@ abstract class StartAddressResponse extends ProtocolDataUnit
         return b''
             . $this->getHeader()->__toString()
             . Types::toByte($this->getFunctionCode())
-            . Types::toInt16($this->startAddress);
+            . Types::toRegister($this->startAddress);
     }
 
     /**
@@ -32,6 +32,17 @@ abstract class StartAddressResponse extends ProtocolDataUnit
     public function getStartAddress()
     {
         return $this->startAddress;
+    }
+
+    /**
+     * @param int $startAddress
+     * @param int $addressStep
+     * @return static
+     */
+    public function withStartAddress(int $startAddress)
+    {
+        // do not use argument as this kind of packet gets start address from data
+        return clone $this;
     }
 
     protected function getLengthInternal()

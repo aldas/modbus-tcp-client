@@ -12,13 +12,14 @@ namespace ModbusTcpClient\Packet;
  * 0003: The total number of registers requested. (read 3 registers 40108 to 40110)
  */
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Utils\Types;
 
 abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
 {
     private $startAddress;
 
-    public function __construct($startAddress, $unitId = 0, $transactionId = null)
+    public function __construct(int $startAddress, int $unitId = 0, int $transactionId = null)
     {
         parent::__construct($unitId, $transactionId);
 
@@ -30,7 +31,7 @@ abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
         return b''
             . $this->getHeader()->__toString()
             . Types::toByte($this->getFunctionCode())
-            . Types::toInt16($this->getStartAddress());
+            . Types::toUint16($this->getStartAddress());
     }
 
     public function getStartAddress()
@@ -46,7 +47,7 @@ abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
     protected function validate()
     {
         if ((null === $this->startAddress) || !($this->startAddress >= 0 && $this->startAddress <= Types::MAX_VALUE_UINT16)) {
-            throw new \OutOfRangeException("startAddress is not set or out of range: {$this->startAddress}");
+            throw new InvalidArgumentException("startAddress is not set or out of range: {$this->startAddress}");
         }
     }
 

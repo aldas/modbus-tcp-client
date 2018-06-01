@@ -1,7 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Utils\Types;
 
@@ -9,7 +13,7 @@ use ModbusTcpClient\Utils\Types;
 /**
  * Request for Write Single Register (FC=06)
  */
-class WriteSingleRegisterRequest extends ProtocolDataUnitRequest
+class WriteSingleRegisterRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {
 
     /**
@@ -17,7 +21,7 @@ class WriteSingleRegisterRequest extends ProtocolDataUnitRequest
      */
     private $value;
 
-    public function __construct($startAddress, $value, $unitId = 0, $transactionId = null)
+    public function __construct(int $startAddress, int $value, int $unitId = 0, int $transactionId = null)
     {
         parent::__construct($startAddress, $unitId, $transactionId);
         $this->value = $value;
@@ -31,7 +35,7 @@ class WriteSingleRegisterRequest extends ProtocolDataUnitRequest
         if ((null !== $this->value) && (($this->value >= Types::MIN_VALUE_INT16) && ($this->value <= Types::MAX_VALUE_INT16))) {
             return;
         }
-        throw new \OutOfRangeException("value is not set or out of range (int16): {$this->value}");
+        throw new InvalidArgumentException("value is not set or out of range (int16): {$this->value}");
     }
 
     public function getFunctionCode()
@@ -42,7 +46,7 @@ class WriteSingleRegisterRequest extends ProtocolDataUnitRequest
     public function __toString()
     {
         return parent::__toString()
-            . Types::toInt16($this->getValue());
+            . Types::toRegister($this->getValue());
     }
 
     /**

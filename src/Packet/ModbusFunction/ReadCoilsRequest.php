@@ -1,22 +1,26 @@
 <?php
+declare(strict_types=1);
+
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Utils\Types;
 
 /**
  * Request for Read Coils (FC=01)
  */
-class ReadCoilsRequest extends ProtocolDataUnitRequest
+class ReadCoilsRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {
     /**
      * @var int total number of coils requested. Size 2 bytes
      */
     private $quantity;
 
-    public function __construct($startAddress, $quantity, $unitId = 0, $transactionId = null)
+    public function __construct(int $startAddress, int $quantity, int $unitId = 0, int $transactionId = null)
     {
         parent::__construct($startAddress, $unitId, $transactionId);
         $this->quantity = $quantity;
@@ -28,10 +32,11 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest
     {
         parent::validate();
 
-        if ((null !== $this->quantity) && ($this->quantity > 0 && $this->quantity <= Types::MAX_VALUE_UINT16)) {
+        if ((null !== $this->quantity) && ($this->quantity > 0 && $this->quantity <= 2048)) {
+            // 2048 coils is due that in response data size field is 1 byte so max 256*8=2048 coils can be returned
             return;
         }
-        throw new \OutOfRangeException("quantity is not set or out of range (1-65535): {$this->quantity}");
+        throw new InvalidArgumentException("quantity is not set or out of range (1-2048): {$this->quantity}");
     }
 
     public function getFunctionCode()
@@ -42,7 +47,7 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest
     public function __toString()
     {
         return parent::__toString()
-            . Types::toInt16($this->getQuantity());
+            . Types::toRegister($this->getQuantity());
     }
 
     /**

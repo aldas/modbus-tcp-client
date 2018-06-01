@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Packet\ModbusPacket;

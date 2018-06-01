@@ -3,11 +3,11 @@
 namespace Tests\integration;
 
 use ModbusTcpClient\Network\BinaryStreamConnection;
+use ModbusTcpClient\Network\NonBlockingClient;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use PHPUnit\Framework\TestCase;
 use React\ChildProcess\Process;
 use React\EventLoop\Factory;
-use React\EventLoop\Timer\Timer;
 
 abstract class MockServerTestCase extends TestCase
 {
@@ -15,12 +15,12 @@ abstract class MockServerTestCase extends TestCase
     {
         $loop = Factory::create();
 
-        $port = $port ?: mt_rand(10000, 50000);
+        $port = $port ?: random_int(10000, 50000);
         $process = new Process(PHP_BINARY . ' ' . __DIR__ . DIRECTORY_SEPARATOR . "MockResponseServer.php {$protocol} {$port} {$answerTimeout} {$packetToRespond}");
 
         $clientData = [];
-        $loop->addTimer(0.001, function (Timer $timer) use ($process, $closure, $port, &$clientData) {
-            $process->start($timer->getLoop());
+        $loop->addTimer(0.001, function () use ($process, $closure, $port, &$clientData, $loop) {
+            $process->start($loop);
 
             $process->stdout->on('data', function ($output) use (&$clientData) {
                 $clientData[] = $output;
@@ -54,5 +54,22 @@ abstract class MockServerTestCase extends TestCase
         });
 
         return [$responseBinary, $clientData];
+    }
+
+    public static function executeWithNonBlockingClient($mockResponse, callable $readRequestsCb, array $options = [])
+    {
+        $responses = null;
+        $clientData = static::executeWithMockServer($mockResponse, function ($port) use ($readRequestsCb, &$responses, $options) {
+
+            $host = getenv('MOCKSERVER_BIND_ADDRESS') ?: '127.0.0.1';
+            $uri = "tcp://{$host}:{$port}";
+
+            $readRequests = $readRequestsCb($uri);
+            $client = new NonBlockingClient(array_merge(['readTimeoutSec' => 0.1], $options));
+
+            $responses = $client->sendRequests($readRequests);
+        });
+
+        return [$responses, $clientData];
     }
 }

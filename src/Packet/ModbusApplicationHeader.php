@@ -3,7 +3,8 @@
 namespace ModbusTcpClient\Packet;
 
 
-use ModbusTcpClient\ModbusException;
+use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Utils\Types;
 
 class ModbusApplicationHeader
@@ -34,7 +35,7 @@ class ModbusApplicationHeader
 
         $this->length = $length + 1; // + 1 is for unitId size
         $this->unitId = $unitId;
-        $this->transactionId = $transactionId ?: mt_rand(1, Types::MAX_VALUE_UINT16);
+        $this->transactionId = $transactionId ?: random_int(1, Types::MAX_VALUE_UINT16);
     }
 
     /**
@@ -72,9 +73,9 @@ class ModbusApplicationHeader
     public function __toString()
     {
         return b''
-            . Types::toInt16($this->getTransactionId())
-            . Types::toInt16($this->getProtocolId())
-            . Types::toInt16($this->getLength())
+            . Types::toRegister($this->getTransactionId())
+            . Types::toRegister($this->getProtocolId())
+            . Types::toRegister($this->getLength())
             . Types::toByte($this->getUnitId())
             ;
     }
@@ -90,8 +91,6 @@ class ModbusApplicationHeader
         $length = Types::parseUInt16($binaryString[4] . $binaryString[5]);
         $unitId = Types::parseByte($binaryString[6]);
 
-        self::validate($length, $unitId, $transactionId);
-
         return new ModbusApplicationHeader(
             $length,
             $unitId,
@@ -99,16 +98,16 @@ class ModbusApplicationHeader
         );
     }
 
-    private static function validate($length, $unitId, $transactionId)
+    private function validate($length, $unitId, $transactionId)
     {
         if (!$length || !($length > 0 && $length <= Types::MAX_VALUE_UINT16)) {
-            throw new \OutOfRangeException("length is not set or out of range (uint16): {$length}");
+            throw new InvalidArgumentException("length is not set or out of range (uint16): {$length}");
         }
         if (!($unitId >= 0 && $unitId <= 247)) {
-            throw new \OutOfRangeException("unitId is out of range (0-247): {$unitId}");
+            throw new InvalidArgumentException("unitId is out of range (0-247): {$unitId}");
         }
         if ((null !== $transactionId) && !($transactionId >= 0 && $transactionId <= Types::MAX_VALUE_UINT16)) {
-            throw new \OutOfRangeException("transactionId is out of range (uint16): {$transactionId}");
+            throw new InvalidArgumentException("transactionId is out of range (uint16): {$transactionId}");
         }
     }
 }

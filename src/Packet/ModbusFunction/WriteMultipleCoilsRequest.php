@@ -1,14 +1,18 @@
 <?php
+declare(strict_types=1);
+
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Utils\Types;
 
 /**
  * Request for Write Multiple Coils (FC=15)
  */
-class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest
+class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {
     /**
      * @var array coils (array of booleans)
@@ -17,7 +21,7 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest
     private $coilCount;
     private $coilBytesSize;
 
-    public function __construct($startAddress, array $coils, $unitId = 0, $transactionId = null)
+    public function __construct(int $startAddress, array $coils, int $unitId = 0, int $transactionId = null)
     {
         $this->coils = $coils;
         $this->coilCount = count($this->coils);
@@ -33,7 +37,7 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest
         parent::validate();
 
         if ($this->coilCount === 0 || $this->coilCount > 2048) {
-            throw new \OutOfRangeException("coils count out of range (1-2048): {$this->coilCount}");
+            throw new InvalidArgumentException("coils count out of range (1-2048): {$this->coilCount}");
         }
     }
 
@@ -45,7 +49,7 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest
     public function __toString()
     {
         return parent::__toString()
-            . Types::toInt16($this->coilCount)
+            . Types::toRegister($this->coilCount)
             . Types::toByte($this->coilBytesSize)
             . Types::byteArrayToByte(Types::booleanArrayToByteArray($this->coils));
     }

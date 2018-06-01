@@ -1,7 +1,7 @@
 <?php
 namespace ModbusTcpClient\Network;
 
-use ModbusTcpClient\ModbusException;
+use ModbusTcpClient\Exception\ModbusException;
 
 /**
  * Exception class thrown when a binary stream network connection operation failure happens.

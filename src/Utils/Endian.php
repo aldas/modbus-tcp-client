@@ -22,7 +22,6 @@ namespace ModbusTcpClient\Utils;
  *      Big Endian (DCBA) = 0x04030201
  *      Big Endian Low Word First (BADC) = 0x02010403 <-- used by WAGO 750-XXX to send modbus packets over tcp/udp
  *
- * TODO: are 64bit (8 bytes - quad words) data types ala int64 different?
  */
 class Endian
 {
@@ -46,7 +45,7 @@ class Endian
 
     public static $defaultEndian = self::BIG_ENDIAN_LOW_WORD_FIRST;
 
-    public static function getCurrentEndianness($endianness = null)
+    public static function getCurrentEndianness(int $endianness = null): int
     {
         return $endianness === null ? static::$defaultEndian : $endianness;
     }

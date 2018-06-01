@@ -33,7 +33,7 @@ class RegistersTest extends TestCase
 
     public function testLowWordIsSentFirst()
     {
-        $this->assertEquals("\x56\x52\xAE\x41", Registers::getRegisterArrayAsByteString([Types::toInt32(2923517522, Endian::BIG_ENDIAN_LOW_WORD_FIRST)]));
+        $this->assertEquals("\x56\x52\xAE\x41", Registers::getRegisterArrayAsByteString([Types::toUint32(2923517522, Endian::BIG_ENDIAN_LOW_WORD_FIRST)]));
     }
 
 }

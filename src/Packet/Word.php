@@ -17,7 +17,7 @@ class Word extends AbstractWord
     /**
      * @param int $endianness byte and word order for modbus binary data
      * @return int
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
     public function getInt16($endianness = null)
     {
@@ -27,7 +27,7 @@ class Word extends AbstractWord
     /**
      * @param int $endianness byte and word order for modbus binary data
      * @return int
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
     public function getUInt16($endianness = null)
     {
@@ -55,7 +55,7 @@ class Word extends AbstractWord
      *
      * @param Word $lowWord
      * @return DoubleWord
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
     public function combine(Word $lowWord)
     {

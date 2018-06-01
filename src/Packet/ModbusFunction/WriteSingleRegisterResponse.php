@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
+
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\StartAddressResponse;
+use ModbusTcpClient\Packet\Word;
 use ModbusTcpClient\Utils\Types;
 
 /**
@@ -13,12 +16,12 @@ class WriteSingleRegisterResponse extends StartAddressResponse
     /**
      * @var int
      */
-    private $value;
+    private $word;
 
-    public function __construct($rawData, $unitId = 0, $transactionId = null)
+    public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {
         parent::__construct($rawData, $unitId, $transactionId);
-        $this->value = Types::parseUInt16(substr($rawData, 2, 2));
+        $this->word = new Word(substr($rawData, 2, 2));
     }
 
     public function getFunctionCode()
@@ -26,12 +29,9 @@ class WriteSingleRegisterResponse extends StartAddressResponse
         return ModbusPacket::WRITE_SINGLE_REGISTER;
     }
 
-    /**
-     * @return int
-     */
-    public function getValue()
+    public function getWord(): Word
     {
-        return $this->value;
+        return $this->word;
     }
 
     protected function getLengthInternal()
@@ -42,6 +42,6 @@ class WriteSingleRegisterResponse extends StartAddressResponse
     public function __toString()
     {
         return parent::__toString()
-            . Types::toInt16($this->value);
+            . $this->word->getData();
     }
 }

@@ -52,6 +52,11 @@ try {
             } catch (Exception $e) {
                 $UInt64 = '-';
             }
+            try {
+                $Int64 = $quadWord->getInt64();
+            } catch (Exception $e) {
+                $Int64 = '-';
+            }
 
         }
 
@@ -62,11 +67,12 @@ try {
             'lowByte' => '0x' . str_pad(dechex($lowByteAsInt), 2, '0') . ' / ' . $lowByteAsInt . ' / "&#' . $lowByteAsInt . ';"',
             'highByteBits' => sprintf('%08d', decbin($highByteAsInt)),
             'lowByteBits' => sprintf('%08d', decbin($lowByteAsInt)),
-            'UInt16' => $word->getUInt16(),
             'int16' => $word->getInt16(),
-            'UInt32' => $doubleWord ? $doubleWord->getUInt32() : null,
+            'UInt16' => $word->getUInt16(),
             'int32' => $doubleWord ? $doubleWord->getInt32() : null,
+            'UInt32' => $doubleWord ? $doubleWord->getUInt32() : null,
             'float' => $doubleWord ? $doubleWord->getFloat() : null,
+            'Int64' => $quadWord ? $Int64 : null,
             'UInt64' => $quadWord ? $UInt64 : null,
         ];
     }
@@ -95,9 +101,10 @@ try {
         <td>low bits</td>
         <td>int16</td>
         <td>UInt16</td>
-        <td>UInt32</td>
         <td>int32</td>
+        <td>UInt32</td>
         <td>float</td>
+        <td>int64</td>
         <td>UInt64</td>
     </tr>
     <?php foreach ($result as $address => $values) { ?>

@@ -24,8 +24,17 @@ class QuadWord extends AbstractWord
     }
 
     /**
+     * @param int $endianness byte and word order for modbus binary data
+     * @return int
+     */
+    public function getInt64($endianness = null)
+    {
+        return Types::parseInt64($this->getData(), $endianness);
+    }
+
+    /**
      * @return DoubleWord
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
     public function getLowBytesAsDoubleWord()
     {
@@ -34,7 +43,7 @@ class QuadWord extends AbstractWord
 
     /**
      * @return DoubleWord
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
     public function getHighBytesAsDoubleWord()
     {
@@ -45,7 +54,7 @@ class QuadWord extends AbstractWord
      * Create Quad Word of 4 words. word1 is highest bytes amd word4 lowest bytes
      *
      * @return QuadWord
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
     public static function fromWords(Word $word1, Word $word2, Word $word3, Word $word4)
     {

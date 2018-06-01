@@ -3,8 +3,8 @@
 namespace Tests\Packet\ModbusFunction;
 
 
-use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleRegisterResponse;
+use ModbusTcpClient\Packet\ModbusPacket;
 use PHPUnit\Framework\TestCase;
 
 class WriteSingleRegisterResponseTest extends TestCase
@@ -22,13 +22,22 @@ class WriteSingleRegisterResponseTest extends TestCase
         $packet = new WriteSingleRegisterResponse("\x00\x02\xFF\x00", 3, 33152);
         $this->assertEquals(ModbusPacket::WRITE_SINGLE_REGISTER, $packet->getFunctionCode());
 
-        $this->assertEquals(0xFF00, $packet->getValue());
+        $this->assertEquals(0xFF00, $packet->getWord()->getUInt16());
 
         $header = $packet->getHeader();
         $this->assertEquals(33152, $header->getTransactionId());
         $this->assertEquals(0, $header->getProtocolId());
         $this->assertEquals(6, $header->getLength());
         $this->assertEquals(3, $header->getUnitId());
+    }
+
+    public function testWithStartAddress()
+    {
+        $packet = new WriteSingleRegisterResponse("\x00\x02\xFF\x00", 3, 33152);
+        $packetWithStartAddress = $packet->withStartAddress(1);
+
+        $this->assertEquals(2, $packet->getStartAddress());
+        $this->assertEquals(2, $packetWithStartAddress->getStartAddress());
     }
 
 }

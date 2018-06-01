@@ -3,7 +3,7 @@
 namespace ModbusTcpClient\Network;
 
 
-use Psr\Log\LoggerInterface;
+use ModbusTcpClient\Exception\InvalidArgumentException;
 
 class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
 {
@@ -11,12 +11,12 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
      * Return built instance of BinaryStreamConnection
      *
      * @return BinaryStreamConnection built instance
-     * @throws \LogicException
+     * @throws InvalidArgumentException
      */
     public function build()
     {
-        if (empty($this->host)) {
-            throw new \LogicException('host property can not be left null or empty!');
+        if ($this->host === null && $this->uri === null) {
+            throw new InvalidArgumentException('host or uri property can not be left null or empty!');
         }
         return new BinaryStreamConnection($this);
     }
@@ -112,12 +112,35 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
     }
 
     /**
-     * @param LoggerInterface $logger
+     * @param \Psr\Log\LoggerInterface $logger
      * @return BinaryStreamConnectionBuilder
      */
     public function setLogger($logger)
     {
         $this->logger = $logger;
+        return $this;
+    }
+
+    /**
+     * @param string $uri
+     * @return BinaryStreamConnectionBuilder
+     */
+    public function setUri(string $uri)
+    {
+        $this->uri = $uri;
+        return $this;
+    }
+
+    public function setFromOptions(array $options = null)
+    {
+        if ($options !== null) {
+            foreach ($options as $option => $value) {
+                if (property_exists($this, $option)) {
+                    $this->{$option} = $value;
+                }
+            }
+        }
+
         return $this;
     }
 

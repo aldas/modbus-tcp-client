@@ -9,10 +9,11 @@ class Registers
     {
         $result = 0;
         foreach ($registers as $register) {
-            if (null === $register || strlen($register) === 1) {
+            $len = strlen($register);
+            if ($len < 2) {
                 $result += 2;
             } else { // if double word or something exotic is set
-                $result += strlen($register);
+                $result += ($len % 2 === 0) ? $len : $len + 1;
             }
         }
         return $result;

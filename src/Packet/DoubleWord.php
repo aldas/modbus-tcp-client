@@ -27,7 +27,7 @@ class DoubleWord extends AbstractWord
     /**
      * @param int $endianness byte and word order for modbus binary data
      * @return int
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
     public function getInt32($endianness = null)
     {
@@ -46,7 +46,7 @@ class DoubleWord extends AbstractWord
 
     /**
      * @return Word
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
     public function getLowBytesAsWord()
     {
@@ -55,7 +55,7 @@ class DoubleWord extends AbstractWord
 
     /**
      * @return Word
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
     public function getHighBytesAsWord()
     {
@@ -67,7 +67,7 @@ class DoubleWord extends AbstractWord
      *
      * @param DoubleWord $lowDoubleWord
      * @return QuadWord
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
     public function combine(DoubleWord $lowDoubleWord)
     {
