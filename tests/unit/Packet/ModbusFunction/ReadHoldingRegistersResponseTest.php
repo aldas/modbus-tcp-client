@@ -94,7 +94,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
     }
 
     /**
-     * @expectedException \ModbusTcpClient\ModbusException
+     * @expectedException \ModbusTcpClient\Exception\ModbusException
      * @expectedExceptionMessage getWords needs packet byte count to be multiple of 2
      */
     public function testGetWordsFailsWhenByteCountIsNotMod2()
@@ -160,6 +160,26 @@ class ReadHoldingRegistersResponseTest extends TestCase
         $this->assertFalse(isset($packet[54]));
     }
 
+    /**
+     * @expectedException \ModbusTcpClient\Exception\ModbusException
+     * @expectedExceptionMessage setting value in response is not supported!
+     */
+    public function testOffsetSet()
+    {
+        $packet = new ReadHoldingRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01", 3, 33152);
+        $packet[50] = 1;
+    }
+
+    /**
+     * @expectedException \ModbusTcpClient\Exception\ModbusException
+     * @expectedExceptionMessage unsetting value in response is not supported!
+     */
+    public function testOffsetUnSet()
+    {
+        $packet = new ReadHoldingRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01", 3, 33152);
+        unset($packet[50]);
+    }
+
     public function testOffsetGet()
     {
         $packet = (new ReadHoldingRegistersResponse(
@@ -173,8 +193,22 @@ class ReadHoldingRegistersResponseTest extends TestCase
         $this->assertEquals([0x2, 0x1], $packet[52]->getBytes());
     }
 
+    public function testGetWordAt()
+    {
+        $packet = (new ReadHoldingRegistersResponse(
+            "\x06\xCD\x6B\x4\x3\x2\x01",
+            3,
+            33152
+        ))->withStartAddress(50);
+
+        $this->assertEquals([0xCD, 0x6B], $packet->getWordAt(50)->getBytes());
+        $this->assertEquals([0x4, 0x3], $packet->getWordAt(51)->getBytes());
+        $this->assertEquals([0x2, 0x1], $packet->getWordAt(52)->getBytes());
+        $this->assertEquals([0x2, 0x1], $packet->getWordAt(52)->getBytes());
+    }
+
     /**
-     * @expectedException \OutOfBoundsException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage offset out of bounds
      */
     public function testOffsetGetOutOfBoundsUnder()
@@ -189,7 +223,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfBoundsException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage offset out of bounds
      */
     public function testOffsetGetOutOfBoundsOver()
@@ -204,7 +238,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
     }
 
     /**
-     * @expectedException \ModbusTcpClient\ModbusException
+     * @expectedException \ModbusTcpClient\Exception\ModbusException
      * @expectedExceptionMessage getDoubleWords needs packet byte count to be multiple of 4
      */
     public function testGetDoubleWordsFailsWhenByteCountIsNotMod4()
@@ -226,7 +260,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfBoundsException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage address out of bounds
      */
     public function testGetDoubleWordAtOutOfBounderUnder()
@@ -241,7 +275,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfBoundsException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage address out of bounds
      */
     public function testGetDoubleWordAtOutOfBounderOver()
@@ -270,7 +304,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfBoundsException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage address out of bounds
      */
     public function testGetQuadWordAtOutOfBounderUnder()
@@ -287,7 +321,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfBoundsException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage address out of bounds
      */
     public function testGetQuadWordAtOutOfBounderOver()
@@ -311,7 +345,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfBoundsException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage startFromWord out of bounds
      */
     public function testGetAsciiStringInvalidAddressLow()
@@ -323,7 +357,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfBoundsException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage startFromWord out of bounds
      */
     public function testGetAsciiStringInvalidAddressHigh()
@@ -335,7 +369,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfBoundsException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage length out of bounds
      */
     public function testGetAsciiStringInvalidLength()

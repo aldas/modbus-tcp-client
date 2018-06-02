@@ -1,9 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Utils\Registers;
 use ModbusTcpClient\Utils\Types;
@@ -11,7 +14,7 @@ use ModbusTcpClient\Utils\Types;
 /**
  * Request for Write Multiple Registers (FC=16)
  */
-class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest
+class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {
     /**
      * @var array registers (array of bytes)
@@ -20,7 +23,7 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest
     private $registersCount;
     private $registersBytesSize;
 
-    public function __construct($startAddress, array $registers, $unitId = 0, $transactionId = null)
+    public function __construct(int $startAddress, array $registers, int $unitId = 0, int $transactionId = null)
     {
         $this->registers = $registers;
         $this->registersBytesSize = Registers::getRegisterArrayByteSize($this->registers);
@@ -38,19 +41,19 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest
         if ($this->registersCount === 0 || $this->registersCount > 124) {
             // as request contain 1 byte field 'registersBytesSize' to indicate number of bytes to follow
             // there is no way more than 124 words (124*2 bytes) can be written as this field would overflow
-            throw new \OutOfRangeException("registers count out of range (1-124): {$this->registersCount}");
+            throw new InvalidArgumentException("registers count out of range (1-124): {$this->registersCount}");
         }
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::WRITE_MULTIPLE_REGISTERS;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
-            . Types::toInt16($this->registersCount)
+            . Types::toRegister($this->registersCount)
             . Types::toByte($this->registersBytesSize)
             . Registers::getRegisterArrayAsByteString($this->registers);
     }
@@ -58,12 +61,12 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest
     /**
      * @return array
      */
-    public function getRegisters()
+    public function getRegisters(): array
     {
         return $this->registers;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + (1 + $this->registersBytesSize); // registers count + number of bytes registers need for data
     }

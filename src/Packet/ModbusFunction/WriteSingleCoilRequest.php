@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Utils\Types;
 
@@ -9,7 +12,7 @@ use ModbusTcpClient\Utils\Types;
 /**
  * Request for Write Single Coil (FC=05)
  */
-class WriteSingleCoilRequest extends ProtocolDataUnitRequest
+class WriteSingleCoilRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {
     const ON = 0xFF;
     const OFF = 0x0;
@@ -19,7 +22,7 @@ class WriteSingleCoilRequest extends ProtocolDataUnitRequest
      */
     private $coil;
 
-    public function __construct($startAddress, $coil, $unitId = 0, $transactionId = null)
+    public function __construct(int $startAddress, bool $coil, int $unitId = 0, int $transactionId = null)
     {
         parent::__construct($startAddress, $unitId, $transactionId);
         $this->coil = $coil;
@@ -27,20 +30,12 @@ class WriteSingleCoilRequest extends ProtocolDataUnitRequest
         $this->validate();
     }
 
-    public function validate()
-    {
-        parent::validate();
-        if (!is_bool($this->coil)) {
-            throw new \InvalidArgumentException('coil must be boolean value');
-        }
-    }
-
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::WRITE_SINGLE_COIL;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
             . Types::toByte($this->isCoil() ? self::ON : self::OFF)
@@ -50,12 +45,12 @@ class WriteSingleCoilRequest extends ProtocolDataUnitRequest
     /**
      * @return bool
      */
-    public function isCoil()
+    public function isCoil(): bool
     {
         return $this->coil;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + 2; // coil size (1 byte + 1 byte)
     }

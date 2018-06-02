@@ -5,6 +5,7 @@ namespace Tests\Packet;
 
 
 use ModbusTcpClient\Packet\ErrorResponse;
+use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesResponse;
@@ -20,7 +21,7 @@ use PHPUnit\Framework\TestCase;
 class ResponseFactoryTest extends TestCase
 {
     /**
-     * @expectedException \ModbusTcpClient\ModbusException
+     * @expectedException \ModbusTcpClient\Exception\ModbusException
      * @expectedExceptionMessage Response null or data length too short to be valid packet!
      */
     public function testShouldThrowExceptionOnGarbageData()
@@ -29,7 +30,7 @@ class ResponseFactoryTest extends TestCase
     }
 
     /**
-     * @expectedException \ModbusTcpClient\ModbusException
+     * @expectedException \ModbusTcpClient\Exception\ModbusException
      * @expectedExceptionMessage Response null or data length too short to be valid packet!
      */
     public function testShouldThrowExceptionOnNullData()
@@ -51,9 +52,21 @@ class ResponseFactoryTest extends TestCase
         $this->assertEquals('Illegal data value', $response->getErrorMessage());
     }
 
+    public function testShouldParseErrorResponse2()
+    {
+        $data = (new ErrorResponse(new ModbusApplicationHeader(2, 0, 55943), 1, 3))->__toString();
+
+        /* @var $response ErrorResponse */
+        $response = ResponseFactory::parseResponse($data);
+
+        $this->assertInstanceOf(ErrorResponse::class, $response);
+        $this->assertEquals(ModbusPacket::READ_COILS, $response->getFunctionCode());
+        $this->assertEquals(3, $response->getErrorCode());
+        $this->assertEquals('Illegal data value', $response->getErrorMessage());
+    }
 
     /**
-     * @expectedException \ModbusTcpClient\ModbusException
+     * @expectedException \ModbusTcpClient\Exception\ModbusException
      * @expectedExceptionMessage Illegal data value
      */
     public function testShouldThrowExceptionOnErrorResponse()
@@ -169,7 +182,7 @@ class ResponseFactoryTest extends TestCase
 
         $this->assertInstanceOf(WriteSingleRegisterResponse::class, $response);
         $this->assertEquals(ModbusPacket::WRITE_SINGLE_REGISTER, $response->getFunctionCode());
-        $this->assertEquals(65535, $response->getValue());
+        $this->assertEquals(65535, $response->getWord()->getUInt16());
 
         $header = $response->getHeader();
         $this->assertEquals(3, $header->getUnitId());
@@ -213,7 +226,7 @@ class ResponseFactoryTest extends TestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     * @expectedException \ModbusTcpClient\Exception\ParseException
      * @expectedExceptionMessage Unknown function code '17' read from response packet
      */
     public function testInvalidFunctionCodeParse()

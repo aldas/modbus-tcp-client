@@ -19,7 +19,7 @@ class ProtocolDataUnitRequestTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfRangeException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage startAddress is not set or out of range: -1
      */
     public function testFailWithNegativeStartAddress()
@@ -28,7 +28,7 @@ class ProtocolDataUnitRequestTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfRangeException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage startAddress is not set or out of range: 65536
      */
     public function testFailWithTooBigStartAddress()
@@ -46,7 +46,7 @@ class ProtocolDataUnitRequestImpl extends ProtocolDataUnitRequest
         parent::validate();
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return 23;
     }

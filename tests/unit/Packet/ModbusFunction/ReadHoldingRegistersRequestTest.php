@@ -60,8 +60,7 @@ class ReadHoldingRegistersRequestTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfRangeException
-     * @expectedExceptionMessage quantity is not set or out of range (0-124):
+     * @expectedException \TypeError
      */
     public function testShouldThrowExceptionOnNullQuantity()
     {
@@ -69,7 +68,7 @@ class ReadHoldingRegistersRequestTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfRangeException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage quantity is not set or out of range (0-124):
      */
     public function testShouldThrowExceptionOnBelowLimitQuantity()
@@ -78,7 +77,7 @@ class ReadHoldingRegistersRequestTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfRangeException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage quantity is not set or out of range (0-124):
      */
     public function testShouldThrowExceptionOnOverLimitQuantity()

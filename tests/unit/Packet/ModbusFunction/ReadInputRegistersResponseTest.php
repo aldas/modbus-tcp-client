@@ -23,7 +23,7 @@ class ReadInputRegistersResponseTest extends TestCase
         $packet = new ReadInputRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01", 3, 33152);
         $this->assertEquals(ModbusPacket::READ_INPUT_REGISTERS, $packet->getFunctionCode());
 
-        $this->assertEquals([0xCD, 0x6B, 0x0, 0x0, 0x0, 0x1], $packet->getData()); //TODO get data as array of words (2 bytes)
+        $this->assertEquals([0xCD, 0x6B, 0x0, 0x0, 0x0, 0x1], $packet->getData());
 
         $header = $packet->getHeader();
         $this->assertEquals(33152, $header->getTransactionId());

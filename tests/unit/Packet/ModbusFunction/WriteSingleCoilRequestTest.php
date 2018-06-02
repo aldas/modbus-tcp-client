@@ -23,11 +23,7 @@ class WriteSingleCoilRequestTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage coil must be boolean value
-     */
-    public function testValidateInvalidCoilValue()
+    public function testValidateCoilConvertedToBool()
     {
         $this->assertEquals(
             "\x00\x01\x00\x00\x00\x06\x11\x05\x00\x6B\x00\x00",

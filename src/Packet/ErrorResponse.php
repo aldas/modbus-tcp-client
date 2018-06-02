@@ -6,7 +6,7 @@ namespace ModbusTcpClient\Packet;
 
 use ModbusTcpClient\Utils\Types;
 
-class ErrorResponse implements ModbusPacket
+class ErrorResponse implements ModbusResponse
 {
     /**
      * @var int Modbus exceptions are transfered in function code byte and have their high bit set (128)
@@ -28,28 +28,29 @@ class ErrorResponse implements ModbusPacket
      */
     private $errorCode;
 
-    public function __construct(ModbusApplicationHeader $header, $functionCode, $errorCode)
+    public function __construct(ModbusApplicationHeader $header, int $functionCode, int $errorCode)
     {
         $this->header = $header;
         $this->functionCode = $functionCode;
         $this->errorCode = $errorCode;
     }
 
-    public function getHeader()
+    public function getHeader(): ModbusApplicationHeader
     {
         return $this->header;
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return $this->functionCode;
     }
 
-    public function getErrorCode()
+    public function getErrorCode(): int
     {
         return $this->errorCode;
     }
-    public function getErrorMessage()
+
+    public function getErrorMessage(): string
     {
         switch ($this->errorCode) {
             case 1:
@@ -83,20 +84,26 @@ class ErrorResponse implements ModbusPacket
         return $message;
     }
 
-    public function getLength()
+    public function getLength(): int
     {
-        return $this->header->getLength() + 2; // 2 bytes for function code and error code
+        return 2; // 2 bytes for function code and error code
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return b''
             . $this->getHeader()
-            . Types::toByte($this->getFunctionCode() & self::EXCEPTION_BITMASK)
+            . Types::toByte($this->getFunctionCode() + self::EXCEPTION_BITMASK)
             . Types::toByte($this->getErrorCode());
     }
 
-    public function toHex() {
+    public function toHex(): string
+    {
         return unpack('H*', $this->__toString())[1];
+    }
+
+    public function withStartAddress(int $startAddress)
+    {
+        return clone $this; // just to have same interface as 'success' responses
     }
 }

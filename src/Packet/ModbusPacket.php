@@ -18,20 +18,20 @@ interface ModbusPacket
     /**
      * @return ModbusApplicationHeader
      */
-    public function getHeader();
+    public function getHeader(): ModbusApplicationHeader;
 
     /**
      * @return int
      */
-    public function getFunctionCode();
+    public function getFunctionCode(): int;
 
     /**
      * @return string
      */
-    public function __toString();
+    public function __toString(): string;
 
     /**
      * @return string
      */
-    public function toHex();
+    public function toHex(): string;
 }

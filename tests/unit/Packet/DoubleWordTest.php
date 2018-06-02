@@ -16,7 +16,7 @@ class DoubleWordTest extends TestCase
     }
 
     /**
-     * @expectedException \ModbusTcpClient\ModbusException
+     * @expectedException \ModbusTcpClient\Exception\ModbusException
      * @expectedExceptionMessage Word can only be constructed from 1 to 4 bytes. Currently 5 bytes was given!
      */
     public function testShouldNotConstructFromLongerData()

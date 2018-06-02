@@ -28,7 +28,7 @@ class WriteMultipleCoilsRequestTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfRangeException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage coils count out of range (1-2048): 0
      */
     public function testValidateEmptyCoils()

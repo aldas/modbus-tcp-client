@@ -24,7 +24,8 @@ composer require aldas/modbus-tcp-client
 
 ## Requirements
 
-* PHP 5.6+ (64bit PHP! 32bit php does not support 64bit ints and overflows with 32bit unsigned integers when 32th bit is set)
+* PHP 7.0+ (64bit PHP if you need to read 64bit integers from modbus responses. NB: PHP supports only signed 64bit integers so usigned 64bit ints will overflow when 64th bit is set)
+* Release [0.2.0](https://github.com/aldas/modbus-tcp-client/tree/0.2.0) was last to support PHP 5.6
 
 ## Intention
 This library is influenced by [phpmodbus](https://github.com/adduc/phpmodbus) library and meant to be provide decoupled Modbus protocol (request/response packets) and networking related features so you could build modbus client with our own choice of networking code (ext_sockets/streams/Reactphp/Amp asynchronous streams) or use library provided networking classes (php Streams)
@@ -47,8 +48,50 @@ See [Endian.php](src/Utils/Endian.php) for additional info and [Types.php](src/U
 
 ## Example (fc3 - read holding registers)
 
-Some of the Modbus function examples are in `examples/` folder
+Some of the Modbus function examples are in [examples/](examples) folder
 
+Advanced usage:
+* command line poller with ReachPHP [examples/example_cli_poller.php](examples/example_cli_poller.php)
+* send/recieve packets parallel using non-blocking IO:
+  * using [ReactPHP](https://reactphp.org/) see 'examples/[example_parallel_requests_reactphp.php](examples/example_parallel_requests_reactphp.php)'
+  * using [Amp](https://amphp.org/amp/) see 'examples/[example_parallel_requests_amp.php](examples/example_parallel_requests_amp.php)'
+
+Request multiple packets with higher level API:
+```php
+$fc3 = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
+    ->bit(256, 15, 'pump2_feedbackalarm_do')
+    // will be split into 2 requests as 1 request can return only range of 124 registers max
+    ->int16(657, 'battery3_voltage_wo')
+    // will be another request as uri is different for subsequent int16 register
+    ->useUri('tcp://127.0.0.1:5023')
+    ->string(
+        669,
+        10,
+        'username_plc2',
+        function ($value, $address, $response) {
+            return 'prefix_' . $value; // optional: transform value after extraction
+        },
+        function (\Exception $exception, Address $address, $response) {
+            // optional: callback called then extraction failed with an error
+            return $address->getType() === Address::TYPE_STRING ? '' : null; // does not make sense but gives you an idea
+        }
+    )
+    ->build(); // returns array of 3 ReadHoldingRegistersRequest requests
+
+// this will use PHP non-blocking stream io to recieve responses
+$responses = (new NonBlockingClient(['readTimeoutSec' => 0.2]))->sendReadRequests($fc3);
+print_r($responses);
+```
+Response structure
+```php
+[
+    [ 'pump2_feedbackalarm_do' => true, ],
+    [ 'battery3_voltage_wo' => 12, ],
+    [ 'username_plc2' => 'prefix_admin', ]
+]
+```
+
+Low level - send packets:
 ```php
 $connection = BinaryStreamConnection::getBuilder()
     ->setHost('192.168.0.1')

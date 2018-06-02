@@ -14,7 +14,7 @@ class WordTest extends TestCase
     }
 
     /**
-     * @expectedException \ModbusTcpClient\ModbusException
+     * @expectedException \ModbusTcpClient\Exception\ModbusException
      * @expectedExceptionMessage Word can only be constructed from 1 to 2 bytes. Currently 3 bytes was given!
      */
     public function testShouldThrowExceptionForHugeData()
@@ -23,8 +23,7 @@ class WordTest extends TestCase
     }
 
     /**
-     * @expectedException \ModbusTcpClient\ModbusException
-     * @expectedExceptionMessage Word can only be constructed from 1 to 2 bytes. Currently 0 bytes was given!
+     * @expectedException \TypeError
      */
     public function testShouldThrowExceptionForNullData()
     {
@@ -32,12 +31,12 @@ class WordTest extends TestCase
     }
 
     /**
-     * @expectedException \ModbusTcpClient\ModbusException
+     * @expectedException \ModbusTcpClient\Exception\ModbusException
      * @expectedExceptionMessage Word can only be constructed from 1 to 2 bytes. Currently 0 bytes was given!
      */
     public function testShouldThrowExceptionForEmptyData()
     {
-        new Word("");
+        new Word('');
     }
 
     public function testShouldGetUint16BE()

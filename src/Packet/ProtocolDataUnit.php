@@ -19,22 +19,23 @@ abstract class ProtocolDataUnit implements ModbusPacket
      */
     private $header;
 
-    public function __construct($unitId = 0, $transactionId = null)
+    public function __construct(int $unitId = 0, int $transactionId = null)
     {
         $this->header = new ModbusApplicationHeader($this->getLengthInternal(), $unitId, $transactionId);
     }
 
-    abstract protected function getLengthInternal();
+    abstract protected function getLengthInternal(): int;
 
     /**
      * @return ModbusApplicationHeader
      */
-    public function getHeader()
+    public function getHeader(): ModbusApplicationHeader
     {
         return $this->header;
     }
 
-    public function toHex() {
+    public function toHex(): string
+    {
         return unpack('H*', $this->__toString())[1];
     }
 }

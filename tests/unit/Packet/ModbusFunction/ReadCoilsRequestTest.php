@@ -31,8 +31,7 @@ class ReadCoilsRequestTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfRangeException
-     * @expectedExceptionMessage quantity is not set or out of range (1-65535):
+     * @expectedException \TypeError
      */
     public function testShouldThrowExceptionOnNullQuantity()
     {
@@ -40,8 +39,8 @@ class ReadCoilsRequestTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfRangeException
-     * @expectedExceptionMessage quantity is not set or out of range (1-65535):
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
+     * @expectedExceptionMessage quantity is not set or out of range (1-2048):
      */
     public function testShouldThrowExceptionOnBelowLimitQuantity()
     {
@@ -49,11 +48,11 @@ class ReadCoilsRequestTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfRangeException
-     * @expectedExceptionMessage quantity is not set or out of range (1-65535):
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
+     * @expectedExceptionMessage quantity is not set or out of range (1-2048):
      */
     public function testShouldThrowExceptionOnOverLimitQuantity()
     {
-        new ReadCoilsRequest(107, Types::MAX_VALUE_UINT16 + 1, 17, 1);
+        new ReadCoilsRequest(107, 256*8 + 1, 17, 1);
     }
 }

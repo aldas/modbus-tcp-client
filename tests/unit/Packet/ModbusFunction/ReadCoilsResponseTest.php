@@ -2,8 +2,8 @@
 
 namespace Tests\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
+use ModbusTcpClient\Packet\ModbusPacket;
 use PHPUnit\Framework\TestCase;
 
 class ReadCoilsResponseTest extends TestCase
@@ -13,6 +13,13 @@ class ReadCoilsResponseTest extends TestCase
         $this->assertEquals(
             "\x81\x80\x00\x00\x00\x05\x03\x01\x02\xCD\x6B",
             (new ReadCoilsResponse("\x02\xCD\x6B", 3, 33152))->__toString()
+        );
+    }
+    public function testToHex()
+    {
+        $this->assertEquals(
+            '818000000005030102cd6b',
+            (new ReadCoilsResponse("\x02\xCD\x6B", 3, 33152))->toHex()
         );
     }
 
@@ -69,6 +76,26 @@ class ReadCoilsResponseTest extends TestCase
         );
     }
 
+    /**
+     * @expectedException \ModbusTcpClient\Exception\ModbusException
+     * @expectedExceptionMessage setting value in response is not supported!
+     */
+    public function testOffsetSet()
+    {
+        $packet = (new ReadCoilsResponse("\x02\xCD\x6B", 3, 33152))->withStartAddress(50);
+        $packet[50] = 1;
+    }
+
+    /**
+     * @expectedException \ModbusTcpClient\Exception\ModbusException
+     * @expectedExceptionMessage unsetting value in response is not supported!
+     */
+    public function testOffsetUnSet()
+    {
+        $packet = (new ReadCoilsResponse("\x02\xCD\x6B", 3, 33152))->withStartAddress(50);
+        unset($packet[50]);
+    }
+
     public function testOffsetExists()
     {
         $packet = (new ReadCoilsResponse("\x02\xCD\x6B", 3, 33152))->withStartAddress(50);
@@ -83,12 +110,12 @@ class ReadCoilsResponseTest extends TestCase
     {
         $packet = (new ReadCoilsResponse("\x02\xCD\x6B", 3, 33152))->withStartAddress(50);
 
-        $this->assertTrue(isset($packet[50]));
-        $this->assertFalse(isset($packet[66]));
+        $this->assertTrue($packet[50]);
+        $this->assertFalse($packet[65]);
     }
 
     /**
-     * @expectedException \OutOfBoundsException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage offset out of bounds
      */
     public function testOffsetGetOutOfBoundsUnder()
@@ -99,7 +126,7 @@ class ReadCoilsResponseTest extends TestCase
     }
 
     /**
-     * @expectedException \OutOfBoundsException
+     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
      * @expectedExceptionMessage offset out of bounds
      */
     public function testOffsetGetOutOfBoundsOver()

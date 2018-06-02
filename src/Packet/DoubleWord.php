@@ -9,7 +9,7 @@ use ModbusTcpClient\Utils\Types;
  */
 class DoubleWord extends AbstractWord
 {
-    protected function getByteLength()
+    protected function getByteLength(): int
     {
         return 4;
     }
@@ -19,7 +19,7 @@ class DoubleWord extends AbstractWord
      * @return int
      * @throws \RuntimeException
      */
-    public function getUInt32($endianness = null)
+    public function getUInt32(int $endianness = null): int
     {
         return Types::parseUInt32($this->getData(), $endianness);
     }
@@ -27,9 +27,9 @@ class DoubleWord extends AbstractWord
     /**
      * @param int $endianness byte and word order for modbus binary data
      * @return int
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public function getInt32($endianness = null)
+    public function getInt32(int $endianness = null): int
     {
         return Types::parseInt32($this->getData(), $endianness);
     }
@@ -39,25 +39,25 @@ class DoubleWord extends AbstractWord
      * @return float
      * @throws \RuntimeException
      */
-    public function getFloat($endianness = null)
+    public function getFloat(int $endianness = null): float
     {
         return Types::parseFloat($this->getData(), $endianness);
     }
 
     /**
      * @return Word
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public function getLowBytesAsWord()
+    public function getLowBytesAsWord(): Word
     {
         return new Word(substr($this->getData(), 2));
     }
 
     /**
      * @return Word
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public function getHighBytesAsWord()
+    public function getHighBytesAsWord(): Word
     {
         return new Word(substr($this->getData(), 0, 2));
     }
@@ -67,9 +67,9 @@ class DoubleWord extends AbstractWord
      *
      * @param DoubleWord $lowDoubleWord
      * @return QuadWord
-     * @throws \ModbusTcpClient\ModbusException
+     * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public function combine(DoubleWord $lowDoubleWord)
+    public function combine(DoubleWord $lowDoubleWord): QuadWord
     {
         return new QuadWord($this->getData() . $lowDoubleWord->getData());
     }

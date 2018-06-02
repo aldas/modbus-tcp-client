@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Packet\ModbusPacket;
@@ -15,13 +17,13 @@ class WriteMultipleRegistersResponse extends StartAddressResponse
      */
     private $registersCount;
 
-    public function __construct($rawData, $unitId = 0, $transactionId = null)
+    public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {
         parent::__construct($rawData, $unitId, $transactionId);
         $this->registersCount = Types::parseUInt16(substr($rawData, 2, 2));
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::WRITE_MULTIPLE_REGISTERS;
     }
@@ -29,19 +31,19 @@ class WriteMultipleRegistersResponse extends StartAddressResponse
     /**
      * @return int
      */
-    public function getRegistersCount()
+    public function getRegistersCount(): int
     {
         return $this->registersCount;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + 2; //registersCount is 2 bytes
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
-            . Types::toInt16($this->registersCount);
+            . Types::toRegister($this->registersCount);
     }
 }
