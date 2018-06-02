@@ -47,7 +47,7 @@ abstract class Address
         }
     }
 
-    abstract protected function getAllowedTypes();
+    abstract protected function getAllowedTypes(): array;
 
     public function getSize(): int
     {

@@ -25,10 +25,10 @@ class StringReadAddress extends ReadAddress
 
     public function getSize(): int
     {
-        return ceil($this->byteLength / 2); // 1 register contains 2 bytes/chars
+        return (int)ceil($this->byteLength / 2); // 1 register contains 2 bytes/chars
     }
 
-    protected function getAllowedTypes()
+    protected function getAllowedTypes(): array
     {
         return [Address::TYPE_STRING];
     }

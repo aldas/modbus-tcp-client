@@ -31,7 +31,7 @@ class StringWriteAddress extends WriteAddress
         $this->toEncoding = $toEncoding;
     }
 
-    protected function getAllowedTypes()
+    protected function getAllowedTypes(): array
     {
         return [Address::TYPE_STRING];
     }

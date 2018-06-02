@@ -18,7 +18,7 @@ class WriteAddress extends Address
         $this->value = $value;
     }
 
-    protected function getAllowedTypes()
+    protected function getAllowedTypes(): array
     {
         // writing bit/byte with registers should not be allowed - word is 2 bytes so there is memory that are actually touching by writing single bit or even 1 byte
         return [

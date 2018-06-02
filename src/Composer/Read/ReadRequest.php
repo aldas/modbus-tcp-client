@@ -33,7 +33,7 @@ class ReadRequest implements Request
     /**
      * @return ReadHoldingRegistersRequest
      */
-    public function getRequest()
+    public function getRequest(): ReadHoldingRegistersRequest
     {
         return $this->request;
     }
