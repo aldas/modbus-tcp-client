@@ -397,7 +397,6 @@ final class Types
         $data = $binaryData;
 
         $fromEndian = Endian::getCurrentEndianness($fromEndian);
-        // TODO missing word order logic?
         if ($fromEndian & Endian::BIG_ENDIAN) {
 
             $data = '';
