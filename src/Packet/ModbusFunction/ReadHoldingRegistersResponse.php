@@ -34,7 +34,7 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
         $this->dataBytes = Types::parseByteArray($this->data);
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::READ_HOLDING_REGISTERS;
     }
@@ -42,7 +42,7 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
     /**
      * @return int[]
      */
-    public function getData()
+    public function getData(): array
     {
         return $this->dataBytes;
     }
@@ -71,7 +71,7 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
      * @return Word[] array of Words. each arrays cointains 2 bytes
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public function getWords()
+    public function getWords(): array
     {
         return iterator_to_array($this->asWords());
     }
@@ -102,18 +102,18 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
      * @return DoubleWord[] array of Double Words. each arrays cointains 4 bytes
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public function getDoubleWords()
+    public function getDoubleWords(): array
     {
         return iterator_to_array($this->asDoubleWords());
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
             . $this->data;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + $this->getByteCount();
     }
@@ -158,7 +158,7 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
      * @param $firstWordAddress
      * @return DoubleWord
      */
-    public function getDoubleWordAt($firstWordAddress)
+    public function getDoubleWordAt(int $firstWordAddress)
     {
         $address = ($firstWordAddress - $this->getStartAddress()) * 2;
         $byteCount = $this->getByteCount();
@@ -172,7 +172,7 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
      * @param $firstWordAddress
      * @return QuadWord
      */
-    public function getQuadWordAt($firstWordAddress)
+    public function getQuadWordAt(int $firstWordAddress)
     {
         $address = ($firstWordAddress - $this->getStartAddress()) * 2;
         $byteCount = $this->getByteCount();
@@ -190,7 +190,7 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
      * @param int $endianness byte and word order for modbus binary data
      * @return string
      */
-    public function getAsciiStringAt($startFromWord, $length, $endianness = null)
+    public function getAsciiStringAt(int $startFromWord, int $length, int $endianness = null)
     {
         $address = ($startFromWord - $this->getStartAddress()) * 2;
 

@@ -5,7 +5,7 @@ namespace ModbusTcpClient\Utils;
 
 class Registers
 {
-    public static function getRegisterArrayByteSize(array $registers)
+    public static function getRegisterArrayByteSize(array $registers): int
     {
         $result = 0;
         foreach ($registers as $register) {
@@ -19,7 +19,7 @@ class Registers
         return $result;
     }
 
-    public static function getRegisterArrayAsByteString(array $registers)
+    public static function getRegisterArrayAsByteString(array $registers): string
     {
         $result = '';
         foreach ($registers as $register) {

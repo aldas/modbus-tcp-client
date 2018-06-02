@@ -46,7 +46,7 @@ class ProtocolDataUnitRequestImpl extends ProtocolDataUnitRequest
         parent::validate();
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return 23;
     }

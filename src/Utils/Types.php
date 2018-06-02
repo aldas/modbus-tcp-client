@@ -37,12 +37,12 @@ final class Types
      * @return int
      * @throws \ModbusTcpClient\Exception\InvalidArgumentException
      */
-    public static function parseUInt16($word, $fromEndian = null)
+    public static function parseUInt16(string $word, int $fromEndian = null): int
     {
         return unpack(self::getInt16Format($fromEndian), $word)[1];
     }
 
-    private static function getInt16Format($fromEndian)
+    private static function getInt16Format(int $fromEndian = null): string
     {
         $fromEndian = Endian::getCurrentEndianness($fromEndian);
         if ($fromEndian & Endian::BIG_ENDIAN) {
@@ -64,7 +64,7 @@ final class Types
      * @return int
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public static function parseInt16($word, $fromEndian = null)
+    public static function parseInt16(string $word, int $fromEndian = null): int
     {
         $fromEndian = Endian::getCurrentEndianness($fromEndian);
         if ($fromEndian & Endian::BIG_ENDIAN) {
@@ -88,7 +88,7 @@ final class Types
      * @return int|float
      * @throws \RuntimeException
      */
-    public static function parseUInt32($doubleWord, $fromEndian = null)
+    public static function parseUInt32(string $doubleWord, int $fromEndian = null)
     {
         $byteArray = self::getBytesForInt32Parse($doubleWord, $fromEndian);
         if (PHP_INT_SIZE === 4) {
@@ -108,14 +108,14 @@ final class Types
      * @return int
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public static function parseInt32($doubleWord, $fromEndian = null)
+    public static function parseInt32(string $doubleWord, int $fromEndian = null): int
     {
         $byteArray = self::getBytesForInt32Parse($doubleWord, $fromEndian);
         $byteArray['high'] = self::uintToSignedInt($byteArray['high']);
         return ($byteArray['high'] << 16) + $byteArray['low'];
     }
 
-    private static function getBytesForInt32Parse($doubleWord, $endianness)
+    private static function getBytesForInt32Parse(string $doubleWord, int $endianness = null)
     {
         $endianness = Endian::getCurrentEndianness($endianness);
 
@@ -145,7 +145,7 @@ final class Types
      * @param bool $bitSize
      * @return int
      */
-    private static function uintToSignedInt(int $uint, int $bitSize = 16)
+    private static function uintToSignedInt(int $uint, int $bitSize = 16): int
     {
         if ($bitSize === 16 && ($uint & 0x8000) > 0) {
             // This is a negative number.  Invert the bits and add 1 and add negative sign
@@ -166,7 +166,7 @@ final class Types
      * @param string $char binary string to be converted to unsigned 8 bit unsigned integer
      * @return int
      */
-    public static function parseByte($char)
+    public static function parseByte(string $char): int
     {
         return unpack('C', $char)[1];
     }
@@ -177,7 +177,7 @@ final class Types
      * @param $binaryData string binary string to be converted to array of unsigned 8 bit unsigned integers
      * @return int[]
      */
-    public static function parseByteArray($binaryData)
+    public static function parseByteArray(string $binaryData): array
     {
         return array_values(unpack('C*', $binaryData));
     }
@@ -188,12 +188,12 @@ final class Types
      * @param array $data
      * @return string
      */
-    public static function byteArrayToByte(array $data)
+    public static function byteArrayToByte(array $data): string
     {
         return pack('C*', ...$data);
     }
 
-    public static function booleanArrayToByteArray(array $booleans)
+    public static function booleanArrayToByteArray(array $booleans): array
     {
         $result = [];
         $count = count($booleans);
@@ -216,7 +216,7 @@ final class Types
         return $result;
     }
 
-    public static function binaryStringToBooleanArray($binary)
+    public static function binaryStringToBooleanArray(string $binary): array
     {
         $result = [];
         $coilCount = 8 * strlen($binary);
@@ -240,7 +240,7 @@ final class Types
      * @return bool
      * @throws \InvalidArgumentException
      */
-    public static function isBitSet($data, $bit)
+    public static function isBitSet($data, int $bit): bool
     {
         if (null === $data) {
             return false;
@@ -276,7 +276,7 @@ final class Types
      * @return float
      * @throws \RuntimeException
      */
-    public static function parseFloat($binaryData, $fromEndian = null)
+    public static function parseFloat(string $binaryData, int $fromEndian = null): float
     {
         $fromEndian = Endian::getCurrentEndianness($fromEndian);
         if ($fromEndian & Endian::LOW_WORD_FIRST) {
@@ -306,7 +306,7 @@ final class Types
      * @return int
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public static function parseUInt64($binaryData, $fromEndian = null)
+    public static function parseUInt64(string $binaryData, int $fromEndian = null): int
     {
         if (strlen($binaryData) !== 8) {
             throw new ParseException('binaryData must be 8 bytes in length');
@@ -345,7 +345,7 @@ final class Types
      * @return int
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public static function parseInt64($binaryData, $fromEndian = null)
+    public static function parseInt64(string $binaryData, int $fromEndian = null)
     {
         if (strlen($binaryData) !== 8) {
             throw new ParseException('binaryData must be 8 bytes in length');
@@ -377,7 +377,7 @@ final class Types
      * @param int $fromEndian byte and word order for modbus binary data
      * @return string
      */
-    public static function parseAsciiStringFromRegister($binaryData, $length = 0, $fromEndian = null): string
+    public static function parseAsciiStringFromRegister(string $binaryData, int $length = 0, int $fromEndian = null): string
     {
         // 'ASCII' is needed to for extended ascii characters as 'ø' (decimal 248)
         return static::parseStringFromRegister($binaryData, $length, 'ASCII', $fromEndian);
@@ -392,7 +392,7 @@ final class Types
      * @param int $fromEndian byte and word order for modbus binary data
      * @return string
      */
-    public static function parseStringFromRegister($binaryData, int $length, string $fromEncoding = null, int $fromEndian = null): string
+    public static function parseStringFromRegister(string $binaryData, int $length, string $fromEncoding = null, int $fromEndian = null): string
     {
         $data = $binaryData;
 
@@ -432,7 +432,7 @@ final class Types
      * @param int $data integer to be converted to register/word (binary string of 2 bytes)
      * @return string binary string with big endian byte order
      */
-    public static function toRegister(int $data): string
+    public static function toRegister($data): string
     {
         $data &= 0xFFFF;
         return pack('n', $data);
@@ -444,7 +444,7 @@ final class Types
      * @param int $data 1 bit integer to be converted to binary byte string
      * @return string binary string with length of 1 char
      */
-    public static function toByte($data)
+    public static function toByte($data): string
     {
         return pack('C', $data);
     }
@@ -454,10 +454,10 @@ final class Types
      *
      * @param int $data 16 bit integer to be converted to binary string (1 word)
      * @param int $toEndian byte and word order for modbus binary data
+     * @param bool $doRangeCheck should min/max range check be done for data
      * @return string binary string with big endian byte order
-     * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public static function toInt16(int $data, $toEndian = null, bool $doRangeCheck = true)
+    public static function toInt16($data, int $toEndian = null, bool $doRangeCheck = true): string
     {
         if ($doRangeCheck && ($data < self::MIN_VALUE_INT16 || $data > self::MAX_VALUE_INT16)) {
             throw new OverflowException('Data out of int16 range (-32768...32767)! Given: ' . $data);
@@ -471,10 +471,11 @@ final class Types
      *
      * @param int $data 16 bit integer to be converted to binary string (1 word)
      * @param int $toEndian byte and word order for modbus binary data
+     * @param bool $doRangeCheck should min/max range check be done for data
      * @return string binary string with big endian byte order
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public static function toUint16($data, $toEndian = null, bool $doRangeCheck = true)
+    public static function toUint16($data, int $toEndian = null, bool $doRangeCheck = true): string
     {
         if ($doRangeCheck && ($data < self::MIN_VALUE_UINT16 || $data > self::MAX_VALUE_UINT16)) {
             throw new OverflowException('Data out of uint16 range (0...65535)! Given: ' . $data);
@@ -488,10 +489,11 @@ final class Types
      *
      * @param int $data 32 bit integer to be converted to binary string (double word)
      * @param int $toEndian byte and word order for modbus binary data
+     * @param bool $doRangeCheck should min/max range check be done for data
      * @return string binary string with big endian byte order
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public static function toInt32($data, $toEndian = null, bool $doRangeCheck = true)
+    public static function toInt32($data, int $toEndian = null, bool $doRangeCheck = true): string
     {
         if ($doRangeCheck && ($data < self::MIN_VALUE_INT32 || $data > self::MAX_VALUE_INT32)) {
             throw new OverflowException('Data out of int32 range (-2147483648...2147483647)! Given: ' . $data);
@@ -504,10 +506,11 @@ final class Types
      *
      * @param int $data 32 bit unsigned integer to be converted to binary string (double word)
      * @param int $toEndian byte and word order for modbus binary data
+     * @param bool $doRangeCheck should min/max range check be done for data
      * @return string binary string with big endian byte order
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public static function toUint32($data, $toEndian = null, bool $doRangeCheck = true)
+    public static function toUint32($data, int $toEndian = null, bool $doRangeCheck = true): string
     {
         if ($doRangeCheck && ($data < self::MIN_VALUE_UINT32 || $data > self::MAX_VALUE_UINT32)) {
             throw new OverflowException('Data out of int32 range (0...4294967295)! Given: ' . $data);
@@ -515,7 +518,7 @@ final class Types
         return static::toInt32Internal($data, $toEndian);
     }
 
-    private static function toInt32Internal($data, $endianness = null)
+    private static function toInt32Internal($data, $endianness = null): string
     {
         $words = [
             ($data >> 16) & 0xFFFF,
@@ -531,7 +534,6 @@ final class Types
         return pack("{$format}*", ...$words);
     }
 
-
     /**
      * Convert Php data as it would be 64 bit integer to binary string with given endianness order
      *
@@ -540,7 +542,7 @@ final class Types
      * @return string binary string with big endian byte order
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public static function toInt64(int $data, int $toEndian = null)
+    public static function toInt64($data, int $toEndian = null): string
     {
         if (PHP_INT_SIZE !== 8) {
             throw new InvalidArgumentException('64-bit format codes are not available for 32-bit versions of PHP');
@@ -562,13 +564,21 @@ final class Types
         return pack("{$format}*", ...$words);
     }
 
-    public static function toUint64(int $data, int $endianness = null, bool $doRangeCheck = true)
+    /**
+     * Convert Php data as it would be 64 bit unsigned integer to binary string with given endianness order
+     *
+     * @param int $data 64 bit integer to be converted to binary string (quad word)
+     * @param int $toEndian byte and word order for modbus binary data
+     * @return string binary string with big endian byte order
+     * @throws \ModbusTcpClient\Exception\ModbusException
+     */
+    public static function toUint64($data, int $toEndian = null, bool $doRangeCheck = true): string
     {
         if ($doRangeCheck && $data < 0) {
             throw new OverflowException('Data out of uint64 range (0...9223372036854775807)! Given: ' . $data);
         }
         // php has actually only signed integers so we can actually use 63bits of 64bit of unsigned int value
-        return static::toInt64($data, $endianness);
+        return static::toInt64($data, $toEndian);
     }
 
     /**
@@ -579,7 +589,7 @@ final class Types
      * @return string binary string with big endian byte order
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public static function toReal($float, $toEndian = null)
+    public static function toReal($float, int $toEndian = null): string
     {
         //pack to machine order float, unpack to machine order uint32, pack uint32 to binary big endian
         //from php git seems that some day there will be 'g' and 'G' modifiers for float LE/BE conversion
@@ -595,34 +605,38 @@ final class Types
      * @param int|null $toEndian in which endianess and word order resulting binary string should be
      * @return string
      */
-    public static function toString(string $string, int $registersCount, string $toEncoding = null, int $toEndian = null): string
+    public static function toString($string, int $registersCount, string $toEncoding = null, int $toEndian = null): string
     {
         if ($toEncoding !== null) {
             // use 'cp1252' as encoding if you just need extended ASCII chars i.e. chars like 'ø'
             $string = mb_convert_encoding($string, $toEncoding);
         }
-
         $byteCount = $registersCount * 2;
-        $string = substr($string, 0, $byteCount - 1);
 
-        $words = str_split($string, 2);
+        $raw = '';
+        if (!empty($string)) {
+            $string = substr($string, 0, $byteCount - 1);
+            $words = str_split($string, 2);
 
-        $toEndian = Endian::getCurrentEndianness($toEndian);
-        if ($toEndian & Endian::LOW_WORD_FIRST) {
-            $words = array_reverse($words);
-        }
+            $toEndian = Endian::getCurrentEndianness($toEndian);
+            if ($toEndian & Endian::LOW_WORD_FIRST) {
+                $words = array_reverse($words);
+            }
 
-        if ($toEndian & Endian::BIG_ENDIAN) {
-            // big endian needs bytes in word reversed
-            foreach ($words as &$word) {
-                if (isset($word[1])) {
-                    $word = $word[1] . $word[0]; // low byte + high byte
-                } else {
-                    $word = "\x00" . $word[0];
+            if ($toEndian & Endian::BIG_ENDIAN && !empty($words)) {
+                // big endian needs bytes in word reversed
+                foreach ($words as &$word) {
+                    if (isset($word[1])) {
+                        $word = $word[1] . $word[0]; // low byte + high byte
+                    } else {
+                        $word = "\x00" . $word[0];
+                    }
                 }
             }
+            $raw = implode('', $words);
         }
-        return pack("a{$byteCount}", implode('', $words));
+
+        return pack("a{$byteCount}", $raw);
     }
 
 }

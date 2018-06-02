@@ -27,7 +27,7 @@ class BitReadAddress extends ReadAddress
         return $this->bit;
     }
 
-    protected function getAllowedTypes()
+    protected function getAllowedTypes(): array
     {
         return [Address::TYPE_BIT];
     }

@@ -38,12 +38,12 @@ class ReadHoldingRegistersRequest extends ProtocolDataUnitRequest implements Mod
         throw new InvalidArgumentException("quantity is not set or out of range (0-124): {$this->quantity}");
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::READ_HOLDING_REGISTERS;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
             . Types::toRegister($this->getQuantity());
@@ -52,12 +52,12 @@ class ReadHoldingRegistersRequest extends ProtocolDataUnitRequest implements Mod
     /**
      * @return int
      */
-    public function getQuantity()
+    public function getQuantity(): int
     {
         return $this->quantity;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + 2; // quantity size (2 bytes)
     }

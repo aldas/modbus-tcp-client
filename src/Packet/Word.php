@@ -9,7 +9,7 @@ use ModbusTcpClient\Utils\Types;
  */
 class Word extends AbstractWord
 {
-    protected function getByteLength()
+    protected function getByteLength(): int
     {
         return 2;
     }
@@ -19,7 +19,7 @@ class Word extends AbstractWord
      * @return int
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public function getInt16($endianness = null)
+    public function getInt16(int $endianness = null): int
     {
         return Types::parseInt16($this->data, $endianness);
     }
@@ -29,7 +29,7 @@ class Word extends AbstractWord
      * @return int
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public function getUInt16($endianness = null)
+    public function getUInt16(int $endianness = null): int
     {
         return Types::parseUInt16($this->data, $endianness);
     }
@@ -37,7 +37,7 @@ class Word extends AbstractWord
     /**
      * @return int
      */
-    public function getLowByteAsInt()
+    public function getLowByteAsInt(): int
     {
         return Types::parseByte($this->data[1]);
     }
@@ -45,7 +45,7 @@ class Word extends AbstractWord
     /**
      * @return int
      */
-    public function getHighByteAsInt()
+    public function getHighByteAsInt(): int
     {
         return Types::parseByte($this->data[0]);
     }
@@ -57,7 +57,7 @@ class Word extends AbstractWord
      * @return DoubleWord
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
-    public function combine(Word $lowWord)
+    public function combine(Word $lowWord): DoubleWord
     {
         return new DoubleWord($this->getData() . $lowWord->getData());
     }

@@ -620,7 +620,7 @@ class TypesTest extends TestCase
     /**
      * @dataProvider toStringProvider
      */
-    public function testShouldEncodeToBinaryString(string $expectedBinaryString, string $string, int $registersCount = null, int $endian, $expectedException = null)
+    public function testShouldEncodeToBinaryString(string $expectedBinaryString, string $string = null, int $registersCount = null, int $endian, $expectedException = null)
     {
         if ($expectedException !== null) {
             $this->expectException($expectedException);
@@ -631,6 +631,7 @@ class TypesTest extends TestCase
     public function toStringProvider()
     {
         return [
+            'null: toString "\x00\x00\x00\x00"' => ["\x00\x00\x00\x00", null, 2, Endian::BIG_ENDIAN],
             'BigEndian: toString "Søren\x00"' => ["\xF8\x53\x65\x72\x00\x6E", 'Søren', 3, Endian::BIG_ENDIAN],
             'BigEndian: toString "Søre\x00\x00"' => ["\xF8\x53\x65\x72\x00\x00", 'Søre', 3, Endian::BIG_ENDIAN],
             'BigEndian: toString "Sør\x00"' => ["\xF8\x53\x00\x72", 'Søren', 2, Endian::BIG_ENDIAN],

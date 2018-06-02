@@ -47,7 +47,7 @@ class NonBlockingClient
         $throwOnError = $options[static::OPT_THROW_ON_ERROR] === true;
 
         if (!empty($uri)) {
-            $options['uri'] = $uri;
+            $options['uri'] = mb_strtolower($uri);
         }
 
         try {
@@ -119,7 +119,7 @@ class NonBlockingClient
 
         try {
             foreach ($requests as $indexOrKey => $request) {
-                $uri = $request->getUri();
+                $uri = mb_strtolower($request->getUri());
                 $packet = $request->getRequest();
                 $connection = BinaryStreamConnection::getBuilder()
                     ->setFromOptions(array_merge($options, ['uri' => $uri]))

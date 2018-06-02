@@ -33,7 +33,7 @@ class ByteReadAddress extends ReadAddress
         return $this->firstByte;
     }
 
-    protected function getAllowedTypes()
+    protected function getAllowedTypes(): array
     {
         return [Address::TYPE_BYTE];
     }

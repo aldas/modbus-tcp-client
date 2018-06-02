@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
-use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
@@ -31,12 +30,12 @@ class WriteSingleCoilRequest extends ProtocolDataUnitRequest implements ModbusRe
         $this->validate();
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::WRITE_SINGLE_COIL;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
             . Types::toByte($this->isCoil() ? self::ON : self::OFF)
@@ -46,12 +45,12 @@ class WriteSingleCoilRequest extends ProtocolDataUnitRequest implements ModbusRe
     /**
      * @return bool
      */
-    public function isCoil()
+    public function isCoil(): bool
     {
         return $this->coil;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + 2; // coil size (1 byte + 1 byte)
     }

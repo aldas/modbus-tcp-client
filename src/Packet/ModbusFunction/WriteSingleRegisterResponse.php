@@ -6,7 +6,6 @@ namespace ModbusTcpClient\Packet\ModbusFunction;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\StartAddressResponse;
 use ModbusTcpClient\Packet\Word;
-use ModbusTcpClient\Utils\Types;
 
 /**
  * Response for Write Single Register (FC=06)
@@ -24,7 +23,7 @@ class WriteSingleRegisterResponse extends StartAddressResponse
         $this->word = new Word(substr($rawData, 2, 2));
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::WRITE_SINGLE_REGISTER;
     }
@@ -34,12 +33,12 @@ class WriteSingleRegisterResponse extends StartAddressResponse
         return $this->word;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + 2; //register is 2 bytes
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
             . $this->word->getData();

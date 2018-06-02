@@ -45,12 +45,12 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest implements M
         }
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::WRITE_MULTIPLE_REGISTERS;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
             . Types::toRegister($this->registersCount)
@@ -61,12 +61,12 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest implements M
     /**
      * @return array
      */
-    public function getRegisters()
+    public function getRegisters(): array
     {
         return $this->registers;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + (1 + $this->registersBytesSize); // registers count + number of bytes registers need for data
     }

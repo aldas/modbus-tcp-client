@@ -10,7 +10,7 @@ use ModbusTcpClient\Packet\ModbusPacket;
  */
 class ReadInputDiscretesResponse extends ReadCoilsResponse
 {
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::READ_INPUT_DISCRETES;
     }

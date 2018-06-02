@@ -19,7 +19,7 @@ abstract class ByteCountResponse extends ProtocolDataUnit implements ModbusRespo
         parent::__construct($unitId, $transactionId);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return b''
             . $this->getHeader()
@@ -30,17 +30,17 @@ abstract class ByteCountResponse extends ProtocolDataUnit implements ModbusRespo
     /**
      * @return int
      */
-    public function getByteCount()
+    public function getByteCount(): int
     {
         return $this->byteCount;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return 2; // 1 for function code + 1 for byte count
     }
 
-    public function getStartAddress()
+    public function getStartAddress(): int
     {
         return $this->startAddress;
     }

@@ -23,7 +23,7 @@ class WriteMultipleCoilsResponse extends StartAddressResponse
         $this->coilCount = Types::parseUInt16(substr($rawData, 2, 2));
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::WRITE_MULTIPLE_COILS;
     }
@@ -31,17 +31,17 @@ class WriteMultipleCoilsResponse extends StartAddressResponse
     /**
      * @return int
      */
-    public function getCoilCount()
+    public function getCoilCount(): int
     {
         return $this->coilCount;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + 2; //coilCount is 2 bytes
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
             . Types::toRegister($this->coilCount);

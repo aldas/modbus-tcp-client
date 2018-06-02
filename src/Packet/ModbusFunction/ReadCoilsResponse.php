@@ -33,23 +33,23 @@ class ReadCoilsResponse extends ByteCountResponse implements \ArrayAccess, \Iter
         parent::__construct($rawData, $unitId, $transactionId);
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::READ_COILS;
     }
 
-    public function getCoils()
+    public function getCoils(): array
     {
         return iterator_to_array($this->getIterator());
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
             . Types::byteArrayToByte(Types::booleanArrayToByteArray($this->coils));
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + $this->coilsBytesLength;
     }

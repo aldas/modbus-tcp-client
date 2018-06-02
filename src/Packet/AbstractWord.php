@@ -37,12 +37,12 @@ abstract class AbstractWord
      *
      * @return int
      */
-    protected abstract function getByteLength();
+    protected abstract function getByteLength(): int;
 
     /**
      * @return string
      */
-    public function getData()
+    public function getData(): string
     {
         return $this->data;
     }
@@ -50,7 +50,7 @@ abstract class AbstractWord
     /**
      * @return array
      */
-    public function getBytes()
+    public function getBytes(): array
     {
         return Types::parseByteArray($this->data);
     }
@@ -62,7 +62,7 @@ abstract class AbstractWord
      * @return bool
      * @throws \InvalidArgumentException
      */
-    public function isBitSet($bit)
+    public function isBitSet($bit): bool
     {
         return Types::isBitSet($this->data, $bit);
     }

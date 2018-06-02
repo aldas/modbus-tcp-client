@@ -26,7 +26,7 @@ class ReadAddress extends Address
         $this->errorCallback = $errorCallback;
     }
 
-    protected function getAllowedTypes()
+    protected function getAllowedTypes(): array
     {
         return [
             Address::TYPE_INT16,

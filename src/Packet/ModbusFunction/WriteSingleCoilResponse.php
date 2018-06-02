@@ -30,24 +30,24 @@ class WriteSingleCoilResponse extends StartAddressResponse
         $this->coil = ord($rawData[2]) === self::ON;
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::WRITE_SINGLE_COIL;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
             . Types::toByte($this->isCoil() ? self::ON : self::OFF)
             . chr(self::OFF);
     }
 
-    public function isCoil()
+    public function isCoil(): bool
     {
         return $this->coil;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + 2; //coil 1 byte + 1 "unused 0x0 byte"
     }

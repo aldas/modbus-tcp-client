@@ -89,7 +89,7 @@ class ErrorResponse implements ModbusResponse
         return 2; // 2 bytes for function code and error code
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return b''
             . $this->getHeader()

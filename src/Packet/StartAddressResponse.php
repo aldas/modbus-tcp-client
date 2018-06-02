@@ -18,7 +18,7 @@ abstract class StartAddressResponse extends ProtocolDataUnit implements ModbusRe
         $this->startAddress = Types::parseUInt16(substr($rawData, 0, 2));
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return b''
             . $this->getHeader()->__toString()
@@ -29,7 +29,7 @@ abstract class StartAddressResponse extends ProtocolDataUnit implements ModbusRe
     /**
      * @return int
      */
-    public function getStartAddress()
+    public function getStartAddress(): int
     {
         return $this->startAddress;
     }
@@ -45,7 +45,7 @@ abstract class StartAddressResponse extends ProtocolDataUnit implements ModbusRe
         return clone $this;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return 3; // 1 for fc + 2 for startAddress bytes
     }

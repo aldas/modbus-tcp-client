@@ -39,12 +39,12 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest implements ModbusRequest
         throw new InvalidArgumentException("quantity is not set or out of range (1-2048): {$this->quantity}");
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::READ_COILS;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
             . Types::toRegister($this->getQuantity());
@@ -53,12 +53,12 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest implements ModbusRequest
     /**
      * @return int
      */
-    public function getQuantity()
+    public function getQuantity(): int
     {
         return $this->quantity;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + 2; // quantity size (2 bytes)
     }

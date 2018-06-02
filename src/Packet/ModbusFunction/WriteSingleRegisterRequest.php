@@ -38,12 +38,12 @@ class WriteSingleRegisterRequest extends ProtocolDataUnitRequest implements Modb
         throw new InvalidArgumentException("value is not set or out of range (int16): {$this->value}");
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::WRITE_SINGLE_REGISTER;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
             . Types::toRegister($this->getValue());
@@ -52,12 +52,12 @@ class WriteSingleRegisterRequest extends ProtocolDataUnitRequest implements Modb
     /**
      * @return int
      */
-    public function getValue()
+    public function getValue(): int
     {
         return $this->value;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + 2; // value size (2 bytes)
     }

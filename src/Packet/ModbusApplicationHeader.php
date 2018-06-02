@@ -41,7 +41,7 @@ class ModbusApplicationHeader
     /**
      * @return int
      */
-    public function getTransactionId()
+    public function getTransactionId(): int
     {
         return $this->transactionId;
     }
@@ -49,7 +49,7 @@ class ModbusApplicationHeader
     /**
      * @return int
      */
-    public function getProtocolId()
+    public function getProtocolId(): int
     {
         return self::PROTOCOL_ID;
     }
@@ -57,7 +57,7 @@ class ModbusApplicationHeader
     /**
      * @return int
      */
-    public function getLength()
+    public function getLength(): int
     {
         return $this->length;
     }
@@ -65,22 +65,21 @@ class ModbusApplicationHeader
     /**
      * @return int
      */
-    public function getUnitId()
+    public function getUnitId(): int
     {
         return $this->unitId;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return b''
             . Types::toRegister($this->getTransactionId())
             . Types::toRegister($this->getProtocolId())
             . Types::toRegister($this->getLength())
-            . Types::toByte($this->getUnitId())
-            ;
+            . Types::toByte($this->getUnitId());
     }
 
-    public static function parse($binaryString)
+    public static function parse($binaryString): ModbusApplicationHeader
     {
 
         if (strlen($binaryString) < 7) {

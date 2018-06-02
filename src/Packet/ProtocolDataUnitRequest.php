@@ -26,7 +26,7 @@ abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
         $this->startAddress = $startAddress;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return b''
             . $this->getHeader()->__toString()
@@ -34,12 +34,12 @@ abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
             . Types::toUint16($this->getStartAddress());
     }
 
-    public function getStartAddress()
+    public function getStartAddress(): int
     {
         return $this->startAddress;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return 3; // size of function code (1 byte) + startAddress (2 bytes)
     }

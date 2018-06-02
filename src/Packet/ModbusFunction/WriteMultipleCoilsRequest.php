@@ -41,12 +41,12 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest implements Modbu
         }
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::WRITE_MULTIPLE_COILS;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
             . Types::toRegister($this->coilCount)
@@ -57,12 +57,12 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest implements Modbu
     /**
      * @return array
      */
-    public function getCoils()
+    public function getCoils(): array
     {
         return $this->coils;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + (3 + $this->coilBytesSize); // coilCount + coilBytesSize + number of bytes coils need for data
     }

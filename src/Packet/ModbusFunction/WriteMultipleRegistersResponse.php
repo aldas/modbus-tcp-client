@@ -23,7 +23,7 @@ class WriteMultipleRegistersResponse extends StartAddressResponse
         $this->registersCount = Types::parseUInt16(substr($rawData, 2, 2));
     }
 
-    public function getFunctionCode()
+    public function getFunctionCode(): int
     {
         return ModbusPacket::WRITE_MULTIPLE_REGISTERS;
     }
@@ -31,17 +31,17 @@ class WriteMultipleRegistersResponse extends StartAddressResponse
     /**
      * @return int
      */
-    public function getRegistersCount()
+    public function getRegistersCount(): int
     {
         return $this->registersCount;
     }
 
-    protected function getLengthInternal()
+    protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + 2; //registersCount is 2 bytes
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString()
             . Types::toRegister($this->registersCount);

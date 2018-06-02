@@ -24,7 +24,7 @@ composer require aldas/modbus-tcp-client
 
 ## Requirements
 
-* PHP 7.0+ (64bit PHP if you need to read 64bit integers from modbus responses. NB: PHP supports only signed 64bit integers so usigned 64bit ints will overflow then 64th bit is set)
+* PHP 7.0+ (64bit PHP if you need to read 64bit integers from modbus responses. NB: PHP supports only signed 64bit integers so usigned 64bit ints will overflow when 64th bit is set)
 * Release [0.2.0](https://github.com/aldas/modbus-tcp-client/tree/0.2.0) was last to support PHP 5.6
 
 ## Intention

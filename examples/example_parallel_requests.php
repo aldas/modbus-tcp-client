@@ -34,5 +34,5 @@ $fc3 = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
     )
     ->build(); // returns array of 3 requests
 
-$responses = (new NonBlockingClient(['readTimeoutSec' => 0.2]))->sendRequests($fc3);
-print_r($responses);
+$responseContainer = (new NonBlockingClient(['readTimeoutSec' => 0.2]))->sendRequests($fc3);
+print_r($responseContainer);
