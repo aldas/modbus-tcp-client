@@ -13,7 +13,7 @@ use ModbusTcpClient\Utils\Types;
 class WriteMultipleRegistersResponse extends StartAddressResponse
 {
     /**
-     * @var int
+     * @var int number of registers written
      */
     private $registersCount;
 

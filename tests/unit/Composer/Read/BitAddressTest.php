@@ -29,7 +29,7 @@ class BitAddressTest extends TestCase
 
     public function testExtract()
     {
-        $responsePacket = new ReadHoldingRegistersResponse("\x01\x00\x05", 3, 33152);
+        $responsePacket = new ReadHoldingRegistersResponse("\x02\x00\x05", 3, 33152);
 
         $this->assertTrue((new BitReadAddress(0, 0))->extract($responsePacket));
         $this->assertFalse((new BitReadAddress(0, 1))->extract($responsePacket));
@@ -38,7 +38,7 @@ class BitAddressTest extends TestCase
 
     public function testExtractWithCallback()
     {
-        $responsePacket = new ReadHoldingRegistersResponse("\x01\x00\x05", 3, 33152);
+        $responsePacket = new ReadHoldingRegistersResponse("\x02\x00\x05", 3, 33152);
 
         $address = new BitReadAddress(0, 0, 'name', function ($value) {
             return 'prefix_' . $value; // transform value after extraction

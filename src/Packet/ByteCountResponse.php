@@ -3,6 +3,7 @@
 namespace ModbusTcpClient\Packet;
 
 
+use ModbusTcpClient\Exception\ParseException;
 use ModbusTcpClient\Utils\Types;
 
 abstract class ByteCountResponse extends ProtocolDataUnit implements ModbusResponse
@@ -16,6 +17,12 @@ abstract class ByteCountResponse extends ProtocolDataUnit implements ModbusRespo
     public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {
         $this->byteCount = Types::parseByte($rawData[0]);
+
+        $bytesInPacket = (strlen($rawData) - 1);
+        if ($this->byteCount !== $bytesInPacket) {
+            throw new ParseException("packet byte count does not match bytes in packet! count: {$this->byteCount}, actual: {$bytesInPacket}");
+        }
+
         parent::__construct($unitId, $transactionId);
     }
 
