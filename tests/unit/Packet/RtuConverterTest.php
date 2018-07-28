@@ -7,6 +7,7 @@ use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersResponse;
 use ModbusTcpClient\Packet\RtuConverter;
 use PHPUnit\Framework\TestCase;
 
@@ -54,6 +55,17 @@ class RtuConverterTest extends TestCase
     public function testRtuPackWithInvalidCrc()
     {
         RtuConverter::fromRtu("\x00\x81\x03\x51\x90");
+    }
+
+    public function testRtuPackWithInvalidCrcIsRead()
+    {
+        /** @var ReadHoldingRegistersRequest $packet */
+        $packet = RtuConverter::fromRtu("\x03\x03\x02\xCD\x6B\x00\x00", ['no_crc_check' => true]); // last 2 bytes for crc should be \xD4\xFB to be correct
+
+        $this->assertInstanceOf(ReadHoldingRegistersResponse::class, $packet);
+
+        $tcpPacket = new ReadHoldingRegistersResponse("\x02\xCD\x6B", 3, $packet->getHeader()->getTransactionId());
+        $this->assertEquals($packet, $tcpPacket);
     }
 
 }

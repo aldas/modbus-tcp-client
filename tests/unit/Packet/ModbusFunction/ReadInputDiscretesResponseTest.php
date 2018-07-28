@@ -2,9 +2,8 @@
 
 namespace Tests\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\ModbusPacket;
-use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesResponse;
+use ModbusTcpClient\Packet\ModbusPacket;
 use PHPUnit\Framework\TestCase;
 
 class ReadInputDiscretesResponseTest extends TestCase
@@ -32,6 +31,15 @@ class ReadInputDiscretesResponseTest extends TestCase
         $this->assertEquals(0, $header->getProtocolId());
         $this->assertEquals(5, $header->getLength());
         $this->assertEquals(3, $header->getUnitId());
+    }
+
+    /**
+     * @expectedException \ModbusTcpClient\Exception\ParseException
+     * @expectedExceptionMessage packet byte count does not match bytes in packet! count: 3, actual: 2
+     */
+    public function testFailWhenByteCountDoesNotMatch()
+    {
+        new ReadInputDiscretesResponse("\x03\xCD\x6B", 3, 33152);
     }
 
 }

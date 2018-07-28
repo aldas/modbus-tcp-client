@@ -24,6 +24,12 @@ final class RtuConverter
         // utility class
     }
 
+    /**
+     * Convert Modbus TCP request instance to Modbus RTU binary packet
+     *
+     * @param ModbusRequest $request request to be converted
+     * @return string Modbus RTU request in binary form
+     */
     public static function toRtu(ModbusRequest $request): string
     {
         // trim 6 bytes: 2 bytes for transaction id + 2 bytes for protocol id + 2 bytes for data length field
@@ -31,19 +37,30 @@ final class RtuConverter
         return $packet . self::crc16($packet);
     }
 
-    public static function fromRtu(string $binaryData): ModbusResponse
+    /**
+     * Converts binary string containing RTU response packet to Modbus TCP response instance
+     *
+     * @param string $binaryData rtu binary response
+     * @param array $options option to use during conversion
+     * @return ModbusResponse converted Modbus TCP packet
+     * @throws \ModbusTcpClient\Exception\ParseException
+     * @throws \Exception if it was not possible to gather sufficient entropy
+     */
+    public static function fromRtu(string $binaryData, array $options = []): ModbusResponse
     {
         $data = substr($binaryData, 0, -2); // remove and crc
 
-        $originalCrc = substr($binaryData, -2);
-        $calculatedCrc = self::crc16($data);
-        if ($originalCrc !== $calculatedCrc) {
-            throw new ParseException(
-                sprintf('Packet crc (\x%s) does not match calculated crc (\x%s)!',
-                    bin2hex($originalCrc),
-                    bin2hex($calculatedCrc)
-                )
-            );
+        if ((bool)($options['no_crc_check'] ?? false) === false) {
+            $originalCrc = substr($binaryData, -2);
+            $calculatedCrc = self::crc16($data);
+            if ($originalCrc !== $calculatedCrc) {
+                throw new ParseException(
+                    sprintf('Packet crc (\x%s) does not match calculated crc (\x%s)!',
+                        bin2hex($originalCrc),
+                        bin2hex($calculatedCrc)
+                    )
+                );
+            }
         }
 
         $packet = b''

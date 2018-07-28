@@ -136,4 +136,13 @@ class ReadCoilsResponseTest extends TestCase
         $packet[66];
     }
 
+    /**
+     * @expectedException \ModbusTcpClient\Exception\ParseException
+     * @expectedExceptionMessage packet byte count does not match bytes in packet! count: 3, actual: 2
+     */
+    public function testFailWhenByteCountDoesNotMatch()
+    {
+        new ReadCoilsResponse("\x03\xCD\x6B", 3, 33152);
+    }
+
 }

@@ -2,8 +2,8 @@
 
 namespace Tests\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
+use ModbusTcpClient\Packet\ModbusPacket;
 use PHPUnit\Framework\TestCase;
 
 class ReadHoldingRegistersResponseTest extends TestCase
@@ -129,7 +129,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
             $dWordsAssoc[$address] = $doubleWord;
         }
 
-        $dWords =[];
+        $dWords = [];
         foreach ($packet->asDoubleWords() as $doubleWord) {
             $dWords[] = $doubleWord;
         }
@@ -178,6 +178,15 @@ class ReadHoldingRegistersResponseTest extends TestCase
     {
         $packet = new ReadHoldingRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01", 3, 33152);
         unset($packet[50]);
+    }
+
+    /**
+     * @expectedException \ModbusTcpClient\Exception\ParseException
+     * @expectedExceptionMessage packet byte count does not match bytes in packet! count: 6, actual: 7
+     */
+    public function testFailWhenByteCountDoesNotMatch()
+    {
+        new ReadHoldingRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01\x00", 3, 33152);
     }
 
     public function testOffsetGet()
@@ -234,7 +243,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
             33152
         ))->withStartAddress(50);
 
-       $packet[53];
+        $packet[53];
     }
 
     /**
@@ -341,7 +350,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
         $packet = (new ReadHoldingRegistersResponse("\x08\x01\x00\xF8\x53\x65\x72\x00\x6E", 3, 33152))->withStartAddress(50);
         $this->assertCount(4, $packet->getWords());
 
-        $this->assertEquals('Søren', $packet->getAsciiStringAt(51,5));
+        $this->assertEquals('Søren', $packet->getAsciiStringAt(51, 5));
     }
 
     /**
@@ -353,7 +362,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
         $packet = (new ReadHoldingRegistersResponse("\x08\x01\x00\xF8\x53\x65\x72\x00\x6E", 3, 33152))->withStartAddress(50);
         $this->assertCount(4, $packet->getWords());
 
-        $packet->getAsciiStringAt(49,5);
+        $packet->getAsciiStringAt(49, 5);
     }
 
     /**
@@ -365,7 +374,7 @@ class ReadHoldingRegistersResponseTest extends TestCase
         $packet = (new ReadHoldingRegistersResponse("\x08\x01\x00\xF8\x53\x65\x72\x00\x6E", 3, 33152))->withStartAddress(50);
         $this->assertCount(4, $packet->getWords());
 
-        $packet->getAsciiStringAt(54,5);
+        $packet->getAsciiStringAt(54, 5);
     }
 
     /**
@@ -377,6 +386,6 @@ class ReadHoldingRegistersResponseTest extends TestCase
         $packet = (new ReadHoldingRegistersResponse("\x08\x01\x00\xF8\x53\x65\x72\x00\x6E", 3, 33152))->withStartAddress(50);
         $this->assertCount(4, $packet->getWords());
 
-        $packet->getAsciiStringAt(50,0);
+        $packet->getAsciiStringAt(50, 0);
     }
 }

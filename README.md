@@ -1,4 +1,4 @@
-# Modbus TCP protocol client
+# Modbus TCP and RTU over TCP protocol client
 [![Build Status](https://travis-ci.org/aldas/modbus-tcp-client.svg?branch=master)](https://travis-ci.org/aldas/modbus-tcp-client)
 [![codecov](https://codecov.io/gh/aldas/modbus-tcp-client/branch/master/graph/badge.svg)](https://codecov.io/gh/aldas/modbus-tcp-client)
 
@@ -46,7 +46,7 @@ Library supports following byte and word orders:
 
 See [Endian.php](src/Utils/Endian.php) for additional info and [Types.php](src/Utils/Types.php) for supported data types.
 
-## Example (fc3 - read holding registers)
+## Example of Modbus TCP (fc3 - read holding registers)
 
 Some of the Modbus function examples are in [examples/](examples) folder
 
@@ -123,6 +123,21 @@ try {
 } finally {
     $connection->close();
 }
+```
+
+## Example of Modbus RTU over TCP
+Difference between Modbus RTU and Modbus TCP is that:
+
+1. RTU header contains only slave id. TCP/IP header contains of transaction id, protocol id, length, unitid
+2. RTU packed has 2 byte CRC appended
+
+See http://www.simplymodbus.ca/TCP.htm for more detailsed explanation
+
+This library was/is originally meant for Modbus TCP but it has support to convert packet to RTU and from RTU. See this [examples/rtu.php](examples/rtu.php) for example.
+```php
+$rtuBinaryPacket = RtuConverter::toRtu(new ReadHoldingRegistersRequest($startAddress, $quantity, $slaveId));
+$binaryData = $connection->connect()->sendAndReceive($rtuBinaryPacket);
+$responseAsTcpPacket = RtuConverter::fromRtu($binaryData);
 ```
 
 ## Example of non-blocking socket IO (i.e. modbus request are run in 'parallel')

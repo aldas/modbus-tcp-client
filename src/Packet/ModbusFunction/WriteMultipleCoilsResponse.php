@@ -13,7 +13,7 @@ use ModbusTcpClient\Utils\Types;
 class WriteMultipleCoilsResponse extends StartAddressResponse
 {
     /**
-     * @var int
+     * @var int coils written
      */
     private $coilCount;
 

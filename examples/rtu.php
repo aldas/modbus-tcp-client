@@ -9,17 +9,19 @@ require __DIR__ . '/../vendor/autoload.php';
 $connection = BinaryStreamConnection::getBuilder()
     ->setPort(502)
     ->setHost('127.0.0.1')
+    ->setReadTimeoutSec(3) // increase read timeout to 3 seconds
     ->build();
 
 $startAddress = 256;
 $quantity = 6;
 $slaveId = 1; // RTU packet slave id equivalent is Modbus TCP unitId
 
-$rtuPacket = RtuConverter::toRtu(new ReadHoldingRegistersRequest($startAddress, $quantity, $slaveId));
+$tcpPacket = new ReadHoldingRegistersRequest($startAddress, $quantity, $slaveId);
+$rtuPacket = RtuConverter::toRtu($tcpPacket);
 
 try {
     $binaryData = $connection->connect()->sendAndReceive($rtuPacket);
-    echo 'Binary received (in hex):   ' . unpack('H*', $binaryData)[1] . PHP_EOL;
+    echo 'RTU Binary received (in hex):   ' . unpack('H*', $binaryData)[1] . PHP_EOL;
 
     $response = RtuConverter::fromRtu($binaryData);
     echo 'Parsed packet (in hex):     ' . $response->toHex() . PHP_EOL;
