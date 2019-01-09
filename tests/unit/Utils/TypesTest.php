@@ -500,7 +500,7 @@ class TypesTest extends TestCase
     /**
      * @dataProvider toInt32Provider
      */
-    public function testShouldEncodeToBinaryInt32(string $expectedBinaryString, int $integer, int $endian, $expectedException = null)
+    public function testShouldEncodeToBinaryInt32(string $expectedBinaryString, $integer, int $endian, $expectedException = null)
     {
         if ($expectedException !== null) {
             $this->expectException($expectedException);
@@ -530,7 +530,7 @@ class TypesTest extends TestCase
     /**
      * @dataProvider toUint32Provider
      */
-    public function testShouldEncodeToBinaryUint32(string $expectedBinaryString, int $integer, int $endian, $expectedException = null)
+    public function testShouldEncodeToBinaryUint32(string $expectedBinaryString, $integer, int $endian, $expectedException = null)
     {
         if ($expectedException !== null) {
             $this->expectException($expectedException);
@@ -562,8 +562,12 @@ class TypesTest extends TestCase
     /**
      * @dataProvider toInt64Provider
      */
-    public function testShouldEncodeToBinaryInt64(string $expectedBinaryString, int $integer, int $endian)
+    public function testShouldEncodeToBinaryInt64(string $expectedBinaryString, $integer, int $endian, $skipOn32Bit = false)
     {
+        if ($skipOn32Bit && PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('32-bit version of PHP');
+        }
+
         $this->assertEquals($expectedBinaryString, Types::toInt64($integer, $endian));
     }
 
@@ -571,26 +575,30 @@ class TypesTest extends TestCase
     {
         return [
             'BigEndianLowWordFirst: toInt64 1' => ["\x00\x01\x00\x00\x00\x00\x00\x00", 1, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
-            'BigEndianLowWordFirst: toInt64 2923517522' => ["\x56\x52\xAE\x41\x00\x00\x00\x0", 2923517522, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
+            'BigEndianLowWordFirst: toInt64 2923517522' => ["\x56\x52\xAE\x41\x00\x00\x00\x0", 2923517522, Endian::BIG_ENDIAN_LOW_WORD_FIRST, true],
             'BigEndianLowWordFirst: toInt64 67305985' => ["\x02\x01\x04\x03\x00\x00\x00\x00", 67305985, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
-            'BigEndianLowWordFirst: toInt64 9223372036854775807' => ["\xFF\xFF\xFF\xFF\xFF\xFF\x7F\xFF", 9223372036854775807, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
-            'BigEndianLowWordFirst: toInt64 -9223372036854775808' => ["\x00\x00\x00\x00\x00\x00\x80\x00", -9223372036854775808, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
+            'BigEndianLowWordFirst: toInt64 9223372036854775807' => ["\xFF\xFF\xFF\xFF\xFF\xFF\x7F\xFF", 9223372036854775807, Endian::BIG_ENDIAN_LOW_WORD_FIRST, true],
+            'BigEndianLowWordFirst: toInt64 -9223372036854775808' => ["\x00\x00\x00\x00\x00\x00\x80\x00", -9223372036854775808, Endian::BIG_ENDIAN_LOW_WORD_FIRST, true],
 
             'BigEndian: toInt64 1' => ["\x00\x00\x00\x00\x00\x00\x00\x01", 1, Endian::BIG_ENDIAN],
-            'BigEndian: toInt64 2923517522' => ["\x00\x00\x00\x00\xAE\x41\x56\x52", 2923517522, Endian::BIG_ENDIAN],
+            'BigEndian: toInt64 2923517522' => ["\x00\x00\x00\x00\xAE\x41\x56\x52", 2923517522, Endian::BIG_ENDIAN, true],
             'BigEndian: toInt64 67305985' => ["\x00\x00\x00\x00\x04\x03\x02\x01", 67305985, Endian::BIG_ENDIAN],
-            'BigEndian: toInt64 9223372036854775807' => ["\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 9223372036854775807, Endian::BIG_ENDIAN],
-            'BigEndian: toInt64 -9223372036854775808' => ["\x80\x00\x00\x00\x00\x00\x00\x00", -9223372036854775808, Endian::BIG_ENDIAN],
+            'BigEndian: toInt64 9223372036854775807' => ["\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 9223372036854775807, Endian::BIG_ENDIAN, true],
+            'BigEndian: toInt64 -9223372036854775808' => ["\x80\x00\x00\x00\x00\x00\x00\x00", -9223372036854775808, Endian::BIG_ENDIAN, true],
 
-            'LittleEndian: toInt64 -9223372036854775808' => ["\x00\x80\x00\x00\x00\x00\x00\x00", -9223372036854775808, Endian::LITTLE_ENDIAN],
+            'LittleEndian: toInt64 -9223372036854775808' => ["\x00\x80\x00\x00\x00\x00\x00\x00", -9223372036854775808, Endian::LITTLE_ENDIAN, true],
         ];
     }
 
     /**
      * @dataProvider toUint64Provider
      */
-    public function testShouldEncodeToBinaryUint64(string $expectedBinaryString, int $integer, int $endian, $expectedException = null)
+    public function testShouldEncodeToBinaryUint64(string $expectedBinaryString, $integer, int $endian, $expectedException = null, $skipOn32Bit = false)
     {
+        if ($skipOn32Bit && PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('32-bit version of PHP');
+        }
+
         if ($expectedException !== null) {
             $this->expectException($expectedException);
         }
@@ -601,19 +609,19 @@ class TypesTest extends TestCase
     {
         return [
             'BigEndianLowWordFirst: toInt64 1' => ["\x00\x01\x00\x00\x00\x00\x00\x00", 1, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
-            'BigEndianLowWordFirst: toInt64 2923517522' => ["\x56\x52\xAE\x41\x00\x00\x00\x0", 2923517522, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
+            'BigEndianLowWordFirst: toInt64 2923517522' => ["\x56\x52\xAE\x41\x00\x00\x00\x0", 2923517522, Endian::BIG_ENDIAN_LOW_WORD_FIRST, null, true],
             'BigEndianLowWordFirst: toInt64 67305985' => ["\x02\x01\x04\x03\x00\x00\x00\x00", 67305985, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
-            'BigEndianLowWordFirst: toInt64 9223372036854775807' => ["\xFF\xFF\xFF\xFF\xFF\xFF\x7F\xFF", 9223372036854775807, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
+            'BigEndianLowWordFirst: toInt64 9223372036854775807' => ["\xFF\xFF\xFF\xFF\xFF\xFF\x7F\xFF", 9223372036854775807, Endian::BIG_ENDIAN_LOW_WORD_FIRST, null, true],
 
             'BigEndianLowWordFirst: toInt64 -1 (underflow)' => ['', -1, Endian::BIG_ENDIAN_LOW_WORD_FIRST, \ModbusTcpClient\Exception\OverflowException::class],
 
             'BigEndian: toInt64 1' => ["\x00\x00\x00\x00\x00\x00\x00\x01", 1, Endian::BIG_ENDIAN],
-            'BigEndian: toInt64 2923517522' => ["\x00\x00\x00\x00\xAE\x41\x56\x52", 2923517522, Endian::BIG_ENDIAN],
+            'BigEndian: toInt64 2923517522' => ["\x00\x00\x00\x00\xAE\x41\x56\x52", 2923517522, Endian::BIG_ENDIAN, null, true],
             'BigEndian: toInt64 67305985' => ["\x00\x00\x00\x00\x04\x03\x02\x01", 67305985, Endian::BIG_ENDIAN],
-            'BigEndian: toInt64 9223372036854775807' => ["\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 9223372036854775807, Endian::BIG_ENDIAN],
+            'BigEndian: toInt64 9223372036854775807' => ["\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 9223372036854775807, Endian::BIG_ENDIAN, null, true],
             'BigEndian: toInt64 -1 (underflow)' => ['', -1, Endian::BIG_ENDIAN, \ModbusTcpClient\Exception\OverflowException::class],
 
-            'LittleEndian: toInt64 9223372036854775807' => ["\xFF\x7F\xFF\xFF\xFF\xFF\xFF\xFF", 9223372036854775807, Endian::LITTLE_ENDIAN],
+            'LittleEndian: toInt64 9223372036854775807' => ["\xFF\x7F\xFF\xFF\xFF\xFF\xFF\xFF", 9223372036854775807, Endian::LITTLE_ENDIAN, null, true],
         ];
     }
 

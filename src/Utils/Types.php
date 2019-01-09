@@ -543,10 +543,6 @@ final class Types
      */
     public static function toInt64($data, int $toEndian = null): string
     {
-        if (PHP_INT_SIZE !== 8) {
-            throw new InvalidArgumentException('64-bit format codes are not available for 32-bit versions of PHP');
-        }
-
         $words = [
             ($data >> 48) & 0xFFFF,
             ($data >> 32) & 0xFFFF,

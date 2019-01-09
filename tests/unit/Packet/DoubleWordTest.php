@@ -4,6 +4,7 @@ namespace Tests\Packet;
 
 
 use ModbusTcpClient\Packet\DoubleWord;
+use ModbusTcpClient\Utils\Endian;
 use PHPUnit\Framework\TestCase;
 
 class DoubleWordTest extends TestCase
@@ -29,6 +30,23 @@ class DoubleWordTest extends TestCase
         $dWord = new DoubleWord("\xFF\xFF\x7F\xFF");
 
         $this->assertEquals(2147483647, $dWord->getUInt32());
+    }
+
+    public function testShouldGetUInt32Types()
+    {
+        $dWordUpperLimit = new DoubleWord("\xFF\xFF\xFF\xFF");
+        $dWord = new DoubleWord("\x00\x00\x00\x01");
+
+        if (PHP_INT_SIZE === 8) {
+            $this->assertTrue(is_int($dWordUpperLimit->getUInt32(Endian::BIG_ENDIAN)));
+            $this->assertTrue(is_int($dWord->getUInt32(Endian::BIG_ENDIAN)));
+        } else {
+            $this->assertTrue(is_float($dWordUpperLimit->getUInt32(Endian::BIG_ENDIAN)));
+            $this->assertTrue(is_int($dWord->getUInt32(Endian::BIG_ENDIAN)));
+        }
+
+        $this->assertEquals(4294967295, $dWordUpperLimit->getUInt32(Endian::BIG_ENDIAN));
+        $this->assertEquals(1, $dWord->getUInt32(Endian::BIG_ENDIAN));
     }
 
     public function testShouldGetInt32()
