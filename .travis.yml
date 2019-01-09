@@ -10,6 +10,11 @@ php:
     - 7.0
     - 7.1
     - 7.2
+    - 7.3
+
+env:
+    - ARCH=64bit
+    - ARCH=32bit
 
 before_install:
     - travis_retry composer self-update
@@ -18,7 +23,8 @@ install:
     - travis_retry composer update --no-interaction
 
 script:
-    - vendor/bin/phpunit --testsuite 'unit-tests' --coverage-clover=coverage.xml
+    - if [ "$ARCH" = "32bit" ]; then ./docker-run-test.sh $(phpenv version-name); fi
+    - if [ "$ARCH" = "64bit" ]; then ./vendor/bin/phpunit --testsuite 'unit-tests' --coverage-clover=coverage.xml; fi
 
 after_success:
     - bash <(curl -s https://codecov.io/bash)

@@ -4,8 +4,8 @@ namespace Tests\unit\Composer\Read;
 
 
 use ModbusTcpClient\Composer\Address;
-use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use ModbusTcpClient\Composer\Read\ReadAddress;
+use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use PHPUnit\Framework\TestCase;
 
 class ReadAddressTest extends TestCase
@@ -103,7 +103,12 @@ class ReadAddressTest extends TestCase
 
         $value = $address->extract($responsePacket);
 
-        $this->assertEquals('ModbusTcpClient\Exception\OverflowException_64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows. Hex: ffffffffffffffff', $value);
+        $error = 'ModbusTcpClient\Exception\OverflowException_64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows. Hex: ffffffffffffffff';
+        if (PHP_INT_SIZE === 4) {
+            $error = 'ModbusTcpClient\Exception\ParseException_64-bit format codes are not available for 32-bit versions of PHP';
+        }
+        $this->assertEquals($error, $value);
+
         $this->assertEquals($responsePacket, $errCbResponse);
         $this->assertEquals($address, $errCbAddress);
     }
@@ -116,7 +121,7 @@ class ReadAddressTest extends TestCase
         $errCbResponse = null;
         $address = new ReadAddress(
             0,
-            Address::TYPE_UINT64,
+            Address::TYPE_INT16,
             null,
             function () {
                 throw new \RuntimeException('catch me');
@@ -187,6 +192,10 @@ class ReadAddressTest extends TestCase
 
     public function testExtractUInt64()
     {
+        if (PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('32-bit version of PHP');
+        }
+
         $responsePacket = new ReadHoldingRegistersResponse("\x08\xFF\xFF\x7F\xFF\x00\x00\x00\x00", 3, 33152);
         $address = new ReadAddress(0, Address::TYPE_UINT64);
 
@@ -197,6 +206,10 @@ class ReadAddressTest extends TestCase
 
     public function testExtractInt64()
     {
+        if (PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('32-bit version of PHP');
+        }
+
         $responsePacket = new ReadHoldingRegistersResponse("\x08\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 3, 33152);
         $address = new ReadAddress(0, Address::TYPE_INT64);
 

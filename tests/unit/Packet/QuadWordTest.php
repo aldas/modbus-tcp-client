@@ -32,6 +32,10 @@ class QuadWordTest extends TestCase
      */
     public function testShouldOverflow()
     {
+        if (PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
+        }
+
         // 64-bit PHP supports only up to 63-bit signed integers. Parsing this value results '-1' which is overflow
         $quadWord = new QuadWord("\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 
@@ -40,6 +44,10 @@ class QuadWordTest extends TestCase
 
     public function testShouldGetUInt64()
     {
+        if (PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
+        }
+
         $quadWord = new QuadWord("\xFF\xFF\x7F\xFF\x00\x00\x00\x00");
 
         $this->assertEquals(2147483647, $quadWord->getUInt64(Endian::BIG_ENDIAN_LOW_WORD_FIRST));
@@ -47,6 +55,10 @@ class QuadWordTest extends TestCase
 
     public function testShouldGetInt64()
     {
+        if (PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
+        }
+
         $quadWord = new QuadWord("\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 
         $this->assertEquals(-1, $quadWord->getInt64(Endian::BIG_ENDIAN_LOW_WORD_FIRST));

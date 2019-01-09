@@ -16,10 +16,13 @@ class DoubleWord extends AbstractWord
 
     /**
      * @param int $endianness byte and word order for modbus binary data
-     * @return int
+     *
+     * NB: On 32bit php and having highest bit set method will return float instead of int value. This is due 32bit php supports only 32bit signed integers
+     *
+     * @return int|float
      * @throws \RuntimeException
      */
-    public function getUInt32(int $endianness = null): int
+    public function getUInt32(int $endianness = null)
     {
         return Types::parseUInt32($this->getData(), $endianness);
     }
