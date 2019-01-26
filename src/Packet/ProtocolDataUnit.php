@@ -24,6 +24,7 @@ abstract class ProtocolDataUnit implements ModbusPacket
         $this->header = new ModbusApplicationHeader($this->getLengthInternal(), $unitId, $transactionId);
     }
 
+    // lengthInternal is number of bytes in packet after unit id field in header
     abstract protected function getLengthInternal(): int;
 
     /**
