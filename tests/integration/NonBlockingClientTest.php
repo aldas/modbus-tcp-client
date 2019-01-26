@@ -70,7 +70,7 @@ class NonBlockingClientTest extends MockServerTestCase
 
         // did we sent correct packet?
         $packetWithoutTransactionId = substr($clientSentData[0], 4);
-        $this->assertEquals('00000007001001000001020001', $packetWithoutTransactionId);
+        $this->assertEquals('00000009001001000001020001', $packetWithoutTransactionId);
 
         // is response as we expect?
         $this->assertCount(1, $responses);
@@ -99,7 +99,7 @@ class NonBlockingClientTest extends MockServerTestCase
 
         // did we sent correct packet?
         $packetWithoutTransactionId = substr($clientSentData[0], 4);
-        $this->assertEquals('00000007001001000001020001', $packetWithoutTransactionId);
+        $this->assertEquals('00000009001001000001020001', $packetWithoutTransactionId);
 
         $this->assertEquals([0, 3], $response[0]->getData());
     }

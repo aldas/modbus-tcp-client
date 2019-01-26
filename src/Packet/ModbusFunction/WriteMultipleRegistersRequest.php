@@ -68,6 +68,7 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest implements M
 
     protected function getLengthInternal(): int
     {
-        return parent::getLengthInternal() + (1 + $this->registersBytesSize); // registers count + number of bytes registers need for data
+        // (function code size (1) + startAddress size (2)) + registers count size (2) + register byte size (1) + number of bytes registers need for data
+        return parent::getLengthInternal() + (3 + $this->registersBytesSize);
     }
 }
