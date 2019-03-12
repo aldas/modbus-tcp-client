@@ -41,7 +41,7 @@ $loop->addPeriodicTimer(1.0, function () use ($loop, &$n, $requests) {
 
                 // wait for response event
                 $connection->on('data', function ($data) use ($connection, $request) {
-                    echo microtime(true) . ": uri: {$request->getUri()}, response: " . print_r($request->extract($data), true) . PHP_EOL;
+                    echo microtime(true) . ": uri: {$request->getUri()}, response: " . print_r($request->parse($data), true) . PHP_EOL;
                     $connection->end();
                 });
                 $connection->on('error', function ($data) use ($connection, $request) {

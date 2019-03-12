@@ -53,7 +53,7 @@ function requestWithReactPhp(array $requests)
 
                 // wait for response event
                 $connection->on('data', function ($data) use ($connection, $promise, $request) {
-                    $promise->resolve($request->extract($data));
+                    $promise->resolve($request->parse($data));
                     $connection->end();
                 });
                 $connection->on('error', function ($data) use ($connection, $promise) {

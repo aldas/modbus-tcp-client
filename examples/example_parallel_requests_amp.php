@@ -64,7 +64,7 @@ function requestWithAmp(array $requests)
                     return null;
                 }
 
-                return $request->extract($data);
+                return $request->parse($data);
             } finally {
                 $socket->close();
             }
