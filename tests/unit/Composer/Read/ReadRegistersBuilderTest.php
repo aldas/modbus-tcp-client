@@ -55,8 +55,8 @@ class ReadRegistersBuilderTest extends TestCase
                 ['uri' => 'tcp://127.0.0.1:5022', 'type' => 'byte', 'address' => 256, 'firstByte' => true, 'name' => 'username_first_char'],
                 ['uri' => 'tcp://127.0.0.1:5022', 'type' => 'string', 'address' => 256, 'length' => 10, 'name' => 'username'],
                 // will be split into 2 requests as 1 request can return only range of 124 registers max
-                ['uri' => 'tcp://127.0.0.1:5022', 'type' => 'uint16', 'address' => 453, 'name' => 'gen1_fuel_rate_wo'],
-                ['uri' => 'tcp://127.0.0.1:5022', 'type' => 'uint16', 'address' => 454, 'name' => 'gen2_fuel_rate_wo'],
+                ['uri' => 'tcp://127.0.0.1:5022', 'type' => 'uint16', 'address' => 0, 'name' => 'gen1_fuel_rate_wo'],
+                ['uri' => 'tcp://127.0.0.1:5022', 'type' => 'uint16', 'address' => 1, 'name' => 'gen2_fuel_rate_wo'],
                 // will be another request as uri is different for subsequent string register
                 ['uri' => 'tcp://127.0.0.1:5023', 'type' => 'uint16', 'address' => 270, 'name' => 'room7_temp_wo'],
                 ['uri' => 'tcp://127.0.0.1:5023', 'type' => 'int16', 'address' => 270, 'name' => 'room8_temp_wo'],
@@ -70,8 +70,8 @@ class ReadRegistersBuilderTest extends TestCase
 
         $this->assertCount(3, $requests);
 
-        $this->assertCount(4, $requests[0]->getAddresses());
-        $this->assertCount(2, $requests[1]->getAddresses());
+        $this->assertCount(2, $requests[0]->getAddresses());
+        $this->assertCount(4, $requests[1]->getAddresses());
         $this->assertCount(7, $requests[2]->getAddresses());
     }
 

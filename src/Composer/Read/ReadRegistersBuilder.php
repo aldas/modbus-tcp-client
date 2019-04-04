@@ -84,7 +84,7 @@ class ReadRegistersBuilder
         }
 
         $address = $register['address'] ?? null;
-        if (empty($address)) {
+        if ($address === null) {
             throw new InvalidArgumentException('empty address given');
         }
 

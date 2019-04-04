@@ -72,7 +72,7 @@ class WriteRegistersBuilderTest extends TestCase
     {
         $requests = WriteRegistersBuilder::newWriteMultipleRegisters('tcp://127.0.0.1:5022')
             ->allFromArray([
-                ['uri' => 'tcp://127.0.0.1:5022', 'type' => 'string', 'value' => 'Søren', 'address' => 256, 'length' => 10],
+                ['uri' => 'tcp://127.0.0.1:5022', 'type' => 'string', 'value' => 'Søren', 'address' => 0, 'length' => 10],
                 // will be split into 2 requests as 1 request can return only range of 124 registers max
                 ['uri' => 'tcp://127.0.0.1:5022', 'type' => 'uint16', 'value' => 1, 'address' => 453],
                 ['uri' => 'tcp://127.0.0.1:5022', 'type' => 'uint16', 'value' => 1, 'address' => 454],
