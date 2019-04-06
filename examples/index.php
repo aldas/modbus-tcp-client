@@ -105,11 +105,31 @@ if ($returnJson) {
     exit(0);
 }
 
-foreach ($log as $m) {
-    echo $m . '<br>' . PHP_EOL;
-}
 ?>
 
+<h2>Example FC3 request</h2>
+<form>
+    IP: <input type="text" name="ip" value="<?php echo $ip; ?>" <?php if (!$canChangeIpPort) { echo 'disabled'; } ?>><br>
+    Port: <input type="number" name="port" value="<?php echo $port; ?>"><br>
+    Address: <input type="number" name="address" value="<?php echo $address; ?>"><br>
+    Quantity: <input type="number" name="quantity" value="<?php echo $quantity; ?>"><br>
+    Endianess: <select name="endianess">
+        <option value="1" <?php if ($endianess === 1) { echo 'selected'; } ?>>BIG_ENDIAN</option>
+        <option value="5" <?php if ($endianess === 5) { echo 'selected'; } ?>>BIG_ENDIAN_LOW_WORD_FIRST</option>
+        <option value="2" <?php if ($endianess === 2) { echo 'selected'; } ?>>LITTLE_ENDIAN</option>
+        <option value="6" <?php if ($endianess === 6) { echo 'selected'; } ?>>LITTLE_ENDIAN_LOW_WORD_FIRST</option>
+    </select><br>
+    <button type="submit">Send</button>
+</form>
+<h2>Debug info</h2>
+<pre>
+<?php
+foreach ($log as $m) {
+    echo $m . PHP_EOL;
+}
+?>
+</pre>
+<h2>Result</h2>
 <table border="1">
     <tr>
         <td rowspan="2">WORD<br>address</td>
