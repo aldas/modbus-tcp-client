@@ -16,18 +16,18 @@ $canChangeIpPort = file_exists('.allow-change');
 $ip = '192.168.100.1';
 $port = 502;
 if ($canChangeIpPort) {
-    $ip = filter_var($_GET['ip'], FILTER_VALIDATE_IP) ? $_GET['ip'] : $ip;
+    $ip = filter_var($_GET['ip'] ?? '', FILTER_VALIDATE_IP) ? $_GET['ip'] : $ip;
     $port = (int)($_GET['port'] ?? $port);
 }
 
 $unitId = (int)($_GET['unitid'] ?? 0);
-$address = (int)($_GET['address'] ?? 256);
+$startAddress = (int)($_GET['address'] ?? 256);
 $quantity = (int)($_GET['quantity'] ?? 12);
 $endianess = (int)($_GET['endianess'] ?? Endian::BIG_ENDIAN_LOW_WORD_FIRST);
 Endian::$defaultEndian = $endianess;
 
 $log = [];
-$log[] = "Using: ip: {$ip}, port: {$port}, address: {$address}, quantity: {$quantity}, endianess: {$endianess}";
+$log[] = "Using: ip: {$ip}, port: {$port}, address: {$startAddress}, quantity: {$quantity}, endianess: {$endianess}";
 
 $connection = BinaryStreamConnection::getBuilder()
     ->setPort($port)
@@ -35,7 +35,7 @@ $connection = BinaryStreamConnection::getBuilder()
     ->build();
 
 
-$packet = new ReadHoldingRegistersRequest($address, $quantity, $unitId);
+$packet = new ReadHoldingRegistersRequest($startAddress, $quantity, $unitId);
 $log[] = 'Packet to be sent (in hex): ' . $packet->toHex();
 
 $result = [];
@@ -44,7 +44,7 @@ try {
     $log[] = 'Binary received (in hex):   ' . unpack('H*', $binaryData)[1];
 
     /** @var $response ReadHoldingRegistersResponse */
-    $response = ResponseFactory::parseResponseOrThrow($binaryData)->withStartAddress($address);
+    $response = ResponseFactory::parseResponseOrThrow($binaryData)->withStartAddress($startAddress);
 
     foreach ($response as $address => $word) {
         $doubleWord = isset($response[$address + 1]) ? $response->getDoubleWordAt($address) : null;
@@ -111,7 +111,8 @@ if ($returnJson) {
 <form>
     IP: <input type="text" name="ip" value="<?php echo $ip; ?>" <?php if (!$canChangeIpPort) { echo 'disabled'; } ?>><br>
     Port: <input type="number" name="port" value="<?php echo $port; ?>"><br>
-    Address: <input type="number" name="address" value="<?php echo $address; ?>"><br>
+    UnitID (SlaveID): <input type="number" name="unitid" value="<?php echo $unitId; ?>"><br>
+    Address: <input type="number" name="address" value="<?php echo $startAddress; ?>"><br>
     Quantity: <input type="number" name="quantity" value="<?php echo $quantity; ?>"><br>
     Endianess: <select name="endianess">
         <option value="1" <?php if ($endianess === 1) { echo 'selected'; } ?>>BIG_ENDIAN</option>
@@ -150,7 +151,7 @@ foreach ($log as $m) {
         <td>int64</td>
         <td>UInt64</td>
     </tr>
-    <?php foreach ($result as $address => $values) { ?>
+    <?php foreach ($result ?? [] as $address => $values) { ?>
         <tr>
             <td><?php echo $address ?></td>
             <td><?php echo implode('</td><td>', $values) ?></td>
