@@ -43,20 +43,30 @@ abstract class AddressSplitter
             $quantity = null;
             $chunk = [];
             $previousAddress = null;
+            $maxAvailableRegister = null;
             foreach ($addrs as $currentAddress) {
                 /** @var Address $currentAddress */
                 $currentStartAddress = $currentAddress->getAddress();
-                if (!$startAddress) {
+                if ($startAddress === null) {
                     $startAddress = $currentStartAddress;
                 }
 
                 $nextAvailableRegister = $currentStartAddress + $currentAddress->getSize();
+
+                // in case next address is smaller than previous address with its size we need to make sure that quantity does not change
+                // as those addresses overlap
+                if ($maxAvailableRegister === null || $nextAvailableRegister > $maxAvailableRegister) {
+                    $maxAvailableRegister = $nextAvailableRegister;
+                } else if ($nextAvailableRegister < $maxAvailableRegister) {
+                    $nextAvailableRegister = $maxAvailableRegister;
+                }
                 $previousQuantity = $quantity;
                 $quantity = $nextAvailableRegister - $startAddress;
                 if ($this->shouldSplit($currentAddress, $quantity, $previousAddress, $previousQuantity)) {
                     $result[] = $this->createRequest($uri, $chunk, $startAddress, $previousQuantity, $unitId);
 
                     $chunk = [];
+                    $maxAvailableRegister = null;
                     $startAddress = $currentStartAddress;
                     $quantity = $currentAddress->getSize();
                 }
