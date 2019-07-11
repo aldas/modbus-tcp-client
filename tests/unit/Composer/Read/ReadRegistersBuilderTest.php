@@ -5,6 +5,7 @@ namespace Tests\unit\Composer\Read;
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\Read\BitReadAddress;
 use ModbusTcpClient\Composer\Read\ByteReadAddress;
+use ModbusTcpClient\Composer\Read\ReadAddress;
 use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
 use ModbusTcpClient\Composer\Read\StringReadAddress;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
@@ -306,16 +307,179 @@ class ReadRegistersBuilderTest extends TestCase
         ];
     }
 
-    public function testIsNotEmptyTrue() {
+    public function testIsNotEmptyTrue()
+    {
         $builder = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
             ->bit(278, 5, 'dirchange1_status');
 
         $this->assertTrue($builder->isNotEmpty());
     }
 
-    public function testIsNotEmptyFalse() {
+    public function testIsNotEmptyFalse()
+    {
         $builder = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022');
 
         $this->assertFalse($builder->isNotEmpty());
+    }
+
+    public function test0Address()
+    {
+        $requests = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
+            ->int64(0, 'realtime')
+            ->int32(4, 'sys time')
+            ->build();
+
+        $this->assertCount(1, $requests);
+
+        $request = $requests[0]->getRequest();
+
+        $this->assertEquals(0, $request->getStartAddress());
+        $this->assertEquals(6, $request->getQuantity());
+
+        $addresses = $requests[0]->getAddresses();
+        $this->assertCount(2, $addresses);
+
+        /** @var ReadAddress $address */
+        $address = $addresses[0];
+        $this->assertEquals(Address::TYPE_INT64, $address->getType());
+        $this->assertEquals(0, $address->getAddress());
+        $this->assertEquals('realtime', $address->getName());
+        $this->assertEquals(4, $address->getSize());
+
+        /** @var ReadAddress $address */
+        $address = $addresses[1];
+        $this->assertEquals(Address::TYPE_INT32, $address->getType());
+        $this->assertEquals(4, $address->getAddress());
+        $this->assertEquals('sys time', $address->getName());
+        $this->assertEquals(2, $address->getSize());
+    }
+
+    public function requestValuesProvider(): array
+    {
+        return [
+            'first address is bigger in size than second' => [
+                [
+                    0 => [
+                        'addresses' => [
+                            ['int64', 1, 'addr1'],
+                            ['int32', 2, 'addr2'],
+                        ],
+                        'startAddress' => 1,
+                        'quantity' => 4,
+                    ]
+                ],
+            ],
+            'addresses overlap due their size' => [
+                [
+                    0 => [
+                        'addresses' => [
+                            ['int64', 0, 'addr1'],
+                            ['int64', 2, 'addr2'],
+                        ],
+                        'startAddress' => 0,
+                        'quantity' => 6,
+                    ]
+                ],
+            ],
+            'first address is bigger in size than second multiple requests' => [
+                [
+                    0 => [
+                        'addresses' => [
+                            ['int64', 1, 'addr1'],
+                            ['int32', 2, 'addr2'],
+                        ],
+                        'startAddress' => 1,
+                        'quantity' => 4,
+                    ],
+                    1 => [
+                        'addresses' => [
+                            ['int64', 256, 'addr256'],
+                            ['int32', 259, 'addr259'],
+                        ],
+                        'startAddress' => 256,
+                        'quantity' => 5,
+                    ],
+                    2 => [
+                        'addresses' => [
+                            ['int32', 1259, 'addr1259'],
+                        ],
+                        'startAddress' => 1259,
+                        'quantity' => 2,
+                    ]
+                ],
+            ],
+            'first val is at 0 address' => [
+                [
+                    0 => [
+                        'addresses' => [
+                            ['int64', 0, 'addr1'],
+                            ['int32', 4, 'addr2'],
+                        ],
+                        'startAddress' => 0,
+                        'quantity' => 6,
+                    ]
+                ],
+            ],
+            'first val is at 1 address' => [
+                [
+                    0 => [
+                        'addresses' => [
+                            ['int64', 1, 'addr1'],
+                            ['int32', 5, 'addr2'],
+                        ],
+                        'startAddress' => 1,
+                        'quantity' => 6,
+                    ]
+                ],
+            ],
+            'first val is at 0 address vol2' => [
+                [
+                    0 => [
+                        'addresses' => [
+                            ['int64', 0, 'realtime'],
+                            ['int32', 4, 'sys time'],
+                            ['int16', 6, 'day'],
+                            ['int16', 7, 'month'],
+                        ],
+                        'startAddress' => 0,
+                        'quantity' => 8,
+                    ]
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider requestValuesProvider
+     */
+    public function testRequestValues($requestArgs)
+    {
+        $builder = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022');
+
+        foreach ($requestArgs as $args) {
+            if (empty($args['addresses'])) {
+                continue;
+            }
+            foreach ($args['addresses'] as  list($method, $address, $name)) {
+                $builder = $builder->$method($address, $name);
+            }
+        }
+
+        $requests = $builder->build();
+
+        $this->assertCount(count($requestArgs), $requests);
+
+        $i = 0;
+        foreach ($requestArgs as $args) {
+            $request = $requests[$i]->getRequest();
+
+
+            $this->assertEquals($args['startAddress'], $request->getStartAddress());
+            $this->assertEquals($args['quantity'], $request->getQuantity());
+
+            $this->assertCount(count($args['addresses']), $requests[$i]->getAddresses());
+
+            $i++;
+        }
     }
 }
