@@ -26,6 +26,7 @@ class ModbusApplicationHeader
 
     /**
      * @var int 1 byte set by the Client and echoed by the Server for identification of a remote slave connected on a serial line or on other buses
+     * also known as SlaveID
      */
     private $unitId = 0;
 
@@ -63,6 +64,7 @@ class ModbusApplicationHeader
     }
 
     /**
+     * Returns unit id / slave Id value
      * @return int
      */
     public function getUnitId(): int
