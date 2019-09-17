@@ -32,10 +32,11 @@ class WriteSingleRegisterRequest extends ProtocolDataUnitRequest implements Modb
     public function validate()
     {
         parent::validate();
-        if ((null !== $this->value) && (($this->value >= Types::MIN_VALUE_INT16) && ($this->value <= Types::MAX_VALUE_INT16))) {
+        // value is 2 bytes in packet so it must be set and in range of uint16 (0 - 65535) or int16 (-32768 - +32767)
+        if ((null !== $this->value) && (($this->value >= Types::MIN_VALUE_INT16) && ($this->value <= Types::MAX_VALUE_UINT16))) {
             return;
         }
-        throw new InvalidArgumentException("value is not set or out of range (int16): {$this->value}");
+        throw new InvalidArgumentException("value is not set or out of range (u)int16: {$this->value}");
     }
 
     public function getFunctionCode(): int

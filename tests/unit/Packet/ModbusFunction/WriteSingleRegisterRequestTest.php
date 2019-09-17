@@ -1,8 +1,10 @@
 <?php
+
 namespace Tests\Packet\ModbusFunction;
 
-use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleRegisterRequest;
+use ModbusTcpClient\Packet\ModbusPacket;
 use PHPUnit\Framework\TestCase;
 
 class WriteSingleRegisterRequestTest extends TestCase
@@ -15,16 +17,30 @@ class WriteSingleRegisterRequestTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage value is not set or out of range (int16): 213213123
-     */
-    public function testValueValidationException()
+    public function validationFailureProvider(): array
     {
-        $this->assertEquals(
-            "\x00\x01\x00\x00\x00\x06\x11\x06\x00\x6B\x01\x01",
-            (new WriteSingleRegisterRequest(107, 213213123, 17, 1))->__toString()
-        );
+        return [
+            'validation fails over max uint16"' => [65536, 'value is not set or out of range (u)int16: 65536'],
+            'validation fails below min int16"' => [-32769, 'value is not set or out of range (u)int16: -32769'],
+            'validation success at min int16"' => [-32768, ''],
+            'validation success at max uint16"' => [65535, ''],
+            'validation success at 65534 (between ok range)"' => [65534, ''],
+        ];
+    }
+
+    /**
+     * @dataProvider validationFailureProvider
+     */
+    public function testValueValidationException($value, $expectedMessage)
+    {
+        try {
+            $r = new WriteSingleRegisterRequest(107, $value, 17, 1);
+            $this->assertEquals($value, $r->getValue());
+        } catch (\Exception $e) {
+            $this->expectException(InvalidArgumentException::class);
+            $this->expectExceptionMessage($expectedMessage);
+            throw $e;
+        }
     }
 
     public function testValueValidationValidForNegative1()
