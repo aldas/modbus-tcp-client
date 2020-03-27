@@ -10,6 +10,7 @@ use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReadWriteMultipleRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleCoilResponse;
@@ -67,6 +68,9 @@ class ResponseFactory
                 break;
             case ModbusPacket::WRITE_MULTIPLE_REGISTERS:
                 return new WriteMultipleRegistersResponse($rawData, $unitId, $transactionId);
+                break;
+            case ModbusPacket::READ_WRITE_MULTIPLE_REGISTERS:
+                return new ReadWriteMultipleRegistersResponse($rawData, $unitId, $transactionId);
                 break;
             default:
                 throw new ParseException("Unknown function code '{$functionCode}' read from response packet");

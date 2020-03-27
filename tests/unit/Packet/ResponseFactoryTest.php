@@ -10,6 +10,7 @@ use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReadWriteMultipleRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleCoilResponse;
@@ -222,6 +223,23 @@ class ResponseFactoryTest extends TestCase
 
         $header = $response->getHeader();
         $this->assertEquals(3, $header->getUnitId());
+        $this->assertEquals(0x8180, $header->getTransactionId());
+    }
+
+    public function testShouldParseReadWriteMultipleRegistersResponse()
+    {
+        //trans + proto + len   + uid + fc + qnt + data
+        //81 80 + 00 00 + 00 05 + 01  + 17 + 02  + 00 03
+        $data = "\x81\x80\x00\x00\x00\x05\x01\x17\x02\x00\x03";
+
+        $response = ResponseFactory::parseResponse($data);
+
+        $this->assertInstanceOf(ReadWriteMultipleRegistersResponse::class, $response);
+        $this->assertEquals(ModbusPacket::READ_WRITE_MULTIPLE_REGISTERS, $response->getFunctionCode());
+        $this->assertEquals([0, 3], $response->getData());
+
+        $header = $response->getHeader();
+        $this->assertEquals(1, $header->getUnitId());
         $this->assertEquals(0x8180, $header->getTransactionId());
     }
 
