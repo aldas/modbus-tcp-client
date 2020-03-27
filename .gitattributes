@@ -1,0 +1,5 @@
+# Text files have auto line endings
+* text=auto
+
+# php source files always have LF line endings
+*.php text eol=lf

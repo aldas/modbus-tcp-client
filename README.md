@@ -25,6 +25,7 @@ composer require aldas/modbus-tcp-client
 * FC6 - Write Single Register ([WriteSingleRegisterRequest](src/Packet/ModbusFunction/WriteSingleRegisterRequest.php) / [WriteSingleRegisterResponse](src/Packet/ModbusFunction/WriteSingleRegisterResponse.php))
 * FC15 - Write Multiple Coils ([WriteMultipleCoilsRequest](src/Packet/ModbusFunction/WriteMultipleCoilsRequest.php) / [WriteMultipleCoilsResponse](src/Packet/ModbusFunction/WriteMultipleCoilsResponse.php))
 * FC16 - Write Multiple Registers ([WriteMultipleRegistersRequest](src/Packet/ModbusFunction/WriteMultipleRegistersRequest.php) / [WriteMultipleRegistersResponse](src/Packet/ModbusFunction/WriteMultipleRegistersResponse.php))
+* FC23 - Read / Write Multiple Registers ([ReadWriteMultipleRegistersRequest](src/Packet/ModbusFunction/ReadWriteMultipleRegistersRequest.php) / [ReadWriteMultipleRegistersResponse](src/Packet/ModbusFunction/ReadWriteMultipleRegistersResponse.php))
 
 ## Requirements
 

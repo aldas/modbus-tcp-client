@@ -13,6 +13,7 @@ interface ModbusPacket
     const WRITE_SINGLE_REGISTER = 6;
     const WRITE_MULTIPLE_COILS = 15;
     const WRITE_MULTIPLE_REGISTERS = 16;
+    const READ_WRITE_MULTIPLE_REGISTERS = 23;
 
 
     /**
