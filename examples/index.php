@@ -38,9 +38,11 @@ $connection = BinaryStreamConnection::getBuilder()
 $packet = new ReadHoldingRegistersRequest($startAddress, $quantity, $unitId);
 $log[] = 'Packet to be sent (in hex): ' . $packet->toHex();
 
+$startTime = round(microtime(true) * 1000,3);
 $result = [];
 try {
     $binaryData = $connection->connect()->sendAndReceive($packet);
+
     $log[] = 'Binary received (in hex):   ' . unpack('H*', $binaryData)[1];
 
     /** @var $response ReadHoldingRegistersResponse */
@@ -89,6 +91,7 @@ try {
 } finally {
     $connection->close();
 }
+$elapsed = round(microtime(true) * 1000) - $startTime;
 
 if ($returnJson) {
     header('Access-Control-Allow-Origin: *');
@@ -97,7 +100,8 @@ if ($returnJson) {
     echo json_encode(
         [
             'data' => $result,
-            'debug' => $log
+            'debug' => $log,
+            'time_ms' => $elapsed
         ],
         JSON_PRETTY_PRINT
     );
@@ -158,4 +162,6 @@ foreach ($log as $m) {
         </tr>
     <?php } ?>
 </table>
+Time <?php echo $elapsed ?> ms
+</br>
 Page generated: <?php echo date('c') ?>
