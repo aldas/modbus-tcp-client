@@ -14,7 +14,7 @@ $connection = BinaryStreamConnection::getBuilder()
     ->build();
 
 $readStartAddress = 12288;
-$readQuantity= 2;
+$readQuantity = 2;
 
 $writeStartAddress = 12288;
 $writeRegisters = [
@@ -30,14 +30,17 @@ $packet = new ReadWriteMultipleRegistersRequest(
 echo 'Packet to be sent (in hex): ' . $packet->toHex() . PHP_EOL;
 
 try {
-    $binaryData = $connection->connect()
-        ->sendAndReceive($packet);
+    $binaryData = $connection->connect()->sendAndReceive($packet);
     echo 'Binary received (in hex):   ' . unpack('H*', $binaryData)[1] . PHP_EOL;
 
     /* @var $response ReadWriteMultipleRegistersResponse */
     $response = ResponseFactory::parseResponseOrThrow($binaryData);
     echo 'Parsed packet (in hex):     ' . $response->toHex() . PHP_EOL;
-    print_r($response->getData());
+
+    // set internal index to match read start address to simplify array access
+    $responseWithStartAddress = $response->withStartAddress($readStartAddress);
+    print_r($responseWithStartAddress->getWordAt($readStartAddress)->getInt16());
+    print_r($responseWithStartAddress[$readStartAddress + 1]->getInt16()); // use array access to get value
 
 } catch (Exception $exception) {
     echo 'An exception occurred' . PHP_EOL;
