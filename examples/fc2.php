@@ -28,6 +28,10 @@ try {
     echo 'Data parsed from packet (bytes):' . PHP_EOL;
     print_r($response->getCoils());
 
+    // set internal index to match start address to simplify array access
+    $responseWithStartAddress = $response->withStartAddress($startAddress);
+    print_r($responseWithStartAddress[12288]); // coil value at 12288
+
 } catch (Exception $exception) {
     echo 'An exception occurred' . PHP_EOL;
     echo $exception->getMessage() . PHP_EOL;

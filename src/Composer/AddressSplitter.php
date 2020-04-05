@@ -18,6 +18,7 @@ abstract class AddressSplitter
     abstract protected function createRequest(string $uri, array $addressesChunk, int $startAddress, int $quantity, int $unitId);
 
     /**
+     * @param Address[] $addresses
      * @return array
      */
     public function split(array $addresses): array

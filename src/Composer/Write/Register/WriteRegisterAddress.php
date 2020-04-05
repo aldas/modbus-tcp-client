@@ -1,12 +1,13 @@
 <?php
 
-namespace ModbusTcpClient\Composer\Write;
+namespace ModbusTcpClient\Composer\Write\Register;
 
 
 use ModbusTcpClient\Composer\Address;
+use ModbusTcpClient\Composer\RegisterAddress;
 use ModbusTcpClient\Utils\Types;
 
-class WriteAddress extends Address
+class WriteRegisterAddress extends RegisterAddress
 {
     /** @var int|float|string */
     private $value;

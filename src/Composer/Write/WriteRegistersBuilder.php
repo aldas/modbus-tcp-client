@@ -5,15 +5,19 @@ namespace ModbusTcpClient\Composer\Write;
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\AddressSplitter;
+use ModbusTcpClient\Composer\Write\Register\StringWriteRegisterAddress;
+use ModbusTcpClient\Composer\Write\Register\WriteRegisterAddress;
+use ModbusTcpClient\Composer\Write\Register\WriteRegisterAddressSplitter;
+use ModbusTcpClient\Composer\Write\Register\WriteRegisterRequest;
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersRequest;
 
 class WriteRegistersBuilder
 {
-    /** @var WriteAddressSplitter */
+    /** @var WriteRegisterAddressSplitter */
     private $addressSplitter;
 
-    /** @var WriteAddress[] */
+    /** @var WriteRegisterAddress[] */
     private $addresses = [];
 
     /** @var string */
@@ -24,7 +28,7 @@ class WriteRegistersBuilder
 
     public function __construct(string $requestClass, string $uri = null, int $unitId = 0)
     {
-        $this->addressSplitter = new WriteAddressSplitter($requestClass);
+        $this->addressSplitter = new WriteRegisterAddressSplitter($requestClass);
 
         if ($uri !== null) {
             $this->useUri($uri);
@@ -48,7 +52,7 @@ class WriteRegistersBuilder
         return $this;
     }
 
-    protected function addAddress(WriteAddress $address): WriteRegistersBuilder
+    protected function addAddress(WriteRegisterAddress $address): WriteRegistersBuilder
     {
         if (empty($this->currentUri)) {
             throw new InvalidArgumentException('uri not set');
@@ -64,7 +68,7 @@ class WriteRegistersBuilder
         foreach ($registers as $register) {
             if (\is_array($register)) {
                 $this->fromArray($register);
-            } elseif ($register instanceof WriteAddress) {
+            } elseif ($register instanceof WriteRegisterAddress) {
                 $this->addAddress($register);
             }
         }
@@ -134,46 +138,46 @@ class WriteRegistersBuilder
 
     public function int16(int $address, int $value): WriteRegistersBuilder
     {
-        return $this->addAddress(new WriteAddress($address, Address::TYPE_INT16, $value));
+        return $this->addAddress(new WriteRegisterAddress($address, Address::TYPE_INT16, $value));
     }
 
     public function uint16(int $address, int $value): WriteRegistersBuilder
     {
-        return $this->addAddress(new WriteAddress($address, Address::TYPE_UINT16, $value));
+        return $this->addAddress(new WriteRegisterAddress($address, Address::TYPE_UINT16, $value));
     }
 
     public function int32(int $address, int $value): WriteRegistersBuilder
     {
-        return $this->addAddress(new WriteAddress($address, Address::TYPE_INT32, $value));
+        return $this->addAddress(new WriteRegisterAddress($address, Address::TYPE_INT32, $value));
     }
 
     public function uint32(int $address, int $value): WriteRegistersBuilder
     {
-        return $this->addAddress(new WriteAddress($address, Address::TYPE_UINT32, $value));
+        return $this->addAddress(new WriteRegisterAddress($address, Address::TYPE_UINT32, $value));
     }
 
     public function uint64(int $address, int $value): WriteRegistersBuilder
     {
-        return $this->addAddress(new WriteAddress($address, Address::TYPE_UINT64, $value));
+        return $this->addAddress(new WriteRegisterAddress($address, Address::TYPE_UINT64, $value));
     }
 
     public function int64(int $address, int $value): WriteRegistersBuilder
     {
-        return $this->addAddress(new WriteAddress($address, Address::TYPE_INT64, $value));
+        return $this->addAddress(new WriteRegisterAddress($address, Address::TYPE_INT64, $value));
     }
 
     public function float(int $address, float $value): WriteRegistersBuilder
     {
-        return $this->addAddress(new WriteAddress($address, Address::TYPE_FLOAT, $value));
+        return $this->addAddress(new WriteRegisterAddress($address, Address::TYPE_FLOAT, $value));
     }
 
     public function string(int $address, string $string, int $byteLength = null): WriteRegistersBuilder
     {
-        return $this->addAddress(new StringWriteAddress($address, $string, $byteLength));
+        return $this->addAddress(new StringWriteRegisterAddress($address, $string, $byteLength));
     }
 
     /**
-     * @return WriteRequest[]
+     * @return WriteRegisterRequest[]
      */
     public function build(): array
     {

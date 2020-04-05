@@ -1,11 +1,11 @@
 <?php
 
-namespace ModbusTcpClient\Composer\Read;
+namespace ModbusTcpClient\Composer\Read\Register;
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Packet\ModbusResponse;
 
-class BitReadAddress extends ReadAddress
+class BitReadRegisterAddress extends ReadRegisterAddress
 {
     /** @var int */
     private $bit;

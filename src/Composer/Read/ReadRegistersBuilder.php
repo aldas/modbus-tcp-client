@@ -5,13 +5,19 @@ namespace ModbusTcpClient\Composer\Read;
 use Closure;
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\AddressSplitter;
+use ModbusTcpClient\Composer\Read\Register\BitReadRegisterAddress;
+use ModbusTcpClient\Composer\Read\Register\ByteReadRegisterAddress;
+use ModbusTcpClient\Composer\Read\Register\ReadRegisterAddress;
+use ModbusTcpClient\Composer\Read\Register\ReadRegisterAddressSplitter;
+use ModbusTcpClient\Composer\Read\Register\ReadRegisterRequest;
+use ModbusTcpClient\Composer\Read\Register\StringReadRegisterAddress;
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
 
 class ReadRegistersBuilder
 {
-    /** @var ReadAddressSplitter */
+    /** @var ReadRegisterAddressSplitter */
     private $addressSplitter;
 
     private $addresses = [];
@@ -24,7 +30,7 @@ class ReadRegistersBuilder
 
     public function __construct(string $requestClass, string $uri = null, int $unitId = 0)
     {
-        $this->addressSplitter = new ReadAddressSplitter($requestClass);
+        $this->addressSplitter = new ReadRegisterAddressSplitter($requestClass);
 
         if ($uri !== null) {
             $this->useUri($uri);
@@ -52,7 +58,7 @@ class ReadRegistersBuilder
         return $this;
     }
 
-    protected function addAddress(ReadAddress $address): ReadRegistersBuilder
+    protected function addAddress(ReadRegisterAddress $address): ReadRegistersBuilder
     {
         if (empty($this->currentUri)) {
             throw new InvalidArgumentException('uri not set');
@@ -68,7 +74,7 @@ class ReadRegistersBuilder
         foreach ($registers as $register) {
             if (\is_array($register)) {
                 $this->fromArray($register);
-            } elseif ($register instanceof ReadAddress) {
+            } elseif ($register instanceof ReadRegisterAddress) {
                 $this->addAddress($register);
             }
         }
@@ -147,47 +153,47 @@ class ReadRegistersBuilder
         if ($nthBit < 0 || $nthBit > 15) {
             throw new InvalidArgumentException("Invalid bit number in for register given! nthBit: '{$nthBit}', address: {$address}");
         }
-        return $this->addAddress(new BitReadAddress($address, $nthBit, $name, $callback, $errorCallback));
+        return $this->addAddress(new BitReadRegisterAddress($address, $nthBit, $name, $callback, $errorCallback));
     }
 
     public function byte(int $address, bool $firstByte = true, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
     {
-        return $this->addAddress(new ByteReadAddress($address, $firstByte, $name, $callback, $errorCallback));
+        return $this->addAddress(new ByteReadRegisterAddress($address, $firstByte, $name, $callback, $errorCallback));
     }
 
     public function int16(int $address, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
     {
-        return $this->addAddress(new ReadAddress($address, ReadAddress::TYPE_INT16, $name, $callback, $errorCallback));
+        return $this->addAddress(new ReadRegisterAddress($address, ReadRegisterAddress::TYPE_INT16, $name, $callback, $errorCallback));
     }
 
     public function uint16(int $address, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
     {
-        return $this->addAddress(new ReadAddress($address, ReadAddress::TYPE_UINT16, $name, $callback, $errorCallback));
+        return $this->addAddress(new ReadRegisterAddress($address, ReadRegisterAddress::TYPE_UINT16, $name, $callback, $errorCallback));
     }
 
     public function int32(int $address, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
     {
-        return $this->addAddress(new ReadAddress($address, ReadAddress::TYPE_INT32, $name, $callback, $errorCallback));
+        return $this->addAddress(new ReadRegisterAddress($address, ReadRegisterAddress::TYPE_INT32, $name, $callback, $errorCallback));
     }
 
     public function uint32(int $address, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
     {
-        return $this->addAddress(new ReadAddress($address, ReadAddress::TYPE_UINT32, $name, $callback, $errorCallback));
+        return $this->addAddress(new ReadRegisterAddress($address, ReadRegisterAddress::TYPE_UINT32, $name, $callback, $errorCallback));
     }
 
     public function uint64(int $address, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
     {
-        return $this->addAddress(new ReadAddress($address, ReadAddress::TYPE_UINT64, $name, $callback, $errorCallback));
+        return $this->addAddress(new ReadRegisterAddress($address, ReadRegisterAddress::TYPE_UINT64, $name, $callback, $errorCallback));
     }
 
     public function int64(int $address, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
     {
-        return $this->addAddress(new ReadAddress($address, ReadAddress::TYPE_INT64, $name, $callback, $errorCallback));
+        return $this->addAddress(new ReadRegisterAddress($address, ReadRegisterAddress::TYPE_INT64, $name, $callback, $errorCallback));
     }
 
     public function float(int $address, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
     {
-        return $this->addAddress(new ReadAddress($address, ReadAddress::TYPE_FLOAT, $name, $callback, $errorCallback));
+        return $this->addAddress(new ReadRegisterAddress($address, ReadRegisterAddress::TYPE_FLOAT, $name, $callback, $errorCallback));
     }
 
     public function string(int $address, int $byteLength, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
@@ -195,11 +201,11 @@ class ReadRegistersBuilder
         if ($byteLength < 1 || $byteLength > 228) {
             throw new InvalidArgumentException("Out of range string length for given! length: '{$byteLength}', address: {$address}");
         }
-        return $this->addAddress(new StringReadAddress($address, $byteLength, $name, $callback, $errorCallback));
+        return $this->addAddress(new StringReadRegisterAddress($address, $byteLength, $name, $callback, $errorCallback));
     }
 
     /**
-     * @return ReadRequest[]
+     * @return ReadRegisterRequest[]
      */
     public function build(): array
     {

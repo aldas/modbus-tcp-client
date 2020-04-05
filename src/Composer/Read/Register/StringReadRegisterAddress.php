@@ -1,12 +1,12 @@
 <?php
 
-namespace ModbusTcpClient\Composer\Read;
+namespace ModbusTcpClient\Composer\Read\Register;
 
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Packet\ModbusResponse;
 
-class StringReadAddress extends ReadAddress
+class StringReadRegisterAddress extends ReadRegisterAddress
 {
     /** @var int */
     private $byteLength;

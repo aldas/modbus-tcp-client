@@ -1,17 +1,17 @@
 <?php
 
-namespace Tests\unit\Composer\Write;
+namespace Tests\unit\Composer\Write\Register;
 
 
 use ModbusTcpClient\Composer\Address;
-use ModbusTcpClient\Composer\Write\WriteAddress;
+use ModbusTcpClient\Composer\Write\Register\WriteRegisterAddress;
 use PHPUnit\Framework\TestCase;
 
-class WriteAddressTest extends TestCase
+class WriteRegisterAddressTest extends TestCase
 {
     public function testGetValue()
     {
-        $address = new WriteAddress(0, Address::TYPE_INT64, 1);
+        $address = new WriteRegisterAddress(0, Address::TYPE_INT64, 1);
 
         $this->assertEquals(1, $address->getValue());
     }
@@ -29,7 +29,7 @@ class WriteAddressTest extends TestCase
         if ($expectedException !== null) {
             $this->expectException($expectedException);
         }
-        $address = new WriteAddress(0, $type, $value);
+        $address = new WriteRegisterAddress(0, $type, $value);
 
         $this->assertEquals($expectedBinaryString, $address->toBinary());
     }

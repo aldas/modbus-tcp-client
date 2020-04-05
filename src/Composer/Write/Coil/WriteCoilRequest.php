@@ -1,6 +1,6 @@
 <?php
 
-namespace ModbusTcpClient\Composer\Write;
+namespace ModbusTcpClient\Composer\Write\Coil;
 
 
 use ModbusTcpClient\Composer\Request;
@@ -9,7 +9,7 @@ use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ModbusResponse;
 use ModbusTcpClient\Packet\ResponseFactory;
 
-class WriteRequest implements Request
+class WriteCoilRequest implements Request
 {
     /**
      * @var string uri to modbus server. Example: 'tcp://192.168.100.1:502'
@@ -19,7 +19,7 @@ class WriteRequest implements Request
     /** @var ModbusRequest */
     private $request;
 
-    /** @var array */
+    /** @var WriteCoilAddress[] */
     private $addresses;
 
 
@@ -44,7 +44,7 @@ class WriteRequest implements Request
     }
 
     /**
-     * @return WriteAddress[]
+     * @return WriteCoilAddress[]
      */
     public function getAddresses(): array
     {

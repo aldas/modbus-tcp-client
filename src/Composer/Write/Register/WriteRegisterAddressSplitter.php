@@ -1,13 +1,13 @@
 <?php
 
-namespace ModbusTcpClient\Composer\Write;
+namespace ModbusTcpClient\Composer\Write\Register;
 
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\AddressSplitter;
 use ModbusTcpClient\Exception\InvalidArgumentException;
 
-class WriteAddressSplitter extends AddressSplitter
+class WriteRegisterAddressSplitter extends AddressSplitter
 {
     /** @var string */
     private $requestClass;
@@ -19,11 +19,11 @@ class WriteAddressSplitter extends AddressSplitter
 
     /**
      * @param string $uri
-     * @param WriteAddress[] $addressesChunk
+     * @param WriteRegisterAddress[] $addressesChunk
      * @param int $startAddress
      * @param int $quantity
      * @param int $unitId
-     * @return WriteRequest
+     * @return WriteRegisterRequest
      */
     protected function createRequest(string $uri, array $addressesChunk, int $startAddress, int $quantity, int $unitId = 0)
     {
@@ -31,7 +31,7 @@ class WriteAddressSplitter extends AddressSplitter
         foreach ($addressesChunk as $address) {
             $binaryStrings[] = $address->toBinary();
         }
-        return new WriteRequest($uri, $addressesChunk, new $this->requestClass($startAddress, $binaryStrings, $unitId));
+        return new WriteRegisterRequest($uri, $addressesChunk, new $this->requestClass($startAddress, $binaryStrings, $unitId));
     }
 
     protected function shouldSplit(Address $currentAddress, int $currentQuantity, Address $previousAddress = null, int $previousQuantity = null): bool
