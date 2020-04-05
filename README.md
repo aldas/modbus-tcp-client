@@ -147,6 +147,11 @@ $binaryData = $connection->connect()->sendAndReceive($rtuBinaryPacket);
 $responseAsTcpPacket = RtuConverter::fromRtu($binaryData);
 ```
 
+## Example of Modbus RTU over USB to Serial (RS485) adapter
+
+See Linux example in 'examples/[rtu_usb_to_serial.php](examples/rtu_usb_to_serial.php)'
+
+
 ## Example of non-blocking socket IO (i.e. modbus request are run in 'parallel')
 
 Example of non-blocking socket IO with https://github.com/amphp/socket

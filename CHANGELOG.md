@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added example to read modbus RTU from Usb to rs-485 adapter and SHT20 sensor (#50)
 * Started changelog
 * Adds Function 23 (0x17) Read/Write Multiple registers support (#47)
 
