@@ -213,6 +213,9 @@ php -S localhost:8080 -t examples/
 
 Now open <http://localhost:8080> in browser. See additional query parameters from [index.php](examples/index.php).
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md)
 
 ## Tests
 
