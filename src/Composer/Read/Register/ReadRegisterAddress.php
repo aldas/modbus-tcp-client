@@ -1,12 +1,13 @@
 <?php
 
-namespace ModbusTcpClient\Composer\Read;
+namespace ModbusTcpClient\Composer\Read\Register;
 
 
 use ModbusTcpClient\Composer\Address;
+use ModbusTcpClient\Composer\RegisterAddress;
 use ModbusTcpClient\Packet\ModbusResponse;
 
-class ReadAddress extends Address
+class ReadRegisterAddress extends RegisterAddress
 {
     /** @var string */
     private $name;
@@ -43,25 +44,25 @@ class ReadAddress extends Address
     {
         $result = null;
         switch ($this->type) {
-            case ReadAddress::TYPE_INT16:
+            case Address::TYPE_INT16:
                 $result = $response->getWordAt($this->address)->getInt16();
                 break;
-            case ReadAddress::TYPE_UINT16:
+            case Address::TYPE_UINT16:
                 $result = $response->getWordAt($this->address)->getUInt16();
                 break;
-            case ReadAddress::TYPE_INT32:
+            case Address::TYPE_INT32:
                 $result = $response->getDoubleWordAt($this->address)->getInt32();
                 break;
-            case ReadAddress::TYPE_UINT32:
+            case Address::TYPE_UINT32:
                 $result = $response->getDoubleWordAt($this->address)->getUInt32();
                 break;
-            case ReadAddress::TYPE_FLOAT:
+            case Address::TYPE_FLOAT:
                 $result = $response->getDoubleWordAt($this->address)->getFloat();
                 break;
-            case ReadAddress::TYPE_INT64:
+            case Address::TYPE_INT64:
                 $result = $response->getQuadWordAt($this->address)->getInt64();
                 break;
-            case ReadAddress::TYPE_UINT64:
+            case Address::TYPE_UINT64:
                 $result = $response->getQuadWordAt($this->address)->getUInt64();
                 break;
         }

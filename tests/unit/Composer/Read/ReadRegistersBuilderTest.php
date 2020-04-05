@@ -3,11 +3,11 @@
 namespace Tests\unit\Composer\Read;
 
 use ModbusTcpClient\Composer\Address;
-use ModbusTcpClient\Composer\Read\BitReadAddress;
-use ModbusTcpClient\Composer\Read\ByteReadAddress;
-use ModbusTcpClient\Composer\Read\ReadAddress;
+use ModbusTcpClient\Composer\Read\Register\BitReadRegisterAddress;
+use ModbusTcpClient\Composer\Read\Register\ByteReadRegisterAddress;
+use ModbusTcpClient\Composer\Read\Register\ReadRegisterAddress;
 use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
-use ModbusTcpClient\Composer\Read\StringReadAddress;
+use ModbusTcpClient\Composer\Read\Register\StringReadRegisterAddress;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
 use PHPUnit\Framework\TestCase;
@@ -74,6 +74,19 @@ class ReadRegistersBuilderTest extends TestCase
         $this->assertCount(2, $requests[0]->getAddresses());
         $this->assertCount(4, $requests[1]->getAddresses());
         $this->assertCount(7, $requests[2]->getAddresses());
+    }
+
+    public function testBuildAllFromArrayWithReadAddress()
+    {
+        $requests = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
+            ->allFromArray([
+                ['uri' => 'tcp://127.0.0.1:5022', 'type' => 'bit', 'address' => 278, 'bit' => 5, 'name' => 'dirchange1_status'],
+                new ReadRegisterAddress(271, Address::TYPE_FLOAT, 'float_wo'),
+            ])
+            ->build();
+
+        $this->assertCount(1, $requests);
+        $this->assertCount(2, $requests[0]->getAddresses());
     }
 
     public function testBuildNewReadInputRegisters()
@@ -192,7 +205,7 @@ class ReadRegistersBuilderTest extends TestCase
         $addresses = $requests[0]->getAddresses();
         $this->assertCount(1, $addresses);
 
-        /** @var BitReadAddress $address */
+        /** @var BitReadRegisterAddress $address */
         $address = $addresses[0];
         $this->assertEquals(Address::TYPE_BIT, $address->getType());
         $this->assertEquals(278, $address->getAddress());
@@ -234,7 +247,7 @@ class ReadRegistersBuilderTest extends TestCase
         $addresses = $requests[0]->getAddresses();
         $this->assertCount(1, $addresses);
 
-        /** @var ByteReadAddress $address */
+        /** @var ByteReadRegisterAddress $address */
         $address = $addresses[0];
         $this->assertEquals(Address::TYPE_BYTE, $address->getType());
         $this->assertEquals(279, $address->getAddress());
@@ -254,7 +267,7 @@ class ReadRegistersBuilderTest extends TestCase
         $addresses = $requests[0]->getAddresses();
         $this->assertCount(1, $addresses);
 
-        /** @var StringReadAddress $address */
+        /** @var StringReadRegisterAddress $address */
         $address = $addresses[0];
         $this->assertEquals(Address::TYPE_STRING, $address->getType());
         $this->assertEquals(280, $address->getAddress());
@@ -339,14 +352,14 @@ class ReadRegistersBuilderTest extends TestCase
         $addresses = $requests[0]->getAddresses();
         $this->assertCount(2, $addresses);
 
-        /** @var ReadAddress $address */
+        /** @var ReadRegisterAddress $address */
         $address = $addresses[0];
         $this->assertEquals(Address::TYPE_INT64, $address->getType());
         $this->assertEquals(0, $address->getAddress());
         $this->assertEquals('realtime', $address->getName());
         $this->assertEquals(4, $address->getSize());
 
-        /** @var ReadAddress $address */
+        /** @var ReadRegisterAddress $address */
         $address = $addresses[1];
         $this->assertEquals(Address::TYPE_INT32, $address->getType());
         $this->assertEquals(4, $address->getAddress());
@@ -460,7 +473,7 @@ class ReadRegistersBuilderTest extends TestCase
             if (empty($args['addresses'])) {
                 continue;
             }
-            foreach ($args['addresses'] as  list($method, $address, $name)) {
+            foreach ($args['addresses'] as list($method, $address, $name)) {
                 $builder = $builder->$method($address, $name);
             }
         }

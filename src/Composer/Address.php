@@ -3,9 +3,7 @@
 namespace ModbusTcpClient\Composer;
 
 
-use ModbusTcpClient\Exception\InvalidArgumentException;
-
-abstract class Address
+interface Address
 {
     const TYPE_BIT = 'bit';
     const TYPE_BYTE = 'byte';
@@ -31,48 +29,7 @@ abstract class Address
         Address::TYPE_STRING,
     ];
 
-    /** @var int */
-    protected $address;
+    public function getSize(): int;
 
-    /** @var string */
-    protected $type;
-
-    public function __construct(int $address, string $type)
-    {
-        $this->address = $address;
-        $this->type = $type;
-
-        if (!in_array($type, $this->getAllowedTypes(), true)) {
-            throw new InvalidArgumentException("Invalid address type given! type: '{$type}', address: {$address}");
-        }
-    }
-
-    abstract protected function getAllowedTypes(): array;
-
-    public function getSize(): int
-    {
-        $size = 1;
-        switch ($this->type) {
-            case self::TYPE_INT32:
-            case self::TYPE_UINT32:
-            case self::TYPE_FLOAT:
-                $size = 2;
-                break;
-            case self::TYPE_INT64:
-            case self::TYPE_UINT64:
-                $size = 4;
-                break;
-        }
-        return $size;
-    }
-
-    public function getAddress(): int
-    {
-        return $this->address;
-    }
-
-    public function getType(): string
-    {
-        return $this->type;
-    }
+    public function getAddress(): int;
 }

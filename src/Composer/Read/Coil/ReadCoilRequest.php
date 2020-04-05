@@ -1,25 +1,25 @@
 <?php
 
-namespace ModbusTcpClient\Composer\Read;
+namespace ModbusTcpClient\Composer\Read\Coil;
 
 
 use ModbusTcpClient\Composer\Request;
 use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Packet\ErrorResponse;
-use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
+use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsRequest;
 use ModbusTcpClient\Packet\ResponseFactory;
 
-class ReadRequest implements Request
+class ReadCoilRequest implements Request
 {
     /**
      * @var string uri to modbus server. Example: 'tcp://192.168.100.1:502'
      */
     private $uri;
 
-    /** @var ReadAddress[] */
+    /** @var ReadCoilAddress[] */
     private $addresses;
 
-    /** @var ReadHoldingRegistersRequest */
+    /** @var ReadCoilsRequest */
     private $request;
 
 
@@ -31,9 +31,9 @@ class ReadRequest implements Request
     }
 
     /**
-     * @return ReadHoldingRegistersRequest
+     * @return ReadCoilsRequest
      */
-    public function getRequest(): ReadHoldingRegistersRequest
+    public function getRequest(): ReadCoilsRequest
     {
         return $this->request;
     }
@@ -44,7 +44,7 @@ class ReadRequest implements Request
     }
 
     /**
-     * @return ReadAddress[]
+     * @return ReadCoilAddress[]
      */
     public function getAddresses(): array
     {

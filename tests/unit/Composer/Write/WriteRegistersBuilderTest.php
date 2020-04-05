@@ -4,7 +4,7 @@ namespace Tests\unit\Composer\Write;
 
 
 use ModbusTcpClient\Composer\Address;
-use ModbusTcpClient\Composer\Write\WriteAddress;
+use ModbusTcpClient\Composer\Write\Register\WriteRegisterAddress;
 use ModbusTcpClient\Composer\Write\WriteRegistersBuilder;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersRequest;
 use PHPUnit\Framework\TestCase;
@@ -97,7 +97,7 @@ class WriteRegistersBuilderTest extends TestCase
     public function testBuildAllFromArrayUsingObject()
     {
         $requests = WriteRegistersBuilder::newWriteMultipleRegisters('tcp://127.0.0.1:5022')
-            ->allFromArray([new WriteAddress(256, Address::TYPE_INT32, 1)])->build();
+            ->allFromArray([new WriteRegisterAddress(256, Address::TYPE_INT32, 1)])->build();
 
         $this->assertCount(1, $requests);
         $this->assertCount(1, $requests[0]->getAddresses());
@@ -211,7 +211,7 @@ class WriteRegistersBuilderTest extends TestCase
         $addresses = $requests[0]->getAddresses();
         $this->assertCount(1, $addresses);
 
-        /** @var WriteAddress $address */
+        /** @var WriteRegisterAddress $address */
         $address = $addresses[0];
         $this->assertEquals($type, $address->getType());
         $this->assertEquals(280, $address->getAddress());
@@ -233,14 +233,16 @@ class WriteRegistersBuilderTest extends TestCase
         ];
     }
 
-    public function testIsNotEmptyTrue() {
+    public function testIsNotEmptyTrue()
+    {
         $builder = WriteRegistersBuilder::newWriteMultipleRegisters('tcp://127.0.0.1:5022')
             ->int32(278, 5);
 
         $this->assertTrue($builder->isNotEmpty());
     }
 
-    public function testIsNotEmptyFalse() {
+    public function testIsNotEmptyFalse()
+    {
         $builder = WriteRegistersBuilder::newWriteMultipleRegisters('tcp://127.0.0.1:5022');
 
         $this->assertFalse($builder->isNotEmpty());

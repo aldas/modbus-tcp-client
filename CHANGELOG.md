@@ -8,11 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added high level API to compose Coil (fc1/2) requests. See:
+    * `ModbusTcpClient\Composer\Read\ReadCoilsBuilder` 
+    * `ModbusTcpClient\Composer\Write\WriteCoilsBuilder` 
 * Added 'serial' protocol support to `BinaryStreamConnection`. See [examples/rtu_usb_to_serial_stream.php](examples/rtu_usb_to_serial_stream.php) how to use it.
 * Added example to read modbus RTU from Usb to rs-485 adapter and SHT20 sensor (#50)
-* Started changelog
 * Adds Function 23 (0x17) Read/Write Multiple registers support (#47)
+* Started changelog
 
 ### Changed
 
 * Adds request time on example request page
+* (BREAKING change) abstract class `ModbusTcpClient\Composer\Address` changed to interface

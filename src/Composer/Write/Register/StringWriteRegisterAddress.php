@@ -1,13 +1,13 @@
 <?php
 
-namespace ModbusTcpClient\Composer\Write;
+namespace ModbusTcpClient\Composer\Write\Register;
 
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Utils\Types;
 
-class StringWriteAddress extends WriteAddress
+class StringWriteRegisterAddress extends WriteRegisterAddress
 {
     /**
      * @var int
