@@ -4,6 +4,7 @@ namespace Tests\unit\Network;
 
 
 use ModbusTcpClient\Network\BinaryStreamConnection;
+use ModbusTcpClient\Network\StreamCreator;
 use PHPUnit\Framework\TestCase;
 
 class BinaryStreamConnectionTest extends TestCase
@@ -21,6 +22,8 @@ class BinaryStreamConnectionTest extends TestCase
 
     public function testSet()
     {
+        $logger = new SetLogger();
+
         $connection = BinaryStreamConnection::getBuilder()
             ->setClient('127.0.0.2')
             ->setClientPort(32000)
@@ -32,6 +35,10 @@ class BinaryStreamConnectionTest extends TestCase
             ->setHost('localhost')
             ->setPort(5022)
             ->setUri('tcp://192.168.100.1:502')
+            ->setCreateStreamCallback(function () {
+                return null;
+            })
+            ->setLogger($logger)
             ->build();
 
         $this->assertEquals('127.0.0.2', $connection->getClient());
@@ -44,6 +51,7 @@ class BinaryStreamConnectionTest extends TestCase
         $this->assertEquals('localhost', $connection->getHost());
         $this->assertEquals(5022, $connection->getPort());
         $this->assertEquals('tcp://192.168.100.1:502', $connection->getUri());
+        $this->assertEquals($logger, $connection->getLogger());
     }
 
     /**
@@ -55,4 +63,25 @@ class BinaryStreamConnectionTest extends TestCase
         BinaryStreamConnection::getBuilder()->setPort(5022)->build();
     }
 
+    public function testSetSerial()
+    {
+        $connection = BinaryStreamConnection::getBuilder()
+            ->setUri('/dev/ttyUSB0')
+            ->setProtocol(StreamCreator::TYPE_SERIAL)
+            ->build();
+
+        $this->assertEquals('/dev/ttyUSB0', $connection->getUri());
+        $this->assertEquals(StreamCreator::TYPE_SERIAL, $connection->getProtocol());
+    }
+
+}
+
+class SetLogger
+{
+    public static $data = [];
+
+    public function debug($message, array $context = array())
+    {
+        $data[] = $message;
+    }
 }

@@ -39,14 +39,15 @@ abstract class MockServerTestCase extends TestCase
         return $clientData;
     }
 
-    public static function executeWithMock($mockResponse, ProtocolDataUnitRequest $request)
+    public static function executeWithMock($mockResponse, ProtocolDataUnitRequest $request, &$logger = null)
     {
         $responseBinary = null;
-        $clientData = static::executeWithMockServer($mockResponse, function ($port) use ($request, &$responseBinary) {
+        $clientData = static::executeWithMockServer($mockResponse, function ($port) use ($request, &$responseBinary, &$logger) {
 
             $connection = BinaryStreamConnection::getBuilder()
                 ->setPort($port)
                 ->setHost(getenv('MOCKSERVER_BIND_ADDRESS') ?: '127.0.0.1')
+                ->setLogger($logger)
                 ->build();
 
             $responseBinary = $connection->connect()

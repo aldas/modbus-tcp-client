@@ -27,8 +27,8 @@ trait StreamHandler
         $result = [];
         $lastAccess = microtime(true);
         $timeoutUsec = (int)(($timeout - (int)$timeout) * 1e6);
-        $write = null;
-        $except = null;
+        $write = [];
+        $except = [];
         while ($responsesToWait > 0) {
             $read = $readStreams;
 
