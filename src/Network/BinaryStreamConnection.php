@@ -26,48 +26,17 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
         $this->writeTimeoutSec = $builder->getWriteTimeoutSec();
         $this->protocol = $builder->getProtocol();
         $this->logger = $builder->getLogger();
+        $this->createStreamCallback = $builder->getCreateStreamCallback();
     }
 
-    public static function getBuilder()
+    public static function getBuilder(): BinaryStreamConnectionBuilder
     {
         return new BinaryStreamConnectionBuilder();
     }
 
-    public function connect()
+    public function connect(): BinaryStreamConnection
     {
-        $uri = $this->uri;
-        if ($uri === null) {
-            $protocol = strtolower($this->getProtocol());
-            if (!($protocol === 'tcp' || $protocol === 'udp')) {
-                throw new InvalidArgumentException("Unknown protocol, should be 'TCP' or 'UDP'");
-            }
-            $uri = "{$protocol}://{$this->host}:{$this->port}";
-        }
-
-        $opts = [];
-        if (strlen($this->getClient()) > 0) {
-            // Bind the client stream to a specific local network interface and port
-            $opts = [
-                'socket' => [
-                    'bindto' => "{$this->getClient()}:{$this->getClientPort()}",
-                ],
-            ];
-        }
-        $context = stream_context_create($opts);
-
-        $this->stream = @stream_socket_client(
-            $uri,
-            $errno,
-            $errstr,
-            $this->connectTimeoutSec,
-            STREAM_CLIENT_CONNECT,
-            $context
-        );
-
-        if (false === $this->stream) {
-            $message = "Unable to create client socket to {$uri}: {$errstr}";
-            throw new IOException($message, $errno);
-        }
+        $this->stream = ($this->createStreamCallback)($this);
 
         if ($this->logger) {
             $this->logger->debug('Connected');
@@ -92,7 +61,7 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
         return reset($result);
     }
 
-    public function send($packet)
+    public function send($packet): BinaryStreamConnection
     {
         if (!\is_resource($this->stream) || @\feof($this->stream)) {
             throw new IOException('Can not write - stream closed by the peer');
@@ -134,7 +103,8 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
         return (int)(($seconds - (int)$seconds) * 1e6);
     }
 
-    public function getStream() {
+    public function getStream()
+    {
         return $this->stream;
     }
 }

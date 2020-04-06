@@ -59,7 +59,7 @@ trait StreamHandler
                      * BE WARNED: So if would try to use same method to download HTML pages
                      * or anything larger you would find this approach not working as expected.
                      */
-                    $data = fread($stream, 2048); // read max 2048 bytes
+                    $data = fread($stream, 256); // read max 256 bytes
                     if (!empty($data)) {
                         if ($logger) {
                             $logger->debug("Stream {$streamId} @ index: {$index} received data: ", unpack('H*', $data));
