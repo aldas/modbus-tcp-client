@@ -41,7 +41,7 @@ abstract class BinaryStreamConnectionProperties
     /**
      * @var string network protocol (TCP, UDP)
      */
-    protected $protocol = 'TCP';
+    protected $protocol = StreamCreator::TYPE_TCP;
     /**
      * @var string|null Modbus device IP address
      */
@@ -56,6 +56,10 @@ abstract class BinaryStreamConnectionProperties
      */
     protected $logger;
 
+    /**
+     * @var callable callable to create stream
+     */
+    protected $createStreamCallback;
 
     /**
      * @return string (optional) client IP address when binding client
@@ -143,5 +147,13 @@ abstract class BinaryStreamConnectionProperties
     public function getUri()
     {
         return $this->uri;
+    }
+
+    /**
+     * @return callable
+     */
+    public function getCreateStreamCallback()
+    {
+        return $this->createStreamCallback;
     }
 }

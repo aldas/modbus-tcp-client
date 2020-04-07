@@ -18,6 +18,19 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
         if ($this->host === null && $this->uri === null) {
             throw new InvalidArgumentException('host or uri property can not be left null or empty!');
         }
+
+        if ($this->createStreamCallback === null) {
+            if ($this->protocol === StreamCreator::TYPE_SERIAL) {
+                $streamCreator = new SerialStreamCreator();
+            } else {
+                $streamCreator = new InternetDomainStreamCreator();
+            }
+
+            $this->createStreamCallback = function (BinaryStreamConnection $conn) use ($streamCreator) {
+                return $streamCreator->createStream($conn);
+            };
+        }
+
         return new BinaryStreamConnection($this);
     }
 
@@ -141,6 +154,16 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
             }
         }
 
+        return $this;
+    }
+
+    /**
+     * @param callable callable to create stream
+     * @return BinaryStreamConnectionBuilder
+     */
+    public function setCreateStreamCallback(callable $createStreamCallback)
+    {
+        $this->createStreamCallback = $createStreamCallback;
         return $this;
     }
 
