@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
+use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
@@ -11,6 +12,16 @@ use ModbusTcpClient\Utils\Types;
 
 /**
  * Request for Write Single Coil (FC=05)
+ *
+ * Example packet: \x00\x01\x00\x00\x00\x06\x11\x05\x00\x6B\xFF\x00
+ * \x00\x01 - transaction id
+ * \x00\x00 - protocol id
+ * \x00\x06 - number of bytes in the message (PDU = ProtocolDataUnit) to follow
+ * \x11 - unit id
+ * \x05 - function code
+ * \x00\x6B - start address
+ * \xFF\x00 - coil data (true)
+ *
  */
 class WriteSingleCoilRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {

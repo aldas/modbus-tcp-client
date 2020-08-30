@@ -2,6 +2,7 @@
 
 namespace Tests\Packet;
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Utils\Types;
 use PHPUnit\Framework\TestCase;
@@ -18,21 +19,19 @@ class ProtocolDataUnitRequestTest extends TestCase
         $this->assertEquals(255, $instance->getHeader()->getTransactionId());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage startAddress is not set or out of range: -1
-     */
     public function testFailWithNegativeStartAddress()
     {
+        $this->expectExceptionMessage("startAddress is not set or out of range: -1");
+        $this->expectException(InvalidArgumentException::class);
+
         new ProtocolDataUnitRequestImpl(-1);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage startAddress is not set or out of range: 65536
-     */
     public function testFailWithTooBigStartAddress()
     {
+        $this->expectExceptionMessage("startAddress is not set or out of range: 65536");
+        $this->expectException(InvalidArgumentException::class);
+
         new ProtocolDataUnitRequestImpl(Types::MAX_VALUE_UINT16 + 1);
     }
 

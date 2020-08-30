@@ -2,6 +2,7 @@
 
 namespace Tests\Packet;
 
+use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Packet\Word;
 use PHPUnit\Framework\TestCase;
 
@@ -13,29 +14,26 @@ class WordTest extends TestCase
         $this->assertEquals(255, $word->getUInt16());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage Word can only be constructed from 1 to 2 bytes. Currently 3 bytes was given!
-     */
     public function testShouldThrowExceptionForHugeData()
     {
+        $this->expectExceptionMessage("Word can only be constructed from 1 to 2 bytes. Currently 3 bytes was given!");
+        $this->expectException(ModbusException::class);
+
         new Word("\xFF\xFF\xFF");
     }
 
-    /**
-     * @expectedException \TypeError
-     */
     public function testShouldThrowExceptionForNullData()
     {
+        $this->expectException(\TypeError::class);
+
         new Word(null);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage Word can only be constructed from 1 to 2 bytes. Currently 0 bytes was given!
-     */
     public function testShouldThrowExceptionForEmptyData()
     {
+        $this->expectExceptionMessage("Word can only be constructed from 1 to 2 bytes. Currently 0 bytes was given!");
+        $this->expectException(ModbusException::class);
+
         new Word('');
     }
 

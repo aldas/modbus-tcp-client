@@ -16,6 +16,16 @@ use Traversable;
 
 /**
  * Request for Read / Write Multiple Registers response (FC=23)
+ *
+ * Example packet: \x01\x38\x00\x00\x00\x05\x11\x17\x02\xCD\x6B
+ * \x01\x38 - transaction id
+ * \x00\x00 - protocol id
+ * \x00\x05 - number of bytes in the message (PDU = ProtocolDataUnit) to follow
+ * \x11 - unit id
+ * \x17 - function code
+ * \x02 - registers bytes count
+ * \xCD\x6B - write registers data (1 registers)
+ *
  */
 class ReadWriteMultipleRegistersResponse extends ByteCountResponse implements \ArrayAccess, \IteratorAggregate
 {

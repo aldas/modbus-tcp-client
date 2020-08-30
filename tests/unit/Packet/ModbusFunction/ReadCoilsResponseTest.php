@@ -2,6 +2,9 @@
 
 namespace Tests\Packet\ModbusFunction;
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Exception\ModbusException;
+use ModbusTcpClient\Exception\ParseException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusPacket;
 use PHPUnit\Framework\TestCase;
@@ -76,22 +79,20 @@ class ReadCoilsResponseTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage setting value in response is not supported!
-     */
     public function testOffsetSet()
     {
+        $this->expectExceptionMessage("setting value in response is not supported!");
+        $this->expectException(ModbusException::class);
+
         $packet = (new ReadCoilsResponse("\x02\xCD\x6B", 3, 33152))->withStartAddress(50);
         $packet[50] = 1;
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage unsetting value in response is not supported!
-     */
     public function testOffsetUnSet()
     {
+        $this->expectExceptionMessage("unsetting value in response is not supported!");
+        $this->expectException(ModbusException::class);
+
         $packet = (new ReadCoilsResponse("\x02\xCD\x6B", 3, 33152))->withStartAddress(50);
         unset($packet[50]);
     }
@@ -114,34 +115,31 @@ class ReadCoilsResponseTest extends TestCase
         $this->assertFalse($packet[65]);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage offset out of bounds
-     */
     public function testOffsetGetOutOfBoundsUnder()
     {
+        $this->expectExceptionMessage("offset out of bounds");
+        $this->expectException(InvalidArgumentException::class);
+
         $packet = (new ReadCoilsResponse("\x02\xCD\x6B", 3, 33152))->withStartAddress(50);
 
         $packet[49];
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage offset out of bounds
-     */
     public function testOffsetGetOutOfBoundsOver()
     {
+        $this->expectExceptionMessage("offset out of bounds");
+        $this->expectException(InvalidArgumentException::class);
+
         $packet = (new ReadCoilsResponse("\x02\xCD\x6B", 3, 33152))->withStartAddress(50);
 
         $packet[66];
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ParseException
-     * @expectedExceptionMessage packet byte count does not match bytes in packet! count: 3, actual: 2
-     */
     public function testFailWhenByteCountDoesNotMatch()
     {
+        $this->expectExceptionMessage("packet byte count does not match bytes in packet! count: 3, actual: 2");
+        $this->expectException(ParseException::class);
+
         new ReadCoilsResponse("\x03\xCD\x6B", 3, 33152);
     }
 

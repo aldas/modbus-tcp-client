@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Packet\ModbusFunction;
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsRequest;
 use PHPUnit\Framework\TestCase;
@@ -27,12 +28,11 @@ class WriteMultipleCoilsRequestTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage coils count out of range (1-2048): 0
-     */
     public function testValidateEmptyCoils()
     {
+        $this->expectExceptionMessage("coils count out of range (1-2048): 0");
+        $this->expectException(InvalidArgumentException::class);
+
         (new WriteMultipleCoilsRequest(107, [], 17, 1))->__toString();
     }
 

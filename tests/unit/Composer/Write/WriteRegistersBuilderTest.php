@@ -6,6 +6,7 @@ namespace Tests\unit\Composer\Write;
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\Write\Register\WriteRegisterAddress;
 use ModbusTcpClient\Composer\Write\WriteRegistersBuilder;
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -22,12 +23,11 @@ class WriteRegistersBuilderTest extends TestCase
         $this->assertCount(2, $requests);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Trying to write addresses that seem share their memory range!
-     */
     public function testBuildSplitFailsDueAddressRangeError()
     {
+        $this->expectExceptionMessage("Trying to write addresses that seem share their memory range!");
+        $this->expectException(InvalidArgumentException::class);
+
         WriteRegistersBuilder::newWriteMultipleRegisters('tcp://127.0.0.1:5022')
             ->int32(278, 5) // int32 is 2 registers wide - 278 and 279
             ->uint16(279, 4) // so we are trying to write uint16 on same memory space as int32
@@ -103,12 +103,11 @@ class WriteRegistersBuilderTest extends TestCase
         $this->assertCount(1, $requests[0]->getAddresses());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage missing length for string address
-     */
     public function testBuildStringMissingLength()
     {
+        $this->expectExceptionMessage("missing length for string address");
+        $this->expectException(InvalidArgumentException::class);
+
         WriteRegistersBuilder::newWriteMultipleRegisters('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',
@@ -118,12 +117,11 @@ class WriteRegistersBuilderTest extends TestCase
             ])->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage empty address given
-     */
     public function testBuildgMissingAddress()
     {
+        $this->expectExceptionMessage("empty address given");
+        $this->expectException(InvalidArgumentException::class);
+
         WriteRegistersBuilder::newWriteMultipleRegisters('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',
@@ -132,12 +130,11 @@ class WriteRegistersBuilderTest extends TestCase
             ])->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage empty or unknown type for address given
-     */
     public function testBuildMissingType()
     {
+        $this->expectExceptionMessage("empty or unknown type for address given");
+        $this->expectException(InvalidArgumentException::class);
+
         WriteRegistersBuilder::newWriteMultipleRegisters('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',
@@ -146,12 +143,11 @@ class WriteRegistersBuilderTest extends TestCase
             ])->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage value missing
-     */
     public function testBuildMissingValue()
     {
+        $this->expectExceptionMessage("value missing");
+        $this->expectException(InvalidArgumentException::class);
+
         WriteRegistersBuilder::newWriteMultipleRegisters('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',
@@ -160,12 +156,11 @@ class WriteRegistersBuilderTest extends TestCase
             ])->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage writing bit/byte through register is not supported as 1 word is 2 bytes so we are touching more memory than needed
-     */
     public function testBuildBitIsNotAllowed()
     {
+        $this->expectExceptionMessage("writing bit/byte through register is not supported as 1 word is 2 bytes so we are touching more memory than needed");
+        $this->expectException(InvalidArgumentException::class);
+
         WriteRegistersBuilder::newWriteMultipleRegisters('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',
@@ -175,23 +170,21 @@ class WriteRegistersBuilderTest extends TestCase
             ])->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage uri not set
-     */
     public function testCanNotAddWithoutUri()
     {
+        $this->expectExceptionMessage("uri not set");
+        $this->expectException(InvalidArgumentException::class);
+
         WriteRegistersBuilder::newWriteMultipleRegisters()
             ->int64(278, 5)
             ->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage uri can not be empty value
-     */
     public function testCanNotSetEmptyUri()
     {
+        $this->expectExceptionMessage("uri can not be empty value");
+        $this->expectException(InvalidArgumentException::class);
+
         WriteRegistersBuilder::newWriteMultipleRegisters()
             ->useUri('')
             ->build();

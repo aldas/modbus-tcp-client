@@ -11,6 +11,16 @@ use ModbusTcpClient\Utils\Types;
 
 /**
  * Response for Read Coils (FC=01)
+ *
+ * Example packet: \x81\x80\x00\x00\x00\x05\x03\x01\x02\xCD\x6B
+ * \x81\x80 - transaction id
+ * \x00\x00 - protocol id
+ * \x00\x05 - number of bytes in the message (PDU = ProtocolDataUnit) to follow
+ * \x03 - unit id
+ * \x01 - function code
+ * \x02 - coils byte count
+ * \xCD\x6B - coils data (2 bytes = 2 * 8 coils)
+ *
  */
 class ReadCoilsResponse extends ByteCountResponse implements \ArrayAccess, \IteratorAggregate
 {

@@ -3,6 +3,9 @@
 namespace Tests\Utils;
 
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Exception\OverflowException;
+use ModbusTcpClient\Exception\ParseException;
 use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
 use PHPUnit\Framework\TestCase;
@@ -192,24 +195,22 @@ class TypesTest extends TestCase
         $this->assertEquals(0x0102030405060708, Types::parseUInt64("\x08\x07\x06\x05\x04\x03\x02\x01", Endian::LITTLE_ENDIAN));
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\OverflowException
-     * @expectedExceptionMessage  64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows
-     */
     public function testShouldFailToParseUInt64FromQuadWord()
     {
+        $this->expectExceptionMessage("64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows");
+        $this->expectException(OverflowException::class);
+
         if (PHP_INT_SIZE === 4) {
             $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
         }
         Types::parseUInt64("\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", Endian::BIG_ENDIAN);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ParseException
-     * @expectedExceptionMessage  binaryData must be 8 bytes in length
-     */
     public function testShouldFailToParseUInt64FromTooShortString()
     {
+        $this->expectExceptionMessage("binaryData must be 8 bytes in length");
+        $this->expectException(ParseException::class);
+
         Types::parseUInt64("\xFF\xFF\xFF\xFF\xFF\xFF\xFF", Endian::BIG_ENDIAN);
     }
 
@@ -257,21 +258,19 @@ class TypesTest extends TestCase
         $this->assertEquals(9223372036854775807, Types::parseInt64("\xFF\xFF\xFF\xFF\xFF\xFF\x7F\xFF", Endian::BIG_ENDIAN_LOW_WORD_FIRST));
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ParseException
-     * @expectedExceptionMessage  binaryData must be 8 bytes in length
-     */
     public function testShouldFailToParseInt64FromTooShortString()
     {
+        $this->expectExceptionMessage("binaryData must be 8 bytes in length");
+        $this->expectException(ParseException::class);
+
         Types::parseInt64("\xFF\xFF\xFF\xFF\xFF\xFF\xFF", Endian::BIG_ENDIAN);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\OverflowException
-     * @expectedExceptionMessage  64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows
-     */
     public function testShouldFailToParseUInt64FromQuadWord2()
     {
+        $this->expectExceptionMessage("64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows");
+        $this->expectException(OverflowException::class);
+
         if (PHP_INT_SIZE === 4) {
             $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
         }
@@ -340,12 +339,11 @@ class TypesTest extends TestCase
         $this->assertFalse(Types::isBitSet("\x05\x01\xFF\x05", 1));
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessageRegExp  /On .*bit PHP bit shifting more than .* bit is not possible as int size is .* bytes/
-     */
     public function testShouldExceptionWhenBitToHighNumber()
     {
+        $this->expectExceptionMessageRegExp("/On .*bit PHP bit shifting more than .* bit is not possible as int size is .* bytes/");
+        $this->expectException(InvalidArgumentException::class);
+
         if (PHP_INT_SIZE === 4) {
             Types::isBitSet(1000, 32);
         } else {
@@ -462,8 +460,8 @@ class TypesTest extends TestCase
             'BigEndian: toInt16 32767 (max int16)' => ["\x7F\xFF", 32767, Endian::BIG_ENDIAN],
             'BigEndian: toInt16 -32768 (min int16)' => ["\x80\x00", -32768, Endian::BIG_ENDIAN],
 
-            'BigEndian: toInt16 32768 (overflow)' => ['', 32768, Endian::BIG_ENDIAN, \ModbusTcpClient\Exception\OverflowException::class],
-            'BigEndian: toInt16 -32769 (underflow)' => ['', -32769, Endian::BIG_ENDIAN, \ModbusTcpClient\Exception\OverflowException::class],
+            'BigEndian: toInt16 32768 (overflow)' => ['', 32768, Endian::BIG_ENDIAN, OverflowException::class],
+            'BigEndian: toInt16 -32769 (underflow)' => ['', -32769, Endian::BIG_ENDIAN, OverflowException::class],
 
             'LittleEndian: toInt16 1' => ["\x01\x00", 1, Endian::LITTLE_ENDIAN],
             'LittleEndian: toInt16 -1' => ["\xFF\xFF", -1, Endian::LITTLE_ENDIAN],
@@ -489,8 +487,8 @@ class TypesTest extends TestCase
             'BigEndian: toInt16 65535 (max uint16)' => ["\xFF\xFF", 65535, Endian::BIG_ENDIAN],
             'BigEndian: toInt16 32767' => ["\x7F\xFF", 32767, Endian::BIG_ENDIAN],
 
-            'BigEndian: toInt16 65536 (overflow)' => ['', 65536, Endian::BIG_ENDIAN, \ModbusTcpClient\Exception\OverflowException::class],
-            'BigEndian: toInt16 -1 (underflow)' => ['', -1, Endian::BIG_ENDIAN, \ModbusTcpClient\Exception\OverflowException::class],
+            'BigEndian: toInt16 65536 (overflow)' => ['', 65536, Endian::BIG_ENDIAN, OverflowException::class],
+            'BigEndian: toInt16 -1 (underflow)' => ['', -1, Endian::BIG_ENDIAN, OverflowException::class],
 
             'LittleEndian: toInt16 1' => ["\x01\x00", 1, Endian::LITTLE_ENDIAN],
             'LittleEndian: toInt16 32767' => ["\xFF\x7F", 32767, Endian::LITTLE_ENDIAN],
@@ -516,8 +514,8 @@ class TypesTest extends TestCase
             'BigEndian: toInt32 2147483647 (max int32)' => ["\x7F\xFF\xFF\xFF", 2147483647, Endian::BIG_ENDIAN],
             'BigEndian: toInt32 -2147483648 (min int32)' => ["\x80\x00\x00\x00", -2147483648, Endian::BIG_ENDIAN],
 
-            'BigEndian: toInt32 2147483648 (overflow)' => ['', 2147483648, Endian::BIG_ENDIAN, \ModbusTcpClient\Exception\OverflowException::class],
-            'BigEndian: toInt32 -2147483649 (underflow)' => ['', -2147483649, Endian::BIG_ENDIAN, \ModbusTcpClient\Exception\OverflowException::class],
+            'BigEndian: toInt32 2147483648 (overflow)' => ['', 2147483648, Endian::BIG_ENDIAN, OverflowException::class],
+            'BigEndian: toInt32 -2147483649 (underflow)' => ['', -2147483649, Endian::BIG_ENDIAN, OverflowException::class],
 
             'BigEndianLowWordFirst: toInt32 1' => ["\x00\x01\x00\x00", 1, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
             'BigEndianLowWordFirst: toInt32 -2147483648 (min int32)' => ["\x00\x00\x80\x00", -2147483648, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
@@ -546,8 +544,8 @@ class TypesTest extends TestCase
             'BigEndian: toInt32 4294967295 (max uint32)' => ["\xFF\xFF\xFF\xFF", 4294967295, Endian::BIG_ENDIAN],
             'BigEndian: toInt32 -2147483648' => ["\x80\x00\x00\x00", 0x80000000, Endian::BIG_ENDIAN],
 
-            'BigEndian: toInt32 4294967296 (overflow)' => ['', 4294967296, Endian::BIG_ENDIAN, \ModbusTcpClient\Exception\OverflowException::class],
-            'BigEndian: toInt32 -1 (underflow)' => ['', -1, Endian::BIG_ENDIAN, \ModbusTcpClient\Exception\OverflowException::class],
+            'BigEndian: toInt32 4294967296 (overflow)' => ['', 4294967296, Endian::BIG_ENDIAN, OverflowException::class],
+            'BigEndian: toInt32 -1 (underflow)' => ['', -1, Endian::BIG_ENDIAN, OverflowException::class],
 
             'BigEndianLowWordFirst: toInt32 1' => ["\x00\x01\x00\x00", 1, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
             'BigEndianLowWordFirst: toInt32 -2147483648' => ["\x00\x00\x80\x00", 0x80000000, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
@@ -613,13 +611,13 @@ class TypesTest extends TestCase
             'BigEndianLowWordFirst: toInt64 67305985' => ["\x02\x01\x04\x03\x00\x00\x00\x00", 67305985, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
             'BigEndianLowWordFirst: toInt64 9223372036854775807' => ["\xFF\xFF\xFF\xFF\xFF\xFF\x7F\xFF", 9223372036854775807, Endian::BIG_ENDIAN_LOW_WORD_FIRST, null, true],
 
-            'BigEndianLowWordFirst: toInt64 -1 (underflow)' => ['', -1, Endian::BIG_ENDIAN_LOW_WORD_FIRST, \ModbusTcpClient\Exception\OverflowException::class],
+            'BigEndianLowWordFirst: toInt64 -1 (underflow)' => ['', -1, Endian::BIG_ENDIAN_LOW_WORD_FIRST, OverflowException::class],
 
             'BigEndian: toInt64 1' => ["\x00\x00\x00\x00\x00\x00\x00\x01", 1, Endian::BIG_ENDIAN],
             'BigEndian: toInt64 2923517522' => ["\x00\x00\x00\x00\xAE\x41\x56\x52", 2923517522, Endian::BIG_ENDIAN, null, true],
             'BigEndian: toInt64 67305985' => ["\x00\x00\x00\x00\x04\x03\x02\x01", 67305985, Endian::BIG_ENDIAN],
             'BigEndian: toInt64 9223372036854775807' => ["\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 9223372036854775807, Endian::BIG_ENDIAN, null, true],
-            'BigEndian: toInt64 -1 (underflow)' => ['', -1, Endian::BIG_ENDIAN, \ModbusTcpClient\Exception\OverflowException::class],
+            'BigEndian: toInt64 -1 (underflow)' => ['', -1, Endian::BIG_ENDIAN, OverflowException::class],
 
             'LittleEndian: toInt64 9223372036854775807' => ["\xFF\x7F\xFF\xFF\xFF\xFF\xFF\xFF", 9223372036854775807, Endian::LITTLE_ENDIAN, null, true],
         ];

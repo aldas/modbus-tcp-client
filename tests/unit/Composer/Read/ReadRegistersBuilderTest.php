@@ -8,6 +8,7 @@ use ModbusTcpClient\Composer\Read\Register\ByteReadRegisterAddress;
 use ModbusTcpClient\Composer\Read\Register\ReadRegisterAddress;
 use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
 use ModbusTcpClient\Composer\Read\Register\StringReadRegisterAddress;
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
 use PHPUnit\Framework\TestCase;
@@ -102,34 +103,31 @@ class ReadRegistersBuilderTest extends TestCase
         $this->assertCount(1, $readRequest->getAddresses());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage uri not set
-     */
     public function testCanNotAddWithoutUri()
     {
+        $this->expectExceptionMessage("uri not set");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadRegistersBuilder::newReadHoldingRegisters()
             ->bit(278, 5, 'dirchange1_status')
             ->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage uri can not be empty value
-     */
     public function testCanNotSetEmptyUri()
     {
+        $this->expectExceptionMessage("uri can not be empty value");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadRegistersBuilder::newReadHoldingRegisters()
             ->useUri('')
             ->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage missing length for string address
-     */
     public function testBuildStringMissingLength()
     {
+        $this->expectExceptionMessage("missing length for string address");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',
@@ -138,12 +136,11 @@ class ReadRegistersBuilderTest extends TestCase
             ])->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage callback must be a an anonymous function
-     */
     public function testBuildInvalidCallback()
     {
+        $this->expectExceptionMessage("callback must be a an anonymous function");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',
@@ -153,12 +150,11 @@ class ReadRegistersBuilderTest extends TestCase
             ])->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage error callback must be a an anonymous function
-     */
     public function testBuildgInvalidErrorCallback()
     {
+        $this->expectExceptionMessage("error callback must be a an anonymous function");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',
@@ -168,12 +164,11 @@ class ReadRegistersBuilderTest extends TestCase
             ])->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage empty address given
-     */
     public function testBuildgMissingAddress()
     {
+        $this->expectExceptionMessage("empty address given");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',
@@ -181,12 +176,11 @@ class ReadRegistersBuilderTest extends TestCase
             ])->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage empty or unknown type for address given
-     */
     public function testBuildMissingType()
     {
+        $this->expectExceptionMessage("empty or unknown type for address given");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',
@@ -214,23 +208,21 @@ class ReadRegistersBuilderTest extends TestCase
         $this->assertEquals(1, $address->getSize());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Invalid bit number in for register given! nthBit: '16', address: 280
-     */
     public function testBitNumberOverflow()
     {
+        $this->expectExceptionMessage("Invalid bit number in for register given! nthBit: '16', address: 280");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
             ->bit(280, 16, 'some_address')
             ->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Invalid bit number in for register given! nthBit: '-1', address: 280
-     */
     public function testBitNumberUnderflow()
     {
+        $this->expectExceptionMessage("Invalid bit number in for register given! nthBit: '-1', address: 280");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
             ->bit(280, -1, 'some_address')
             ->build();
@@ -275,12 +267,11 @@ class ReadRegistersBuilderTest extends TestCase
         $this->assertEquals(5, $address->getSize());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Out of range string length for given! length: '229', address: 280
-     */
     public function testStringTooLong()
     {
+        $this->expectExceptionMessage("Out of range string length for given! length: '229', address: 280");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
             ->string(280, 229, 'some_address')
             ->build();

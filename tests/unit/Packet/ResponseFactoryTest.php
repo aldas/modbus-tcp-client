@@ -4,6 +4,8 @@
 namespace Tests\Packet;
 
 
+use ModbusTcpClient\Exception\ModbusException;
+use ModbusTcpClient\Exception\ParseException;
 use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
@@ -21,21 +23,19 @@ use PHPUnit\Framework\TestCase;
 
 class ResponseFactoryTest extends TestCase
 {
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage Response null or data length too short to be valid packet!
-     */
     public function testShouldThrowExceptionOnGarbageData()
     {
+        $this->expectExceptionMessage("Response null or data length too short to be valid packet!");
+        $this->expectException(ModbusException::class);
+
         ResponseFactory::parseResponse("\x00\x01\x00\x00\x00\x06\x11\x06");
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage Response null or data length too short to be valid packet!
-     */
     public function testShouldThrowExceptionOnNullData()
     {
+        $this->expectExceptionMessage("Response null or data length too short to be valid packet!");
+        $this->expectException(ModbusException::class);
+
         ResponseFactory::parseResponse(null);
     }
 
@@ -66,12 +66,11 @@ class ResponseFactoryTest extends TestCase
         $this->assertEquals('Illegal data value', $response->getErrorMessage());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage Illegal data value
-     */
     public function testShouldThrowExceptionOnErrorResponse()
     {
+        $this->expectExceptionMessage("Illegal data value");
+        $this->expectException(ModbusException::class);
+
         //exception for read coils (FC1), error code 3
         $data = "\xda\x87\x00\x00\x00\x03\x00\x81\x03";
 
@@ -243,12 +242,11 @@ class ResponseFactoryTest extends TestCase
         $this->assertEquals(0x8180, $header->getTransactionId());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ParseException
-     * @expectedExceptionMessage Unknown function code '17' read from response packet
-     */
     public function testInvalidFunctionCodeParse()
     {
+        $this->expectExceptionMessage("Unknown function code '17' read from response packet");
+        $this->expectException(ParseException::class);
+
         //trans + proto + len   + uid + fc + addr + number of coils
         //81 80 + 00 00 + 00 05 + 03  + 11 + 00 01 + 00 0A
         $data = "\x81\x80\x00\x00\x00\x06\x03\x11\x00\x01\x00\x0A";

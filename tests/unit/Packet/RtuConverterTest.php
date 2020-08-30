@@ -3,11 +3,11 @@
 namespace Tests\unit\Packet;
 
 
+use ModbusTcpClient\Exception\ParseException;
 use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
-use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersResponse;
 use ModbusTcpClient\Packet\RtuConverter;
 use PHPUnit\Framework\TestCase;
 
@@ -48,12 +48,11 @@ class RtuConverterTest extends TestCase
         $this->assertEquals($packet, $tcpPacket);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ParseException
-     * @expectedExceptionMessage Packet crc (\x5190) does not match calculated crc (\x5191)!
-     */
     public function testRtuPackWithInvalidCrc()
     {
+        $this->expectExceptionMessage('Packet crc (\x5190) does not match calculated crc (\x5191)!');
+        $this->expectException(ParseException::class);
+
         RtuConverter::fromRtu("\x00\x81\x03\x51\x90");
     }
 

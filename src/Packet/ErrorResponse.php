@@ -6,10 +6,22 @@ namespace ModbusTcpClient\Packet;
 
 use ModbusTcpClient\Utils\Types;
 
+/**
+ * Modbus ErrorResponse packet
+ *
+ * Example packet: \xda\x87\x00\x00\x00\x03\x01\x81\x03
+ * \xda\x87 - transaction id
+ * \x00\x00 - protocol id
+ * \x00\x03 - number of bytes in the message (PDU = ProtocolDataUnit) to follow
+ * \x01 - unit id
+ * \x81 - function code + 128 (exception bitmask)
+ * \x03 - error code
+ *
+ */
 class ErrorResponse implements ModbusResponse
 {
     /**
-     * @var int Modbus exceptions are transfered in function code byte and have their high bit set (128)
+     * @var int Modbus exceptions are transferred in function code byte and have their high bit set (128)
      */
     const EXCEPTION_BITMASK = 128;
 
@@ -78,7 +90,7 @@ class ErrorResponse implements ModbusResponse
                 $message = 'Gateway targeted device failed to respond';
                 break;
             default:
-                $message = "Uknown error code ($this->errorCode)";
+                $message = "Unknown error code ($this->errorCode)";
                 break;
         }
         return $message;
@@ -105,5 +117,23 @@ class ErrorResponse implements ModbusResponse
     public function withStartAddress(int $startAddress)
     {
         return clone $this; // just to have same interface as 'success' responses
+    }
+
+    /**
+     * is checks if given binary string is complete modbus error packet
+     *
+     * @param $binaryData string|null binary string to be checked
+     * @return bool true if data is actual error packet
+     */
+    public static function is($binaryData): bool
+    {
+        // a) data is too short. can not determine packet.
+        // b) data is too long. can not be an error packet
+        // Actual packet is at least 9 bytes. 7 bytes for Modbus header and at least 2 bytes for PDU
+        if (strlen($binaryData) !== 9) {
+            return false;
+        }
+
+        return (ord($binaryData[7]) & self::EXCEPTION_BITMASK) > 0;
     }
 }

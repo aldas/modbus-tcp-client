@@ -5,6 +5,7 @@ namespace Tests\unit\Composer\Read;
 use ModbusTcpClient\Composer\AddressSplitter;
 use ModbusTcpClient\Composer\Read\Coil\ReadCoilAddress;
 use ModbusTcpClient\Composer\Read\ReadCoilsBuilder;
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesRequest;
 use PHPUnit\Framework\TestCase;
@@ -92,34 +93,31 @@ class ReadCoilsBuilderTest extends TestCase
         $this->assertCount(2, $requests[2]->getAddresses());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage uri not set
-     */
     public function testCanNotAddWithoutUri()
     {
+        $this->expectExceptionMessage("uri not set");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadCoilsBuilder::newReadCoils()
             ->coil(278, 'dirchange1_status')
             ->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage uri can not be empty value
-     */
     public function testCanNotSetEmptyUri()
     {
+        $this->expectExceptionMessage("uri can not be empty value");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadCoilsBuilder::newReadCoils()
             ->useUri('')
             ->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage empty address given
-     */
     public function testEmptyAddress()
     {
+        $this->expectExceptionMessage("empty address given");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadCoilsBuilder::newReadCoils('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',
@@ -127,12 +125,11 @@ class ReadCoilsBuilderTest extends TestCase
             ])->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage callback must be a an anonymous function
-     */
     public function testInvalidCallback()
     {
+        $this->expectExceptionMessage("callback must be a an anonymous function");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadCoilsBuilder::newReadCoils('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',
@@ -142,12 +139,11 @@ class ReadCoilsBuilderTest extends TestCase
             ])->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage error callback must be a an anonymous function
-     */
     public function testInvalidErrorCallback()
     {
+        $this->expectExceptionMessage("error callback must be a an anonymous function");
+        $this->expectException(InvalidArgumentException::class);
+
         ReadCoilsBuilder::newReadCoils('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',

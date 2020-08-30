@@ -5,6 +5,7 @@ namespace Tests\unit\Composer\Read\Register;
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\Read\Register\ReadRegisterAddress;
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use PHPUnit\Framework\TestCase;
 
@@ -30,12 +31,11 @@ class ReadRegisterAddressTest extends TestCase
         ];
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Invalid address type given! type: 'byte', address: 1
-     */
     public function testInvalidType()
     {
+        $this->expectExceptionMessage("Invalid address type given! type: 'byte', address: 1");
+        $this->expectException(InvalidArgumentException::class);
+
         new ReadRegisterAddress(1, Address::TYPE_BYTE);
     }
 
@@ -141,12 +141,11 @@ class ReadRegisterAddressTest extends TestCase
     }
 
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage test
-     */
     public function testExtractWithNoErrorCallback()
     {
+        $this->expectExceptionMessage("test");
+        $this->expectException(\RuntimeException::class);
+
         $responsePacket = new ReadHoldingRegistersResponse("\x08\x00\x00\x00\x00\x00\x00\x00\x00", 3, 33152);
 
         $address = new ReadRegisterAddress(

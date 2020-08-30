@@ -5,6 +5,7 @@ namespace ModbusTcpClient\Packet\ModbusFunction;
 
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
@@ -13,6 +14,18 @@ use ModbusTcpClient\Utils\Types;
 
 /**
  * Request for Write Multiple Registers (FC=16)
+ *
+ * Example packet: \x01\x38\x00\x00\x00\x0d\x11\x10\x04\x10\x00\x03\x06\x00\xC8\x00\x82\x87\x01
+ * \x01\x38 - transaction id
+ * \x00\x00 - protocol id
+ * \x00\x0d - number of bytes in the message (PDU = ProtocolDataUnit) to follow
+ * \x11 - unit id
+ * \x10 - function code
+ * \x04\x10 - start address
+ * \x00\x03 - count of register to write
+ * \x06 - coils byte count
+ * \x00\xC8\x00\x82\x87\x01 - registers data
+ *
  */
 class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {
