@@ -36,6 +36,7 @@ namespace Tests\unit\Network;
 
 use ModbusTcpClient\Network\BinaryStreamConnection;
 use ModbusTcpClient\Network\InternetDomainStreamCreator;
+use ModbusTcpClient\Network\IOException;
 use ModbusTcpClient\Network\SSCMockData;
 use ModbusTcpClient\Network\StreamCreator;
 use PHPUnit\Framework\TestCase;
@@ -66,12 +67,11 @@ class InternetDomainStreamCreatorTest extends TestCase
         $this->assertEquals('stream', $stream);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Network\IOException
-     * @expectedExceptionMessage Unable to create client socket to tcp://127.0.0.1:1: Connection refused
-     */
     public function testExceptionCreatingStream()
     {
+        $this->expectExceptionMessage("Unable to create client socket to tcp://127.0.0.1:1: Connection refused");
+        $this->expectException(IOException::class);
+
         $connection = BinaryStreamConnection::getBuilder()
             ->setProtocol(StreamCreator::TYPE_TCP)
             ->setUri('tcp://127.0.0.1:1')
@@ -80,12 +80,11 @@ class InternetDomainStreamCreatorTest extends TestCase
         (new InternetDomainStreamCreator())->createStream($connection);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Unknown protocol, should be 'TCP' or 'UDP'
-     */
     public function testUnknownProtocol()
     {
+        $this->expectExceptionMessage("Unknown protocol, should be 'TCP' or 'UDP'");
+        $this->expectException(\InvalidArgumentException::class);
+
         $connection = BinaryStreamConnection::getBuilder()
             ->setProtocol(StreamCreator::TYPE_SERIAL)
             ->setHost('localhost')

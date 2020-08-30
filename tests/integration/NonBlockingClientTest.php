@@ -4,6 +4,7 @@ namespace Tests\integration;
 
 use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
 use ModbusTcpClient\Composer\Write\WriteRegistersBuilder;
+use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Network\NonBlockingClient;
 use ModbusTcpClient\Network\ResultContainer;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
@@ -155,12 +156,11 @@ class NonBlockingClientTest extends MockServerTestCase
     }
 
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage sendRequests resulted with modbus error. msg: Illegal data value
-     */
     public function testSendSingleRequestShouldThrowException()
     {
+        $this->expectExceptionMessage("sendRequests resulted with modbus error. msg: Illegal data value");
+        $this->expectException(ModbusException::class);
+
         $mockResponse = 'da8700000003008103'; // respond with error response
 
         $response = null;
@@ -177,12 +177,11 @@ class NonBlockingClientTest extends MockServerTestCase
         });
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage sendPackets resulted with modbus error. msg: Illegal data value
-     */
     public function testSendSinglePacketShouldThrowException()
     {
+        $this->expectExceptionMessage("sendPackets resulted with modbus error. msg: Illegal data value");
+        $this->expectException(ModbusException::class);
+
         $mockResponse = 'da8700000003008103'; // respond with error response
 
         $response = null;
@@ -195,12 +194,11 @@ class NonBlockingClientTest extends MockServerTestCase
         });
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage sendPackets resulted with modbus error. msg: Illegal data value
-     */
     public function testSendSinglePacketShouldThrowException2()
     {
+        $this->expectExceptionMessage("sendPackets resulted with modbus error. msg: Illegal data value");
+        $this->expectException(ModbusException::class);
+
         $mockResponse = 'da8700000003008103'; // respond with error response
 
         $response = null;

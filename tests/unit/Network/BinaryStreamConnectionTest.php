@@ -3,6 +3,7 @@
 namespace Tests\unit\Network;
 
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Network\BinaryStreamConnection;
 use ModbusTcpClient\Network\StreamCreator;
 use PHPUnit\Framework\TestCase;
@@ -54,12 +55,11 @@ class BinaryStreamConnectionTest extends TestCase
         $this->assertEquals($logger, $connection->getLogger());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage host or uri property can not be left null or empty!
-     */
     public function testCanNotBuildWithoutHostOrUri()
     {
+        $this->expectExceptionMessage("host or uri property can not be left null or empty!");
+        $this->expectException(InvalidArgumentException::class);
+
         BinaryStreamConnection::getBuilder()->setPort(5022)->build();
     }
 

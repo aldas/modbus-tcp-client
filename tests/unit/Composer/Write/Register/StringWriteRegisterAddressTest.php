@@ -4,16 +4,16 @@ namespace Tests\unit\Composer\Write\Register;
 
 
 use ModbusTcpClient\Composer\Write\Register\StringWriteRegisterAddress;
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class StringWriteRegisterAddressTest extends TestCase
 {
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Out of range string length for given! length: '0', address: 0
-     */
     public function testConstructorByteRangeUnderflow()
     {
+        $this->expectExceptionMessage("Out of range string length for given! length: '0', address: 0");
+        $this->expectException(InvalidArgumentException::class);
+
         new StringWriteRegisterAddress(0, 'hello', 0);
     }
 

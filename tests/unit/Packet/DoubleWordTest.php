@@ -3,6 +3,7 @@
 namespace Tests\Packet;
 
 
+use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Packet\DoubleWord;
 use ModbusTcpClient\Utils\Endian;
 use PHPUnit\Framework\TestCase;
@@ -16,12 +17,11 @@ class DoubleWordTest extends TestCase
         $this->assertEquals("\x00\x00\x7F\xFF", $dWord->getData());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage Word can only be constructed from 1 to 4 bytes. Currently 5 bytes was given!
-     */
     public function testShouldNotConstructFromLongerData()
     {
+        $this->expectExceptionMessage("Word can only be constructed from 1 to 4 bytes. Currently 5 bytes was given!");
+        $this->expectException(ModbusException::class);
+
         new DoubleWord("\x01\x02\x03\x04\x05");
     }
 

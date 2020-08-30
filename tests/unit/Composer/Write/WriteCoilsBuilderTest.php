@@ -6,6 +6,7 @@ namespace Tests\unit\Composer\Write;
 use ModbusTcpClient\Composer\AddressSplitter;
 use ModbusTcpClient\Composer\Write\Coil\WriteCoilAddress;
 use ModbusTcpClient\Composer\Write\WriteCoilsBuilder;
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -103,12 +104,11 @@ class WriteCoilsBuilderTest extends TestCase
         $this->assertCount(1, $requests[0]->getAddresses());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage empty address given
-     */
     public function testBuildgMissingAddress()
     {
+        $this->expectExceptionMessage("empty address given");
+        $this->expectException(InvalidArgumentException::class);
+
         WriteCoilsBuilder::newWriteMultipleCoils('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',
@@ -116,12 +116,11 @@ class WriteCoilsBuilderTest extends TestCase
             ])->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage value missing
-     */
     public function testBuildMissingValue()
     {
+        $this->expectExceptionMessage("value missing");
+        $this->expectException(InvalidArgumentException::class);
+
         WriteCoilsBuilder::newWriteMultipleCoils('tcp://127.0.0.1:5022')
             ->fromArray([
                 'uri' => 'tcp://127.0.0.1:5022',
@@ -129,23 +128,21 @@ class WriteCoilsBuilderTest extends TestCase
             ])->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage uri not set
-     */
     public function testCanNotAddWithoutUri()
     {
+        $this->expectExceptionMessage("uri not set");
+        $this->expectException(InvalidArgumentException::class);
+
         WriteCoilsBuilder::newWriteMultipleCoils()
             ->coil(278, true)
             ->build();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage uri can not be empty value
-     */
     public function testCanNotSetEmptyUri()
     {
+        $this->expectExceptionMessage("uri can not be empty value");
+        $this->expectException(InvalidArgumentException::class);
+
         WriteCoilsBuilder::newWriteMultipleCoils()
             ->useUri('')
             ->build();

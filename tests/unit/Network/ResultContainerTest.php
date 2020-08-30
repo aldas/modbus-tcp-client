@@ -3,6 +3,7 @@
 namespace Tests\unit\Network;
 
 
+use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Network\ResultContainer;
 use PHPUnit\Framework\TestCase;
 
@@ -31,22 +32,20 @@ class ResultContainerTest extends TestCase
         $this->assertFalse($c->hasErrors());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage setting value is not supported!
-     */
     public function testArrayAccessSettingIsNotSupported()
     {
+        $this->expectExceptionMessage("setting value is not supported!");
+        $this->expectException(ModbusException::class);
+
         $c = new ResultContainer([], []);
         $c[0] = 1;
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage setting value is not supported!
-     */
     public function testArrayAccessUnsettingIsNotSupported()
     {
+        $this->expectExceptionMessage("setting value is not supported!");
+        $this->expectException(ModbusException::class);
+
         $c = new ResultContainer([], []);
         unset($c[0]);
     }

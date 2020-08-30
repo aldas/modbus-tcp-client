@@ -83,12 +83,11 @@ class ReadCoilAddressTest extends TestCase
         $this->assertEquals(false, $value);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage test
-     */
     public function testExtractWithNoErrorCallback()
     {
+        $this->expectExceptionMessage("test");
+        $this->expectException(\RuntimeException::class);
+
         $responsePacket = new ReadCoilsResponse("\x01\x02", 3, 33152);
         $address = new ReadCoilAddress(
             1,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
@@ -11,6 +12,16 @@ use ModbusTcpClient\Utils\Types;
 
 /**
  * Request for Read Holding Registers (FC=03)
+ *
+ * Example packet: \x00\x01\x00\x00\x00\x06\x01\x03\x00\x6B\x00\x01
+ * \x00\x01 - transaction id
+ * \x00\x00 - protocol id
+ * \x00\x06 - number of bytes in the message (PDU = ProtocolDataUnit) to follow
+ * \x01 - unit id
+ * \x03 - function code
+ * \x00\x6B - start address
+ * \x00\x01 - holding registers quantity to return
+ *
  */
 class ReadHoldingRegistersRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {

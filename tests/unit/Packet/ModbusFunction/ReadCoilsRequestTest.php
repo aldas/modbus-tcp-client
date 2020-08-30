@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Packet\ModbusFunction;
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsRequest;
 use ModbusTcpClient\Utils\Types;
@@ -30,29 +31,26 @@ class ReadCoilsRequestTest extends TestCase
         $this->assertEquals(17, $header->getUnitId());
     }
 
-    /**
-     * @expectedException \TypeError
-     */
     public function testShouldThrowExceptionOnNullQuantity()
     {
+        $this->expectException(\TypeError::class);
+
         new ReadCoilsRequest(107, null, 17, 1);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage quantity is not set or out of range (1-2048):
-     */
     public function testShouldThrowExceptionOnBelowLimitQuantity()
     {
+        $this->expectExceptionMessage("quantity is not set or out of range (1-2048):");
+        $this->expectException(InvalidArgumentException::class);
+
         new ReadCoilsRequest(107, 0, 17, 1);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage quantity is not set or out of range (1-2048):
-     */
     public function testShouldThrowExceptionOnOverLimitQuantity()
     {
+        $this->expectExceptionMessage("quantity is not set or out of range (1-2048):");
+        $this->expectException(InvalidArgumentException::class);
+
         new ReadCoilsRequest(107, 256*8 + 1, 17, 1);
     }
 }

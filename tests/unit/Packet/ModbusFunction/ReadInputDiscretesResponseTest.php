@@ -2,6 +2,7 @@
 
 namespace Tests\Packet\ModbusFunction;
 
+use ModbusTcpClient\Exception\ParseException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesResponse;
 use ModbusTcpClient\Packet\ModbusPacket;
 use PHPUnit\Framework\TestCase;
@@ -33,12 +34,11 @@ class ReadInputDiscretesResponseTest extends TestCase
         $this->assertEquals(3, $header->getUnitId());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ParseException
-     * @expectedExceptionMessage packet byte count does not match bytes in packet! count: 3, actual: 2
-     */
     public function testFailWhenByteCountDoesNotMatch()
     {
+        $this->expectExceptionMessage("packet byte count does not match bytes in packet! count: 3, actual: 2");
+        $this->expectException(ParseException::class);
+
         new ReadInputDiscretesResponse("\x03\xCD\x6B", 3, 33152);
     }
 

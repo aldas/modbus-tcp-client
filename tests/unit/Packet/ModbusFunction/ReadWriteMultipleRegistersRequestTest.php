@@ -2,6 +2,7 @@
 
 namespace Tests\Packet\ModbusFunction;
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadWriteMultipleRegistersRequest;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Utils\Types;
@@ -37,12 +38,11 @@ class ReadWriteMultipleRegistersRequestTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage write registers count out of range (1-121): 0
-     */
     public function testValidateEmptyWriteRegisters()
     {
+        $this->expectExceptionMessage("write registers count out of range (1-121): 0");
+        $this->expectException(InvalidArgumentException::class);
+
         (new ReadWriteMultipleRegistersRequest(
             0x0410,
             1,
@@ -51,12 +51,11 @@ class ReadWriteMultipleRegistersRequestTest extends TestCase
         ))->__toString();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage read registers quantity out of range (1-125): 0
-     */
     public function testValidateReadQuantityUnderflow()
     {
+        $this->expectExceptionMessage("read registers quantity out of range (1-125): 0");
+        $this->expectException(InvalidArgumentException::class);
+
         (new ReadWriteMultipleRegistersRequest(
             0x0410,
             0,
@@ -65,12 +64,11 @@ class ReadWriteMultipleRegistersRequestTest extends TestCase
         ))->__toString();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage read registers quantity out of range (1-125): 126
-     */
     public function testValidateReadQuantityOverflow()
     {
+        $this->expectExceptionMessage("read registers quantity out of range (1-125): 126");
+        $this->expectException(InvalidArgumentException::class);
+
         (new ReadWriteMultipleRegistersRequest(
             0x0410,
             126,
@@ -79,12 +77,11 @@ class ReadWriteMultipleRegistersRequestTest extends TestCase
         ))->__toString();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage startAddress is not set or out of range: -1
-     */
     public function testValidateReadStartAddressUnderflow()
     {
+        $this->expectExceptionMessage("startAddress is not set or out of range: -1");
+        $this->expectException(InvalidArgumentException::class);
+
         (new ReadWriteMultipleRegistersRequest(
             -1,
             1,
@@ -93,12 +90,11 @@ class ReadWriteMultipleRegistersRequestTest extends TestCase
         ))->__toString();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage startAddress is not set or out of range: 65536
-     */
     public function testValidateReadStartAddressOverflow()
     {
+        $this->expectExceptionMessage("startAddress is not set or out of range: 65536");
+        $this->expectException(InvalidArgumentException::class);
+
         (new ReadWriteMultipleRegistersRequest(
             Types::MAX_VALUE_UINT16 + 1,
             1,
@@ -107,12 +103,11 @@ class ReadWriteMultipleRegistersRequestTest extends TestCase
         ))->__toString();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage write registers start address out of range (0-65535): -1
-     */
     public function testValidateWriteStartAddressUnderflow()
     {
+        $this->expectExceptionMessage("write registers start address out of range (0-65535): -1");
+        $this->expectException(InvalidArgumentException::class);
+
         (new ReadWriteMultipleRegistersRequest(
             1,
             1,
@@ -121,12 +116,11 @@ class ReadWriteMultipleRegistersRequestTest extends TestCase
         ))->__toString();
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage write registers start address out of range (0-65535): 65536
-     */
     public function testValidateWriteStartAddressOverflow()
     {
+        $this->expectExceptionMessage("write registers start address out of range (0-65535): 65536");
+        $this->expectException(InvalidArgumentException::class);
+
         (new ReadWriteMultipleRegistersRequest(
             1,
             1,

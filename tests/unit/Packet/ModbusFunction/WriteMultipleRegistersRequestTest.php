@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Packet\ModbusFunction;
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersRequest;
 use ModbusTcpClient\Utils\Types;
@@ -28,12 +29,11 @@ class WriteMultipleRegistersRequestTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage registers count out of range (1-124): 0
-     */
     public function testValidateEmptyRegistersThrowsException()
     {
+        $this->expectExceptionMessage("registers count out of range (1-124): 0");
+        $this->expectException(InvalidArgumentException::class);
+
         (new WriteMultipleRegistersRequest(107, [], 17, 1))->__toString();
     }
 

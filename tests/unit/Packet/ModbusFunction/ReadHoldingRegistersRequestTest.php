@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Packet\ModbusFunction;
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use PHPUnit\Framework\TestCase;
@@ -59,29 +60,26 @@ class ReadHoldingRegistersRequestTest extends TestCase
         $this->assertEquals(0, $header->getUnitId());
     }
 
-    /**
-     * @expectedException \TypeError
-     */
     public function testShouldThrowExceptionOnNullQuantity()
     {
+        $this->expectException(\TypeError::class);
+
         new ReadHoldingRegistersRequest(107, null);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage quantity is not set or out of range (0-124):
-     */
     public function testShouldThrowExceptionOnBelowLimitQuantity()
     {
+        $this->expectExceptionMessage("quantity is not set or out of range (0-124):");
+        $this->expectException(InvalidArgumentException::class);
+
         new ReadHoldingRegistersRequest(107, 0);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage quantity is not set or out of range (0-124):
-     */
     public function testShouldThrowExceptionOnOverLimitQuantity()
     {
+        $this->expectExceptionMessage("quantity is not set or out of range (0-124):");
+        $this->expectException(InvalidArgumentException::class);
+
         new ReadHoldingRegistersRequest(107, 125);
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
@@ -11,6 +12,18 @@ use ModbusTcpClient\Utils\Types;
 
 /**
  * Request for Write Multiple Coils (FC=15)
+ *
+ * Example packet: \x01\x38\x00\x00\x00\x08\x11\x0F\x04\x10\x00\x03\x01\x05
+ * \x01\x38 - transaction id
+ * \x00\x00 - protocol id
+ * \x00\x08 - number of bytes in the message (PDU = ProtocolDataUnit) to follow
+ * \x11 - unit id
+ * \x0F - function code
+ * \x04\x10 - start address
+ * \x00\x03 - count of coils to write
+ * \x01 - coils byte count
+ * \x05 - coils data
+ *
  */
 class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {

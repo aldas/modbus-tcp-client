@@ -5,6 +5,7 @@ namespace ModbusTcpClient\Packet\ModbusFunction;
 
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
@@ -12,6 +13,16 @@ use ModbusTcpClient\Utils\Types;
 
 /**
  * Request for Read Coils (FC=01)
+ *
+ * Example packet: \x81\x80\x00\x00\x00\x06\x10\x01\x00\x6B\x00\x03
+ * \x81\x80 - transaction id
+ * \x00\x00 - protocol id
+ * \x00\x06 - number of bytes in the message (PDU = ProtocolDataUnit) to follow
+ * \x10 - unit id
+ * \x01 - function code
+ * \x00\x6B - start address
+ * \x00\x03 - coils quantity to return
+ *
  */
 class ReadCoilsRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {

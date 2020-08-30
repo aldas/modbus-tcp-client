@@ -13,6 +13,16 @@ use ModbusTcpClient\Utils\Types;
  * Data part of packet is always 4 bytes - 2 byte for address and 2 byte for coil status (FF00 = on,  0000 = off).
  * For example: coil at address 1 is turned on '\x00\x01\xFF\x00'
  * For example: coil at address 10 is turned off '\x00\x0A\x00\x00'
+ *
+ * Example packet: \x00\x01\x00\x00\x00\x06\x03\x05\x00\x02\xFF\x00
+ * \x00\x01 - transaction id
+ * \x00\x00 - protocol id
+ * \x00\x06 - number of bytes in the message (PDU = ProtocolDataUnit) to follow
+ * \x03 - unit id
+ * \x05 - function code
+ * \x00\x02 - start address
+ * \xFF\x00 - coil data (true)
+ *
  */
 class WriteSingleCoilResponse extends StartAddressResponse
 {

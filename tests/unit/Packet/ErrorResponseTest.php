@@ -29,7 +29,7 @@ class ErrorResponseTest extends TestCase
             'errorCode 6means "Server busy"' => [6, 'Server busy'],
             'errorCode 10 means "Gateway path unavailable"' => [10, 'Gateway path unavailable'],
             'errorCode 11 means "Gateway targeted device failed to respond"' => [11, 'Gateway targeted device failed to respond'],
-            'errorCode 12 is unknown code' => [12, 'Uknown error code (12)'],
+            'errorCode 12 is unknown code' => [12, 'Unknown error code (12)'],
         ];
     }
 
@@ -70,5 +70,21 @@ class ErrorResponseTest extends TestCase
         $this->assertEquals($address->toHex(), $withStartAddress->toHex());
     }
 
+    public function isProvider(): array
+    {
+        return [
+            'complete error packet is error' => ["\xda\x87\x00\x00\x00\x03\x00\x81\x03", true],
+            'short incomplete error packet is not error' => ["\xda\x87\x00\x00\x00\x03\x00\x81", false],
+            'read coils (f1) response packet is not error' => ["\x81\x80\x00\x00\x00\x04\x03\x01\x01\xCD", false],
+        ];
+    }
 
+    /**
+     * @dataProvider isProvider
+     */
+    public function testIs($binaryData, $expect)
+    {
+        $is = ErrorResponse::is($binaryData);
+        $this->assertEquals($expect, $is);
+    }
 }

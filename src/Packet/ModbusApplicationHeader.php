@@ -7,6 +7,17 @@ use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Utils\Types;
 
+/**
+ * Modbus packet header.
+ * NB: for 'reasons' this library includes unit id in header.
+ *
+ * Example header: \xda\x87\x00\x00\x00\x03\x01
+ * \xda\x87 - transaction id
+ * \x00\x00 - protocol id
+ * \x00\x03 - number of bytes in the message (PDU = ProtocolDataUnit) to follow
+ * \x01 - unit id
+ *
+ */
 class ModbusApplicationHeader
 {
     /**

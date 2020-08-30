@@ -2,6 +2,9 @@
 
 namespace Tests\Packet\ModbusFunction;
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Exception\ModbusException;
+use ModbusTcpClient\Exception\ParseException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadWriteMultipleRegistersResponse;
 use ModbusTcpClient\Packet\ModbusPacket;
 use PHPUnit\Framework\TestCase;
@@ -93,12 +96,11 @@ class ReadWriteMultipleRegistersResponseTest extends TestCase
         $this->assertEquals([0x0, 0x1], $words[2]->getBytes());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage getWords needs packet byte count to be multiple of 2
-     */
     public function testGetWordsFailsWhenByteCountIsNotMod2()
     {
+        $this->expectExceptionMessage("getWords needs packet byte count to be multiple of 2");
+        $this->expectException(ModbusException::class);
+
         $packet = new ReadWriteMultipleRegistersResponse("\x07\xCD\x6B\x0\x0\x0\x01\x00", 3, 33152);
         $packet->getWords();
     }
@@ -160,32 +162,29 @@ class ReadWriteMultipleRegistersResponseTest extends TestCase
         $this->assertFalse(isset($packet[54]));
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage setting value in response is not supported!
-     */
     public function testOffsetSet()
     {
+        $this->expectExceptionMessage("setting value in response is not supported!");
+        $this->expectException(ModbusException::class);
+
         $packet = new ReadWriteMultipleRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01", 3, 33152);
         $packet[50] = 1;
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage unsetting value in response is not supported!
-     */
     public function testOffsetUnSet()
     {
+        $this->expectExceptionMessage("unsetting value in response is not supported!");
+        $this->expectException(ModbusException::class);
+
         $packet = new ReadWriteMultipleRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01", 3, 33152);
         unset($packet[50]);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ParseException
-     * @expectedExceptionMessage packet byte count does not match bytes in packet! count: 6, actual: 7
-     */
     public function testFailWhenByteCountDoesNotMatch()
     {
+        $this->expectExceptionMessage("packet byte count does not match bytes in packet! count: 6, actual: 7");
+        $this->expectException(ParseException::class);
+
         new ReadWriteMultipleRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01\x00", 3, 33152);
     }
 
@@ -216,12 +215,11 @@ class ReadWriteMultipleRegistersResponseTest extends TestCase
         $this->assertEquals([0x2, 0x1], $packet->getWordAt(52)->getBytes());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage offset out of bounds
-     */
     public function testOffsetGetOutOfBoundsUnder()
     {
+        $this->expectExceptionMessage("offset out of bounds");
+        $this->expectException(InvalidArgumentException::class);
+
         $packet = (new ReadWriteMultipleRegistersResponse(
             "\x06\xCD\x6B\x4\x3\x2\x01",
             3,
@@ -231,12 +229,11 @@ class ReadWriteMultipleRegistersResponseTest extends TestCase
         $packet[49];
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage offset out of bounds
-     */
     public function testOffsetGetOutOfBoundsOver()
     {
+        $this->expectExceptionMessage("offset out of bounds");
+        $this->expectException(InvalidArgumentException::class);
+
         $packet = (new ReadWriteMultipleRegistersResponse(
             "\x06\xCD\x6B\x04\x03\x02\x01",
             3,
@@ -246,12 +243,11 @@ class ReadWriteMultipleRegistersResponseTest extends TestCase
         $packet[53];
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage getDoubleWords needs packet byte count to be multiple of 4
-     */
     public function testGetDoubleWordsFailsWhenByteCountIsNotMod4()
     {
+        $this->expectExceptionMessage("getDoubleWords needs packet byte count to be multiple of 4");
+        $this->expectException(ModbusException::class);
+
         $packet = new ReadWriteMultipleRegistersResponse("\x06\xCD\x6B\x0\x0\x0\x01", 3, 33152);
         $packet->getDoubleWords();
     }
@@ -268,12 +264,11 @@ class ReadWriteMultipleRegistersResponseTest extends TestCase
         $this->assertEquals([0x04, 0x03, 0x02, 0x01], $packet->getDoubleWordAt(51)->getBytes());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage address out of bounds
-     */
     public function testGetDoubleWordAtOutOfBounderUnder()
     {
+        $this->expectExceptionMessage("address out of bounds");
+        $this->expectException(InvalidArgumentException::class);
+
         $packet = (new ReadWriteMultipleRegistersResponse(
             "\x06\xCD\x6B\x04\x03\x02\x01",
             3,
@@ -283,12 +278,11 @@ class ReadWriteMultipleRegistersResponseTest extends TestCase
         $packet->getDoubleWordAt(49);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage address out of bounds
-     */
     public function testGetDoubleWordAtOutOfBounderOver()
     {
+        $this->expectExceptionMessage("address out of bounds");
+        $this->expectException(InvalidArgumentException::class);
+
         $packet = (new ReadWriteMultipleRegistersResponse(
             "\x06\xCD\x6B\x04\x03\x02\x01",
             3,
@@ -312,12 +306,10 @@ class ReadWriteMultipleRegistersResponseTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage address out of bounds
-     */
     public function testGetQuadWordAtOutOfBounderUnder()
     {
+        $this->expectExceptionMessage("address out of bounds");
+        $this->expectException(InvalidArgumentException::class);
 
         $packet = (new ReadWriteMultipleRegistersResponse(
             "\x08\x08\x07\x06\x05\x04\x03\x02\x01",
@@ -329,12 +321,11 @@ class ReadWriteMultipleRegistersResponseTest extends TestCase
         $packet->getQuadWordAt(49);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage address out of bounds
-     */
     public function testGetQuadWordAtOutOfBounderOver()
     {
+        $this->expectExceptionMessage("address out of bounds");
+        $this->expectException(InvalidArgumentException::class);
+
         $packet = (new ReadWriteMultipleRegistersResponse(
             "\x08\x08\x07\x06\x05\x04\x03\x02\x01",
             3,
@@ -353,36 +344,33 @@ class ReadWriteMultipleRegistersResponseTest extends TestCase
         $this->assertEquals('Søren', $packet->getAsciiStringAt(51, 5));
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage startFromWord out of bounds
-     */
     public function testGetAsciiStringInvalidAddressLow()
     {
+        $this->expectExceptionMessage("startFromWord out of bounds");
+        $this->expectException(InvalidArgumentException::class);
+
         $packet = (new ReadWriteMultipleRegistersResponse("\x08\x01\x00\xF8\x53\x65\x72\x00\x6E", 3, 33152))->withStartAddress(50);
         $this->assertCount(4, $packet->getWords());
 
         $packet->getAsciiStringAt(49, 5);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage startFromWord out of bounds
-     */
     public function testGetAsciiStringInvalidAddressHigh()
     {
+        $this->expectExceptionMessage("startFromWord out of bounds");
+        $this->expectException(InvalidArgumentException::class);
+
         $packet = (new ReadWriteMultipleRegistersResponse("\x08\x01\x00\xF8\x53\x65\x72\x00\x6E", 3, 33152))->withStartAddress(50);
         $this->assertCount(4, $packet->getWords());
 
         $packet->getAsciiStringAt(54, 5);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage length out of bounds
-     */
     public function testGetAsciiStringInvalidLength()
     {
+        $this->expectExceptionMessage("length out of bounds");
+        $this->expectException(InvalidArgumentException::class);
+
         $packet = (new ReadWriteMultipleRegistersResponse("\x08\x01\x00\xF8\x53\x65\x72\x00\x6E", 3, 33152))->withStartAddress(50);
         $this->assertCount(4, $packet->getWords());
 

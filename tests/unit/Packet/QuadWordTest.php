@@ -2,6 +2,8 @@
 
 namespace Tests\Packet;
 
+use ModbusTcpClient\Exception\ModbusException;
+use ModbusTcpClient\Exception\OverflowException;
 use ModbusTcpClient\Packet\QuadWord;
 use ModbusTcpClient\Packet\Word;
 use ModbusTcpClient\Utils\Endian;
@@ -17,21 +19,19 @@ class QuadWordTest extends TestCase
         $this->assertEquals("\x00\x00\x00\x00\x00\x00\x7F\xFF", $dWord->getData());
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage QuadWord can only be constructed from 1 to 8 bytes. Currently 9 bytes was given!
-     */
     public function testShouldNotConstructFromLongerData()
     {
+        $this->expectExceptionMessage("QuadWord can only be constructed from 1 to 8 bytes. Currently 9 bytes was given!");
+        $this->expectException(ModbusException::class);
+
         new QuadWord("\x01\x02\x03\x04\x05\x06\x07\x08\x09");
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\OverflowException
-     * @expectedExceptionMessage 64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows. Hex: ffffffffffffffff
-     */
     public function testShouldOverflow()
     {
+        $this->expectExceptionMessage("64-bit PHP supports only up to 63-bit signed integers. Current input has 64th bit set and overflows. Hex: ffffffffffffffff");
+        $this->expectException(OverflowException::class);
+
         if (PHP_INT_SIZE === 4) {
             $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
         }
@@ -92,10 +92,11 @@ class QuadWordTest extends TestCase
 
     /**
      * @requires PHP 7
-     * @expectedException \TypeError
      */
     public function testShouldNotCreateFromWordsWhenParamNotWord()
     {
+        $this->expectException(\TypeError::class);
+
         QuadWord::fromWords(
             new Word("\x01\x02"),
             new Word("\x03\x04"),

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
@@ -12,6 +13,16 @@ use ModbusTcpClient\Utils\Types;
 
 /**
  * Request for Write Single Register (FC=06)
+ *
+ * Example packet: \x00\x01\x00\x00\x00\x06\x11\x06\x00\x6B\x01\x01
+ * \x00\x01 - transaction id
+ * \x00\x00 - protocol id
+ * \x00\x06 - number of bytes in the message (PDU = ProtocolDataUnit) to follow
+ * \x11 - unit id
+ * \x06 - function code
+ * \x00\x6B - start address
+ * \x01\x01 - register data
+ *
  */
 class WriteSingleRegisterRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {

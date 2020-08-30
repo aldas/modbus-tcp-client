@@ -3,6 +3,7 @@
 namespace ModbusTcpClient\Packet;
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Utils\Types;
 
 /**
@@ -17,7 +18,7 @@ abstract class AbstractWord
 
     /**
      * @param string $data
-     * @throws \ModbusTcpClient\Exception\ModbusException
+     * @throws ModbusException
      */
     public function __construct(string $data)
     {

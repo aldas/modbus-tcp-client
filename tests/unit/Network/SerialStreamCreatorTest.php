@@ -39,6 +39,7 @@ namespace Tests\unit\Network;
 
 
 use ModbusTcpClient\Network\BinaryStreamConnection;
+use ModbusTcpClient\Network\IOException;
 use ModbusTcpClient\Network\SerialMockData;
 use ModbusTcpClient\Network\SerialStreamCreator;
 use ModbusTcpClient\Network\StreamCreator;
@@ -74,12 +75,11 @@ class SerialStreamCreatorTest extends TestCase
         $this->assertEquals(['stty -F /dev/random cs8'], SerialMockData::$execOpts);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Network\IOException
-     * @expectedExceptionMessage stty failed to configure device
-     */
     public function testExecException()
     {
+        $this->expectExceptionMessage("stty failed to configure device");
+        $this->expectException(IOException::class);
+
         SerialMockData::$exec = [false];
         SerialMockData::$fopen = ['stream'];
         $creator = new SerialStreamCreator(['sttyModes' => ['cs8']]);
@@ -92,12 +92,11 @@ class SerialStreamCreatorTest extends TestCase
         $creator->createStream($connection);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Network\IOException
-     * @expectedExceptionMessage failed to open device
-     */
     public function testFopenException()
     {
+        $this->expectExceptionMessage("failed to open device");
+        $this->expectException(IOException::class);
+
         SerialMockData::$exec = ['stty'];
         SerialMockData::$fopen = [false];
         $creator = new SerialStreamCreator(['sttyModes' => ['cs8']]);

@@ -3,6 +3,8 @@
 namespace Tests\unit\Packet;
 
 
+use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use PHPUnit\Framework\TestCase;
 
@@ -61,66 +63,59 @@ class ModbusApplicationHeaderTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\ModbusException
-     * @expectedExceptionMessage Data length too short to be valid header!
-     */
     public function testParseGarbage()
     {
+        $this->expectExceptionMessage("Data length too short to be valid header!");
+        $this->expectException(ModbusException::class);
+
         ModbusApplicationHeader::parse("\x00\x01\x00\x00\x00\x06");
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage length is not set or out of range (uint16): 0
-     */
     public function testLengthUnderFlow()
     {
+        $this->expectExceptionMessage("length is not set or out of range (uint16): 0");
+        $this->expectException(InvalidArgumentException::class);
+
         new ModbusApplicationHeader(0, 17, 1);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage length is not set or out of range (uint16): 65536
-     */
     public function testLengthOverFlow()
     {
+        $this->expectExceptionMessage("length is not set or out of range (uint16): 65536");
+        $this->expectException(InvalidArgumentException::class);
+
         new ModbusApplicationHeader(65536, 17, 1);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage unitId is out of range (0-247): 248
-     */
     public function testUnitIdOverFlow()
     {
+        $this->expectExceptionMessage("unitId is out of range (0-247): 248");
+        $this->expectException(InvalidArgumentException::class);
+
         new ModbusApplicationHeader(1, 248, 1);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage unitId is out of range (0-247): -1
-     */
     public function testUnitIdUnderFlow()
     {
+        $this->expectExceptionMessage("unitId is out of range (0-247): -1");
+        $this->expectException(InvalidArgumentException::class);
+
         new ModbusApplicationHeader(1, -1, 1);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage transactionId is out of range (uint16): -1
-     */
     public function testTransactionIdUnderFlow()
     {
+        $this->expectExceptionMessage("transactionId is out of range (uint16): -1");
+        $this->expectException(InvalidArgumentException::class);
+
         new ModbusApplicationHeader(1, 0, -1);
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Exception\InvalidArgumentException
-     * @expectedExceptionMessage transactionId is out of range (uint16): 65536
-     */
     public function testTransactionIdOverFlow()
     {
+        $this->expectExceptionMessage("transactionId is out of range (uint16): 65536");
+        $this->expectException(InvalidArgumentException::class);
+
         new ModbusApplicationHeader(1, 0, 65536);
     }
 
