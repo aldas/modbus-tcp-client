@@ -39,6 +39,9 @@ class BinaryStreamConnectionTest extends TestCase
             ->setCreateStreamCallback(function () {
                 return null;
             })
+            ->setIsCompleteCallback(function () {
+                return true;
+            })
             ->setLogger($logger)
             ->build();
 

@@ -62,6 +62,7 @@ namespace Tests\unit\Network;
 use ModbusTcpClient\Network\IOException;
 use ModbusTcpClient\Network\MockData;
 use ModbusTcpClient\Network\StreamHandler;
+use ModbusTcpClient\Utils\Packet;
 use PHPUnit\Framework\TestCase;
 
 class StreamHandlerTest extends TestCase
@@ -166,6 +167,13 @@ class ForTestStreamHandler
 {
     use StreamHandler {
         receiveFrom as public;
+    }
+
+    protected function getIsCompleteCallback(): callable
+    {
+        return static function ($binaryData, $streamIndex) {
+            return Packet::isCompleteLength($binaryData);
+        };
     }
 }
 

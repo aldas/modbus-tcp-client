@@ -64,19 +64,19 @@ trait StreamHandler
             foreach ($read as $stream) {
                 $streamId = (int)$stream;
 
-                $index = $streamMap[$streamId] ?? null;
-                if ($index !== null) {
+                $streamIndex = $streamMap[$streamId] ?? null;
+                if ($streamIndex !== null) {
                     $data = fread($stream, 256); // read max 256 bytes
                     if (!empty($data)) {
                         if ($logger) {
-                            $logger->debug("Stream {$streamId} @ index: {$index} received data: ", unpack('H*', $data));
+                            $logger->debug("Stream {$streamId} @ index: {$streamIndex} received data: ", unpack('H*', $data));
                         }
-                        $packetData = ($result[$index] ?? '') . $data;
-                        $result[$index] = $packetData;
+                        $packetData = ($result[$streamIndex] ?? '') . $data;
+                        $result[$streamIndex] = $packetData;
 
                         // MODBUS SPECIFIC PART: if we received complete packet to at least one stream we were waiting
                         // then it is good enough stream_select cycle
-                        if (Packet::isCompleteLength($packetData)) {
+                        if ($this->getIsCompleteCallback()($packetData, $streamIndex)) {
                             // happy path, got exactly what we expect
                             // or response is an modbus error packet. nothing to wait anymore
                             $responsesToWait--;

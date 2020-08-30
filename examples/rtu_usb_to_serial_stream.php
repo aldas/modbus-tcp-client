@@ -10,6 +10,13 @@ require __DIR__ . '/../vendor/autoload.php';
 $connection = BinaryStreamConnection::getBuilder()
     ->setUri('/dev/ttyUSB0')
     ->setProtocol('serial')
+    ->setIsCompleteCallback(static function ($binaryData, $streamIndex): bool {
+        // NB: returning always true could lead to problems with reading fragmented packets (so we returning too early)
+        // safest way would be to calculate bytes length that we expect and error response length.
+        // Example for error: 5 bytes = 1 unit id + 1 byte for function code + 1 byte for error code + 2 bytes for CRC
+        // Example for FC4 with quantity 2: 8 bytes = 1 unit id + 1 byte for function code + 2 bytes start address + 2 * quantity
+        return true;
+    })
     ->build();
 
 $startAddress = 1;

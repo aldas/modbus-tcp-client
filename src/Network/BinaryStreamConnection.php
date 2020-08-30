@@ -25,6 +25,7 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
         $this->protocol = $builder->getProtocol();
         $this->logger = $builder->getLogger();
         $this->createStreamCallback = $builder->getCreateStreamCallback();
+        $this->isCompleteCallback = $builder->getIsCompleteCallback();
     }
 
     public static function getBuilder(): BinaryStreamConnectionBuilder
