@@ -2,8 +2,6 @@
 
 namespace ModbusTcpClient\Network;
 
-use InvalidArgumentException;
-
 class BinaryStreamConnection extends BinaryStreamConnectionProperties
 {
     use StreamHandler;

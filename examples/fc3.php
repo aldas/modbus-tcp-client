@@ -6,30 +6,28 @@ use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use ModbusTcpClient\Packet\ResponseFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/logger.php';
 
 $connection = BinaryStreamConnection::getBuilder()
     ->setPort(5020)
     ->setHost('127.0.0.1')
+    ->setLogger(new EchoLogger())
     ->build();
 
 $startAddress = 256;
 $quantity = 6;
-$packet = new ReadHoldingRegistersRequest($startAddress, $quantity);
-echo 'Packet to be sent (in hex): ' . $packet->toHex() . PHP_EOL;
+$unitID = 0;
+$packet = new ReadHoldingRegistersRequest($startAddress, $quantity, $unitID);
 
 try {
-    $binaryData = $connection->connect()
-        ->sendAndReceive($packet);
-    echo 'Binary received (in hex):   ' . unpack('H*', $binaryData)[1] . PHP_EOL;
+    $binaryData = $connection->connect()->sendPacket($packet);
 
     /**
      * @var $response ReadHoldingRegistersResponse
      */
     $response = ResponseFactory::parseResponseOrThrow($binaryData);
-    echo 'Parsed packet (in hex):     ' . $response->toHex() . PHP_EOL;
-    echo 'Data parsed from packet (bytes):' . PHP_EOL;
-    print_r($response->getData());
 
+    print_r($response->getData());
     foreach ($response as $word) {
         print_r($word->getBytes());
     }
@@ -39,8 +37,8 @@ try {
 
     // set internal index to match start address to simplify array access
     $responseWithStartAddress = $response->withStartAddress($startAddress);
-    print_r($responseWithStartAddress[256]->getBytes()); // use array access to get word
-    print_r($responseWithStartAddress->getDoubleWordAt(257)->getFloat());
+    print_r($responseWithStartAddress[$startAddress]->getBytes()); // use array access to get word
+    print_r($responseWithStartAddress->getDoubleWordAt($startAddress)->getFloat());
 
 } catch (Exception $exception) {
     echo 'An exception occurred' . PHP_EOL;

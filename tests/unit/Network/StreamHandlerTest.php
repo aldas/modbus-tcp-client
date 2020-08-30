@@ -59,6 +59,7 @@ function stream_select(array &$read, array &$write, array &$except, $tv_sec, $tv
 
 namespace Tests\unit\Network;
 
+use ModbusTcpClient\Network\IOException;
 use ModbusTcpClient\Network\MockData;
 use ModbusTcpClient\Network\StreamHandler;
 use PHPUnit\Framework\TestCase;
@@ -78,9 +79,14 @@ class StreamHandlerTest extends TestCase
 
     public function testReturnData()
     {
-        MockData::$fread = ['x'];
-        MockData::$microtime = [1, 100];
-        MockData::$stream_select = ['x'];
+        // full packet is received with 2 fread calls (tcp packet fragmentation example)
+        $returnedPacketPart1 = "\xda\x87\x00\x00\x00\x03\x00\x81";
+        $returnedPacketPart2 = "\x03";
+        $expected = $returnedPacketPart1 . $returnedPacketPart2;
+
+        MockData::$fread = [$returnedPacketPart1, $returnedPacketPart2];
+        MockData::$microtime = [1, 1, 1, 100];
+        MockData::$stream_select = ['x', 'x'];
 
         $handler = new ForTestStreamHandler();
 
@@ -90,16 +96,16 @@ class StreamHandlerTest extends TestCase
 
         $result = $handler->receiveFrom($readStreams, $timeout, $logger);
 
-        $this->assertEquals(['x'], $result);
+        $this->assertEquals([$expected], $result);
+        $this->assertEquals(2, MockData::$freadCounter);
 
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Network\IOException
-     * @expectedExceptionMessage stream_select interrupted by an incoming signal
-     */
     public function testExceptionFromStreamSelect()
     {
+        $this->expectExceptionMessage("stream_select interrupted by an incoming signal");
+        $this->expectException(IOException::class);
+
         MockData::$fread = ['x'];
         MockData::$microtime = [1, 100];
         MockData::$stream_select = [false];
@@ -116,12 +122,11 @@ class StreamHandlerTest extends TestCase
 
     }
 
-    /**
-     * @expectedException \ModbusTcpClient\Network\IOException
-     * @expectedExceptionMessage Read total timeout expired
-     */
     public function testExceptionFromReadTimeout()
     {
+        $this->expectExceptionMessage("Read total timeout expired");
+        $this->expectException(IOException::class);
+
         MockData::$fread = [null];
         MockData::$microtime = [0, 100];
         MockData::$stream_select = ['x'];
@@ -140,7 +145,8 @@ class StreamHandlerTest extends TestCase
 
     public function testNoExceptionFromNoData()
     {
-        MockData::$fread = [null, 'x'];
+        $packet = "\xda\x87\x00\x00\x00\x03\x00\x81\x03";
+        MockData::$fread = [null, $packet]; // second read returns all packet bytes
         MockData::$microtime = [0, 0.001, 0.0002, 0.0003];
         MockData::$stream_select = ['x', 'x'];
 
@@ -152,7 +158,7 @@ class StreamHandlerTest extends TestCase
 
         $result = $handler->receiveFrom($readStreams, $timeout, $logger);
 
-        $this->assertEquals(['x'], $result);
+        $this->assertEquals([$packet], $result);
     }
 }
 
