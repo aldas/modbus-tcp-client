@@ -3,9 +3,15 @@
 namespace ModbusTcpClient\Network;
 
 
+use ModbusTcpClient\Utils\Packet;
+
 trait StreamHandler
 {
     /**
+     * receiveFrom reads data from multiple streams asynchronously and returns when at least 1 full packet is received
+     * NB: return when 1 full packet is silly and you should not use this method for multiple streams.
+     * for "backwards compatibility" this is not changed/fixed atm
+     *
      * @param array $readStreams
      * @param float $timeout
      * @param \Psr\Log\LoggerInterface $logger
@@ -32,14 +38,21 @@ trait StreamHandler
         while ($responsesToWait > 0) {
             $read = $readStreams;
 
-            if (false === stream_select(
-                    $read,
-                    $write,
-                    $except,
-                    (int)$timeout,
-                    $timeoutUsec
-                )
-            ) {
+            /**
+             * On success stream_select returns the number of
+             * stream resources contained in the modified arrays, which may be zero if
+             * the timeout expires before anything interesting happens. On error false
+             * is returned and a warning raised (this can happen if the system call is
+             * interrupted by an incoming signal).
+             */
+            $modifiedStreams = stream_select(
+                $read,
+                $write,
+                $except,
+                (int)$timeout,
+                $timeoutUsec
+            );
+            if (false === $modifiedStreams) {
                 throw new IOException('stream_select interrupted by an incoming signal');
             }
 
@@ -53,22 +66,23 @@ trait StreamHandler
 
                 $index = $streamMap[$streamId] ?? null;
                 if ($index !== null) {
-                    /** as Modbus packets are small enough to fit into single read we are just waiting to first response
-                     * from fread and then mark stream as processed.
-                     *
-                     * BE WARNED: So if would try to use same method to download HTML pages
-                     * or anything larger you would find this approach not working as expected.
-                     */
                     $data = fread($stream, 256); // read max 256 bytes
                     if (!empty($data)) {
                         if ($logger) {
                             $logger->debug("Stream {$streamId} @ index: {$index} received data: ", unpack('H*', $data));
                         }
-                        $result[$index] = $data;
-                        $responsesToWait--;
+                        $packetData = ($result[$index] ?? '') . $data;
+                        $result[$index] = $packetData;
 
-                        // if we received data to at least one stream we were waiting then it is good enough stream_select cycle
-                        $dataReceived = true;
+                        // MODBUS SPECIFIC PART: if we received complete packet to at least one stream we were waiting
+                        // then it is good enough stream_select cycle
+                        if (Packet::isCompleteLength($packetData)) {
+                            // happy path, got exactly what we expect
+                            // or response is an modbus error packet. nothing to wait anymore
+                            $responsesToWait--;
+
+                            $dataReceived = true;
+                        }
                     }
                 }
             }
