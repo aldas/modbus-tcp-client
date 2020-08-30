@@ -62,6 +62,11 @@ abstract class BinaryStreamConnectionProperties
     protected $createStreamCallback;
 
     /**
+     * @var callable callable to check if data received from stream is complete/all that is needed
+     */
+    protected $isCompleteCallback;
+
+    /**
      * @return string (optional) client IP address when binding client
      */
     public function getClient()
@@ -155,5 +160,13 @@ abstract class BinaryStreamConnectionProperties
     public function getCreateStreamCallback()
     {
         return $this->createStreamCallback;
+    }
+
+    /**
+     * @return callable
+     */
+    protected function getIsCompleteCallback()
+    {
+        return $this->isCompleteCallback;
     }
 }

@@ -4,6 +4,7 @@ namespace ModbusTcpClient\Network;
 
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Utils\Packet;
 
 class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
 {
@@ -28,6 +29,11 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
 
             $this->createStreamCallback = function (BinaryStreamConnection $conn) use ($streamCreator) {
                 return $streamCreator->createStream($conn);
+            };
+        }
+        if ($this->isCompleteCallback === null) {
+            $this->isCompleteCallback = static function ($binaryData, $streamIndex) {
+                return Packet::isCompleteLength($binaryData);
             };
         }
 
@@ -164,6 +170,16 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
     public function setCreateStreamCallback(callable $createStreamCallback)
     {
         $this->createStreamCallback = $createStreamCallback;
+        return $this;
+    }
+
+    /**
+     * @param callable callable to check if data received from stream is complete/all that is needed
+     * @return BinaryStreamConnectionBuilder
+     */
+    public function setIsCompleteCallback(callable $isCompleteCallback)
+    {
+        $this->isCompleteCallback = $isCompleteCallback;
         return $this;
     }
 

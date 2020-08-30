@@ -9,6 +9,7 @@ use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ResponseFactory;
+use ModbusTcpClient\Utils\Packet;
 
 class NonBlockingClient
 {
@@ -194,5 +195,12 @@ class NonBlockingClient
             return array_merge($this->options, $options);
         }
         return $this->options;
+    }
+
+    protected function getIsCompleteCallback(): callable
+    {
+        return static function ($binaryData, $streamIndex) {
+            return Packet::isCompleteLength($binaryData);
+        };
     }
 }
