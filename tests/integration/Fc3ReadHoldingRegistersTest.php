@@ -22,12 +22,17 @@ class Fc3ReadHoldingRegistersTest extends MockServerTestCase
         $packetWithoutTransactionId = substr($clientSentData[0], 4);
         $this->assertEquals('00000006000301000001', $packetWithoutTransactionId);
         $this->assertCount(4, $logger->data);
-        $this->assertArraySubset([
+
+        $check = [
             'Connected',
             'Data sent',
             'Polling data',
             // last one is changing due resource identifier
-        ], $logger->data);
+        ];
+        $this->assertCount(4, $logger->data);
+        foreach ($check as $key => $value) {
+            $this->assertSame($value, $logger->data[$key]);
+        }
     }
 }
 

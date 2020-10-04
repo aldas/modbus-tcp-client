@@ -47,7 +47,7 @@ use PHPUnit\Framework\TestCase;
 
 class SerialStreamCreatorTest extends TestCase
 {
-    protected function tearDown()
+    protected function tearDown(): void
     {
         SerialMockData::$exec = null;
         SerialMockData::$execCounter = 0;

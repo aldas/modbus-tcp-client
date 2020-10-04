@@ -43,7 +43,7 @@ use PHPUnit\Framework\TestCase;
 
 class InternetDomainStreamCreatorTest extends TestCase
 {
-    protected function tearDown()
+    protected function tearDown(): void
     {
         SSCMockData::$stream_socket_client = null;
         SSCMockData::$stream_socket_clientCounter = 0;

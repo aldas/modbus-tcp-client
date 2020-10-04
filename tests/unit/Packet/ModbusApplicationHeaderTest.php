@@ -27,13 +27,6 @@ class ModbusApplicationHeaderTest extends TestCase
         $this->assertEquals(1, $header->getTransactionId());
     }
 
-    public function testGetRandomTransactionId()
-    {
-        $header = new ModbusApplicationHeader(5, 17);
-
-        $this->assertInternalType('int', $header->getTransactionId());
-    }
-
     public function testGetProtocolId()
     {
         $header = new ModbusApplicationHeader(5, 17, 1);

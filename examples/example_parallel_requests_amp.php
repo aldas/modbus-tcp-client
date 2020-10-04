@@ -5,9 +5,10 @@ require __DIR__ . '/../vendor/autoload.php';
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
 use ModbusTcpClient\Composer\Read\Register\ReadRegisterRequest;
+use ModbusTcpClient\Utils\Packet;
 use function Amp\Socket\connect;
 
-// Install dependency with 'composer require amphp/socket'
+// Install dependency with 'composer require amphp/socket:^1.1'
 
 $registers = [
     ['uri' => 'tcp://127.0.0.1:5022', 'type' => 'bit', 'address' => 256, 'bit' => 15, 'name' => 'pump2_feedbackalarm_do'],
@@ -44,7 +45,7 @@ requestWithAmp($fc3RequestsFromArray);
 
 /**
  * This will do 'parallel' socket request with help of Amp socket library (https://amphp.org/socket/)
- * Install dependency with 'composer require amphp/socket'
+ * Install dependency with 'composer require amphp/socket:^1.1'
  *
  * NB: install PHP extension ('ev', 'event' or 'uv') if the concurrent socket connections are more than 1024.
  *
@@ -56,20 +57,28 @@ function requestWithAmp(array $requests)
     $promises = [];
     foreach ($requests as $request) {
         $promises[] = Amp\call(function () use ($request) {
-            /** @var \Amp\Socket\ClientSocket $socket */
+            /** @var \Amp\Socket\Socket $socket */
             $socket = yield connect($request->getUri());
             try {
                 yield $socket->write($request);
 
-                $data = yield $socket->read(); // modbus packet is so small that one read is enough
-                if ($data === null) {
-                    return null;
+                $data = '';
+                while (null !== $chunk = yield $socket->read()) {
+                    // there are rare cases when MODBUS packet is received by multiple fragmented TCP packets and it could
+                    // take PHP multiple reads from stream to get full packet. So we concatenate data and check if all that
+                    // we have received makes a complete modbus packet.
+                    // NB: `Packet::isCompleteLength` is suitable only for modbus TCP packets
+                    $data .= $chunk;
+                    if (Packet::isCompleteLength($data)) {
+                        return $request->parse($data);
+                    }
                 }
 
-                return $request->parse($data);
             } finally {
                 $socket->close();
             }
+
+            return null;
         });
     }
 

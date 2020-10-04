@@ -207,7 +207,7 @@ class ReadRegisterAddressTest extends TestCase
 
         $value = $address->extract($responsePacket);
 
-        $this->assertEquals(0.6666666, $value, null, 0.0000001);
+        $this->assertEqualsWithDelta(0.6666666, $value, 0.0000001);
     }
 
     public function testExtractUInt64()
