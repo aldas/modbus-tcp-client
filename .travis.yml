@@ -15,6 +15,11 @@ env:
     - ARCH=64bit
     - ARCH=32bit
 
+matrix:
+    exclude:
+        - php: nightly
+          env: ARCH=32bit
+
 before_install:
     - travis_retry composer self-update
 
