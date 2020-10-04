@@ -3,7 +3,8 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
-use ModbusTcpClient\Composer\Read\ReadRequest;
+use ModbusTcpClient\Composer\Read\Register\ReadRegisterRequest;
+use ModbusTcpClient\Utils\Packet;
 
 $fc3 = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
     ->bit(256, 15, 'pump2_feedbackalarm_do')
@@ -30,8 +31,9 @@ requestWithReactPhp($fc3);
  * This will do 'parallel' socket request with help of ReactPHP socket library (https://github.com/reactphp/socket)
  * Install dependency with 'composer require react/socket:^0.8.11'
  *
+ * NB: install PHP extension ('ev', 'event' or 'uv') if the concurrent socket connections are more than 1024.
  *
- * @param ReadRequest[] $requests
+ * @param ReadRegisterRequest[] $requests
  */
 function requestWithReactPhp(array $requests)
 {
@@ -49,12 +51,21 @@ function requestWithReactPhp(array $requests)
 
         $connector->connect($request->getUri())->then(
             function (React\Socket\ConnectionInterface $connection) use ($request, $promise) {
+                $receivedData = '';
+
                 $connection->write($request);
 
                 // wait for response event
-                $connection->on('data', function ($data) use ($connection, $promise, $request) {
-                    $promise->resolve($request->parse($data));
-                    $connection->end();
+                $connection->on('data', function ($data) use ($connection, $promise, $request, &$receivedData) {
+                    // there are rare cases when MODBUS packet is received by multiple fragmented TCP packets and it could
+                    // take PHP multiple reads from stream to get full packet. So we concatenate data and check if all that
+                    // we have received makes a complete modbus packet.
+                    // NB: `Packet::isCompleteLength` is suitable only for modbus TCP packets
+                    $receivedData .= $data;
+                    if (Packet::isCompleteLength($receivedData)) {
+                        $promise->resolve($request->parse($data));
+                        $connection->end();
+                    }
                 });
                 $connection->on('error', function ($data) use ($connection, $promise) {
                     $promise->reject('Request failed: ' . print_r($data, true));

@@ -27,6 +27,11 @@ composer require aldas/modbus-tcp-client
 * FC16 - Write Multiple Registers ([WriteMultipleRegistersRequest](src/Packet/ModbusFunction/WriteMultipleRegistersRequest.php) / [WriteMultipleRegistersResponse](src/Packet/ModbusFunction/WriteMultipleRegistersResponse.php))
 * FC23 - Read / Write Multiple Registers ([ReadWriteMultipleRegistersRequest](src/Packet/ModbusFunction/ReadWriteMultipleRegistersRequest.php) / [ReadWriteMultipleRegistersResponse](src/Packet/ModbusFunction/ReadWriteMultipleRegistersResponse.php))
 
+### Utility functions
+
+* [Packet::isCompleteLength](src/Utils/Packet.php) - checks if data is complete Modbus TCP packet
+* [ErrorResponse::is](src/Packet/ErrorResponse.php) - checks if data is Modbus TCP error packet
+
 ## Requirements
 
 * PHP 7.0+
@@ -152,57 +157,10 @@ $responseAsTcpPacket = RtuConverter::fromRtu($binaryData);
 See Linux example in 'examples/[rtu_usb_to_serial.php](examples/rtu_usb_to_serial.php)'
 
 
-## Example of non-blocking socket IO (i.e. modbus request are run in 'parallel')
+## Example of non-blocking socket IO with ReactPHP/Amp (i.e. modbus request are run in 'parallel')
 
-Example of non-blocking socket IO with https://github.com/amphp/socket
-
-```php
-/**
- * Install dependency with 'composer require amphp/socket'
- *
- * This will do 'parallel' socket request with help of Amp socket library
- */
-
-require __DIR__ . '/../vendor/autoload.php';
-
-use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
-use ModbusTcpClient\Packet\ResponseFactory;
-use function Amp\Socket\connect;
-
-
-$uri = 'tcp://127.0.0.1:502';
-$packets = [
-    new ReadHoldingRegistersRequest(256, 10),
-    new ReadHoldingRegistersRequest(266, 10),
-];
-
-$promises = [];
-foreach ($packets as $packet) {
-    $promises[] = Amp\call(function () use ($packet, $uri) {
-        /** @var \Amp\Socket\ClientSocket $socket */
-        $socket = yield connect($uri);
-        try {
-            yield $socket->write($packet);
-
-            $chunk = yield $socket->read(); // modbus packet is so small that one read is enough
-            if ($chunk === null) {
-                return null;
-            }
-            return ResponseFactory::parseResponse($chunk);
-        } finally {
-            $socket->close();
-        }
-    });
-}
-
-try {
-    // will run multiple request in parallel using non-blocking php stream io
-    $responses = Amp\Promise\wait(Amp\Promise\all($promises));
-    print_r($responses);
-} catch (Throwable $e) {
-    print_r($e);
-}
-```
+* 'examples/[example_parallel_requests_reactphp.php](examples/example_parallel_requests_reactphp.php) - example of non-blocking socket IO with ReactPHP socket library (https://github.com/reactphp/socket)
+* 'examples/[example_parallel_requests_amp.php](examples/example_parallel_requests_amp.php) - example of non-blocking socket IO with Amp socket library https://github.com/amphp/socket 
 
 ## Try communication with PLCs quickly using php built-in web server
 

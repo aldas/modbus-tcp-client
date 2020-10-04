@@ -120,7 +120,8 @@ class ErrorResponse implements ModbusResponse
     }
 
     /**
-     * is checks if given binary string is complete modbus error packet
+     * is checks if given binary string is complete MODBUS TCP error packet
+     * NB: do not use for RTU packets
      *
      * @param $binaryData string|null binary string to be checked
      * @return bool true if data is actual error packet
@@ -129,7 +130,7 @@ class ErrorResponse implements ModbusResponse
     {
         // a) data is too short. can not determine packet.
         // b) data is too long. can not be an error packet
-        // Actual packet is at least 9 bytes. 7 bytes for Modbus header and at least 2 bytes for PDU
+        // Actual packet is at least 9 bytes. 7 bytes for Modbus TCP header and at least 2 bytes for PDU
         if (strlen($binaryData) !== 9) {
             return false;
         }

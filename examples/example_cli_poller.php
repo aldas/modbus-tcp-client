@@ -8,6 +8,7 @@ if (php_sapi_name() !== 'cli') {
 require __DIR__ . '/../vendor/autoload.php';
 
 use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
+use ModbusTcpClient\Utils\Packet;
 
 $requests = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
     ->bit(278, 5, 'dirchange1_status')
@@ -22,6 +23,8 @@ $requests = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022'
     ->build(); // returns array of 3 requests
 
 // Install: 'composer require react/socket:^0.8.11'
+// NB: install PHP extension ('ev', 'event' or 'uv') if the concurrent socket connections are more than 1024.
+
 $loop = React\EventLoop\Factory::create();
 
 $n = 60;
@@ -36,13 +39,24 @@ $loop->addPeriodicTimer(1.0, function () use ($loop, &$n, $requests) {
 
         $connector->connect($request->getUri())->then(
             function (React\Socket\ConnectionInterface $connection) use ($request) {
+                $receivedData = '';
+
                 echo microtime(true) . ": connected to {$request->getUri()}" . PHP_EOL;
                 $connection->write($request);
 
                 // wait for response event
-                $connection->on('data', function ($data) use ($connection, $request) {
-                    echo microtime(true) . ": uri: {$request->getUri()}, response: " . print_r($request->parse($data), true) . PHP_EOL;
-                    $connection->end();
+                $connection->on('data', function ($data) use ($connection, $request, &$receivedData) {
+                    // there are rare cases when MODBUS packet is received by multiple fragmented TCP packets and it could
+                    // take PHP multiple reads from stream to get full packet. So we concatenate data and check if all that
+                    // we have received makes a complete modbus packet.
+                    // NB: `Packet::isCompleteLength` is suitable only for modbus TCP packets
+                    $receivedData .= $data;
+                    if (Packet::isCompleteLength($receivedData)) {
+                        echo microtime(true) . ": uri: {$request->getUri()}, complete response: " . print_r($request->parse($receivedData), true) . PHP_EOL;
+                        $connection->end();
+                    } else {
+                        echo microtime(true) . ": uri: {$request->getUri()}, partial response: " . print_r($data, true) . PHP_EOL;
+                    }
                 });
                 $connection->on('error', function ($data) use ($connection, $request) {
                     echo microtime(true) . ": uri: {$request->getUri()}, Error during connection! error: " . print_r($data, true) . PHP_EOL;

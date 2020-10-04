@@ -4,7 +4,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
-use ModbusTcpClient\Composer\Read\ReadRequest;
+use ModbusTcpClient\Composer\Read\Register\ReadRegisterRequest;
 use function Amp\Socket\connect;
 
 // Install dependency with 'composer require amphp/socket'
@@ -46,8 +46,10 @@ requestWithAmp($fc3RequestsFromArray);
  * This will do 'parallel' socket request with help of Amp socket library (https://amphp.org/socket/)
  * Install dependency with 'composer require amphp/socket'
  *
+ * NB: install PHP extension ('ev', 'event' or 'uv') if the concurrent socket connections are more than 1024.
  *
- * @param ReadRequest[] $requests
+ *
+ * @param ReadRegisterRequest[] $requests
  */
 function requestWithAmp(array $requests)
 {
