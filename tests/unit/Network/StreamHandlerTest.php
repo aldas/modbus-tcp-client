@@ -67,7 +67,7 @@ use PHPUnit\Framework\TestCase;
 
 class StreamHandlerTest extends TestCase
 {
-    protected function tearDown()
+    protected function tearDown(): void
     {
         MockData::$freadCounter = 0;
         MockData::$microtimeCounter = 0;

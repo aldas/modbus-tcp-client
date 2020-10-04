@@ -22,7 +22,7 @@ $requests = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022'
     })
     ->build(); // returns array of 3 requests
 
-// Install: 'composer require react/socket:^0.8.11'
+// Install: 'composer require react/socket:^1.6'
 // NB: install PHP extension ('ev', 'event' or 'uv') if the concurrent socket connections are more than 1024.
 
 $loop = React\EventLoop\Factory::create();

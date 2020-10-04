@@ -60,7 +60,7 @@ class DoubleWordTest extends TestCase
     {
         $dWord = new DoubleWord("\xaa\xab\x3f\x2a");
 
-        $this->assertEquals(0.6666666, $dWord->getFloat(), null, 0.0000001);
+        $this->assertEqualsWithDelta(0.6666666, $dWord->getFloat(), 0.0000001);
     }
 
     public function testShouldGetLowBytesAsWord()

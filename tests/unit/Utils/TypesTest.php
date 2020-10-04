@@ -341,7 +341,7 @@ class TypesTest extends TestCase
 
     public function testShouldExceptionWhenBitToHighNumber()
     {
-        $this->expectExceptionMessageRegExp("/On .*bit PHP bit shifting more than .* bit is not possible as int size is .* bytes/");
+        $this->expectErrorMessageMatches("/On .*bit PHP bit shifting more than .* bit is not possible as int size is .* bytes/");
         $this->expectException(InvalidArgumentException::class);
 
         if (PHP_INT_SIZE === 4) {
@@ -380,10 +380,10 @@ class TypesTest extends TestCase
         $float = Types::parseFloat("\xcc\xcd\x3f\xec", Endian::BIG_ENDIAN_LOW_WORD_FIRST);
 
         $this->assertTrue(is_float($float));
-        $this->assertEquals(1.85, $float, null, 0.0000001);
+        $this->assertEqualsWithDelta(1.85, $float, 0.0000001);
 
-        $this->assertEquals(0.66666666666, Types::parseFloat("\xaa\xab\x3f\x2a", Endian::BIG_ENDIAN_LOW_WORD_FIRST), null, 0.0000001);
-        $this->assertEquals(0, Types::parseFloat("\x00\x00\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST), null, 0.0000001);
+        $this->assertEqualsWithDelta(0.66666666666, Types::parseFloat("\xaa\xab\x3f\x2a", Endian::BIG_ENDIAN_LOW_WORD_FIRST), 0.0000001);
+        $this->assertEqualsWithDelta(0, Types::parseFloat("\x00\x00\x00\x00", Endian::BIG_ENDIAN_LOW_WORD_FIRST), 0.0000001);
     }
 
     public function testShouldParseFloatAsBigEndian()
@@ -391,10 +391,10 @@ class TypesTest extends TestCase
         $float = Types::parseFloat("\x3f\xec\xcc\xcd", Endian::BIG_ENDIAN);
 
         $this->assertTrue(is_float($float));
-        $this->assertEquals(1.85, $float, null, 0.0000001);
+        $this->assertEqualsWithDelta(1.85, $float, 0.0000001);
 
-        $this->assertEquals(0.66666666666, Types::parseFloat("\x3f\x2a\xaa\xab", Endian::BIG_ENDIAN), null, 0.0000001);
-        $this->assertEquals(0, Types::parseFloat("\x00\x00\x00\x00", Endian::BIG_ENDIAN), null, 0.0000001);
+        $this->assertEqualsWithDelta(0.66666666666, Types::parseFloat("\x3f\x2a\xaa\xab", Endian::BIG_ENDIAN), 0.0000001);
+        $this->assertEqualsWithDelta(0, Types::parseFloat("\x00\x00\x00\x00", Endian::BIG_ENDIAN), 0.0000001);
     }
 
     public function testShouldParseFloatAsLittleEndian()
@@ -402,10 +402,10 @@ class TypesTest extends TestCase
         $float = Types::parseFloat("\xcd\xcc\xec\x3f", Endian::LITTLE_ENDIAN);
 
         $this->assertTrue(is_float($float));
-        $this->assertEquals(1.85, $float, null, 0.0000001);
+        $this->assertEqualsWithDelta(1.85, $float, 0.0000001);
 
-        $this->assertEquals(0.66666666666, Types::parseFloat("\xab\xaa\x2a\x3f", Endian::LITTLE_ENDIAN), null, 0.0000001);
-        $this->assertEquals(0, Types::parseFloat("\x00\x00\x00\x00", Endian::LITTLE_ENDIAN), null, 0.0000001);
+        $this->assertEqualsWithDelta(0.66666666666, Types::parseFloat("\xab\xaa\x2a\x3f", Endian::LITTLE_ENDIAN), 0.0000001);
+        $this->assertEqualsWithDelta(0, Types::parseFloat("\x00\x00\x00\x00", Endian::LITTLE_ENDIAN), 0.0000001);
     }
 
     public function testShouldParseStringFromRegisterAsLittleEndian()
