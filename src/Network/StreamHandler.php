@@ -2,9 +2,6 @@
 
 namespace ModbusTcpClient\Network;
 
-
-use ModbusTcpClient\Utils\Packet;
-
 trait StreamHandler
 {
     /**

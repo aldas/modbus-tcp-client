@@ -14,6 +14,7 @@ final class Packet
 
     /**
      * isCompleteLength checks if binary string is complete modbus packet
+     * NB: this function works only for MODBUS TCP packets
      *
      * @param $binaryData string|null binary string to be checked
      * @return bool true if data is actual error packet

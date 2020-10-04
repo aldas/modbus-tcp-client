@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2020-10-04
+
+### Added
+
+* Added functions to check is received data is complete/error Modbus TCP packet (PR #63)
+    * [Packet::isCompleteLength](src/Utils/Packet.php)
+    * [ErrorResponse::is](src/Packet/ErrorResponse.php)
+
+### Changed
+
+* Changed `StreamHandler` to read data until complete packet is received. Previously we read only once from stream
+    and naively assumed that Modbus TCP packet can not be fragmented over multiple TCP packets/ multiple stream reads.
+    This fixed #61.
+
 ## [2.0.1] - 2020-04-12
 
 ### Security
