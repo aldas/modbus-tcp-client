@@ -51,7 +51,7 @@ function requestWithReactPhp(array $requests)
 
         $connector->connect($request->getUri())->then(
             function (React\Socket\ConnectionInterface $connection) use ($request, $promise) {
-                $receivedData = '';
+                $receivedData = b'';
 
                 $connection->write($request);
 

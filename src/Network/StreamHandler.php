@@ -68,7 +68,7 @@ trait StreamHandler
                         if ($logger) {
                             $logger->debug("Stream {$streamId} @ index: {$streamIndex} received data: ", unpack('H*', $data));
                         }
-                        $packetData = ($result[$streamIndex] ?? '') . $data;
+                        $packetData = ($result[$streamIndex] ?? b'') . $data;
                         $result[$streamIndex] = $packetData;
 
                         // MODBUS SPECIFIC PART: if we received complete packet to at least one stream we were waiting

@@ -62,7 +62,7 @@ function requestWithAmp(array $requests)
             try {
                 yield $socket->write($request);
 
-                $data = '';
+                $data = b'';
                 while (null !== $chunk = yield $socket->read()) {
                     // there are rare cases when MODBUS packet is received by multiple fragmented TCP packets and it could
                     // take PHP multiple reads from stream to get full packet. So we concatenate data and check if all that
