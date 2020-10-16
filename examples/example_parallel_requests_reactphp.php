@@ -63,7 +63,7 @@ function requestWithReactPhp(array $requests)
                     // NB: `Packet::isCompleteLength` is suitable only for modbus TCP packets
                     $receivedData .= $data;
                     if (Packet::isCompleteLength($receivedData)) {
-                        $promise->resolve($request->parse($data));
+                        $promise->resolve($request->parse($receivedData));
                         $connection->end();
                     }
                 });
