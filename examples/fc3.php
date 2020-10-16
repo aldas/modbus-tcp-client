@@ -20,7 +20,7 @@ $unitID = 0;
 $packet = new ReadHoldingRegistersRequest($startAddress, $quantity, $unitID);
 
 try {
-    $binaryData = $connection->connect()->sendPacket($packet);
+    $binaryData = $connection->connect()->sendAndReceive($packet);
 
     /**
      * @var $response ReadHoldingRegistersResponse

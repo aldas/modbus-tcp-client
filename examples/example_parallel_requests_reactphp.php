@@ -1,6 +1,7 @@
 <?php
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/logger.php';
 
 use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
 use ModbusTcpClient\Composer\Read\Register\ReadRegisterRequest;
@@ -37,6 +38,7 @@ requestWithReactPhp($fc3);
  */
 function requestWithReactPhp(array $requests)
 {
+    $logger = new EchoLogger();
     $loop = React\EventLoop\Factory::create();
 
     $promises = [];
@@ -50,24 +52,31 @@ function requestWithReactPhp(array $requests)
         ));
 
         $connector->connect($request->getUri())->then(
-            function (React\Socket\ConnectionInterface $connection) use ($request, $promise) {
+            function (React\Socket\ConnectionInterface $connection) use ($request, $promise, $logger) {
                 $receivedData = b'';
 
+                $logger->debug("sending: " . unpack('H*', $request)[1]);
                 $connection->write($request);
 
                 // wait for response event
-                $connection->on('data', function ($data) use ($connection, $promise, $request, &$receivedData) {
+                $connection->on('data', function ($data) use ($connection, $promise, $request, &$receivedData, $logger) {
+                    $logger->debug("received: " . unpack('H*', $data)[1]);
+
                     // there are rare cases when MODBUS packet is received by multiple fragmented TCP packets and it could
                     // take PHP multiple reads from stream to get full packet. So we concatenate data and check if all that
                     // we have received makes a complete modbus packet.
                     // NB: `Packet::isCompleteLength` is suitable only for modbus TCP packets
                     $receivedData .= $data;
                     if (Packet::isCompleteLength($receivedData)) {
+                        $logger->debug("complete packet: " . unpack('H*', $receivedData)[1]);
+
                         $promise->resolve($request->parse($receivedData));
                         $connection->end();
                     }
                 });
-                $connection->on('error', function ($data) use ($connection, $promise) {
+                $connection->on('error', function ($data) use ($connection, $promise, $logger) {
+                    $logger->debug("error data: " . unpack('H*', $data)[1]);
+
                     $promise->reject('Request failed: ' . print_r($data, true));
                     $connection->end();
                 });
