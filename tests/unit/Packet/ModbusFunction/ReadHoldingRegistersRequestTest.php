@@ -1,9 +1,11 @@
 <?php
+
 namespace Tests\Packet\ModbusFunction;
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
-use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
+use ModbusTcpClient\Packet\ModbusPacket;
 use PHPUnit\Framework\TestCase;
 
 /*
@@ -81,6 +83,47 @@ class ReadHoldingRegistersRequestTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
 
         new ReadHoldingRegistersRequest(107, 125);
+    }
+
+    public function testParse()
+    {
+        $packet = ReadHoldingRegistersRequest::parse("\x00\x01\x00\x00\x00\x06\x11\x03\x00\x6B\x00\x03");
+        $this->assertEquals($packet, (new ReadHoldingRegistersRequest(107, 3, 17, 1))->__toString());
+        $this->assertEquals(107, $packet->getStartAddress());
+        $this->assertEquals(3, $packet->getQuantity());
+
+        $header = $packet->getHeader();
+        $this->assertEquals(1, $header->getTransactionId());
+        $this->assertEquals(0, $header->getProtocolId());
+        $this->assertEquals(6, $header->getLength());
+        $this->assertEquals(17, $header->getUnitId());
+    }
+
+    public function testParseShouldReturnErrorResponseForTooShortPacket()
+    {
+        $packet = ReadHoldingRegistersRequest::parse("\x00\x01\x00\x00\x00\x06\x11\x03\x00\x6B\x00");
+        self::assertInstanceOf(ErrorResponse::class, $packet);
+        $toString = $packet->__toString();
+        // transaction id is random
+        $toString[0] = "\x00";
+        $toString[1] = "\x00";
+        self::assertEquals("\x00\x00\x00\x00\x00\x03\x00\x83\x04", $toString);
+    }
+
+    public function testParseShouldReturnErrorResponseForInvalidFunction()
+    {
+        $packet = ReadHoldingRegistersRequest::parse("\x00\x01\x00\x00\x00\x06\x11\x04\x00\x6B\x00\x01");
+        self::assertInstanceOf(ErrorResponse::class, $packet);
+        $toString = $packet->__toString();
+        self::assertEquals("\x00\x01\x00\x00\x00\x03\x11\x83\x01", $toString);
+    }
+
+    public function testParseShouldReturnErrorResponseForInvalidQuantity()
+    {
+        $packet = ReadHoldingRegistersRequest::parse("\x00\x01\x00\x00\x00\x06\x11\x03\x00\x6B\x00\x00");
+        self::assertInstanceOf(ErrorResponse::class, $packet);
+        $toString = $packet->__toString();
+        self::assertEquals("\x00\x01\x00\x00\x00\x03\x11\x83\x03", $toString);
     }
 
 }
