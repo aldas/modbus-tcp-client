@@ -40,56 +40,58 @@ $socket->on('connection', function (React\Socket\ConnectionInterface $conn) use 
         // we have received makes a complete modbus packet.
         // NB: `Packet::isCompleteLength` is suitable only for modbus TCP packets
         $receivedData .= $data;
-        if (Packet::isCompleteLength($receivedData)) {
-            $logger->debug($conn->getRemoteAddress() . ": complete packet: " . unpack('H*', $receivedData)[1]);
+        if (!Packet::isCompleteLength($receivedData)) {
+            return; // not complete - no work to do
+        }
 
-            $request = null;
-            try {
-                $request = RequestFactory::parseRequest($receivedData);
-            } catch (Exception $exception) {
-                // something went totally wrong. we should not end up here. send error and close connection.
-                $response = new ErrorResponse(new ModbusApplicationHeader(2, 0, 0),
-                    ModbusPacket::READ_HOLDING_REGISTERS,
-                    4 // Server failure
-                );
-                $conn->write($response);
-                $conn->end();
-                return;
-            } finally {
-                $receivedData = b'';
-            }
+        $logger->debug($conn->getRemoteAddress() . ": complete packet: " . unpack('H*', $receivedData)[1]);
 
-            if ($request instanceof ErrorResponse) {
-                // could not parse request. something wrong with packet. send error and close connection.
-                $conn->write($request);
-                $conn->end();
-                return;
-            }
-            if (!$request instanceof ReadHoldingRegistersRequest) {
-                // FIXME: send error for not implemented modbus functions
-                $response = new ErrorResponse(new ModbusApplicationHeader(2, 0, 0),
-                    ModbusPacket::READ_HOLDING_REGISTERS,
-                    4 // Server failure
-                );
-                $conn->write($response);
-                $conn->end();
-                return;
-            }
-
-            // compose response out of request. respond with zeroed registers
-            $header = $request->getHeader();
-            $quantity = $request->getQuantity(); // NB: quantity is word/register and register is 2 bytes.
-            $data = Types::toByte($quantity * 2) . str_repeat("\x00\x00", $quantity);
-            $response = new ReadHoldingRegistersResponse(
-                $data,
-                $header->getUnitId(),
-                $header->getTransactionId()
+        $request = null;
+        try {
+            $request = RequestFactory::parseRequest($receivedData);
+        } catch (Exception $exception) {
+            // something went totally wrong. we should not end up here. send error and close connection.
+            $response = new ErrorResponse(new ModbusApplicationHeader(2, 0, 0),
+                ModbusPacket::READ_HOLDING_REGISTERS,
+                4 // Server failure
             );
-            $logger->debug($conn->getRemoteAddress() . ": response packet: " . unpack('H*', $response)[1]);
-
             $conn->write($response);
             $conn->end();
+            return;
+        } finally {
+            $receivedData = b'';
         }
+
+        if ($request instanceof ErrorResponse) {
+            // could not parse request. something wrong with packet. send error and close connection.
+            $conn->write($request);
+            $conn->end();
+            return;
+        }
+        if (!$request instanceof ReadHoldingRegistersRequest) {
+            // FIXME: send error for not implemented modbus functions
+            $response = new ErrorResponse(new ModbusApplicationHeader(2, 0, 0),
+                ModbusPacket::READ_HOLDING_REGISTERS,
+                4 // Server failure
+            );
+            $conn->write($response);
+            $conn->end();
+            return;
+        }
+
+        // compose response out of request. respond with zeroed registers
+        $header = $request->getHeader();
+        $quantity = $request->getQuantity(); // NB: quantity is word/register and register is 2 bytes.
+        $data = Types::toByte($quantity * 2) . str_repeat("\x00\x00", $quantity);
+        $response = new ReadHoldingRegistersResponse(
+            $data,
+            $header->getUnitId(),
+            $header->getTransactionId()
+        );
+        $logger->debug($conn->getRemoteAddress() . ": response packet: " . unpack('H*', $response)[1]);
+
+        $conn->write($response);
+        $conn->end();
     });
 
     $conn->on('close', function () use ($conn, $logger) {

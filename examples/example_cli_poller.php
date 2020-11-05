@@ -39,7 +39,7 @@ $loop->addPeriodicTimer(1.0, function () use ($loop, &$n, $requests) {
 
         $connector->connect($request->getUri())->then(
             function (React\Socket\ConnectionInterface $connection) use ($request) {
-                $receivedData = '';
+                $receivedData = b'';
 
                 echo microtime(true) . ": connected to {$request->getUri()}" . PHP_EOL;
                 $connection->write($request);
