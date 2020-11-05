@@ -27,7 +27,7 @@ $logger = new EchoLogger();
 $loop = Factory::create();
 $socket = new Server("${address}:{$port}", $loop);
 
-$socket->on('connection', function (React\Socket\ConnectionInterface $conn) use ($socket, $loop, $logger) {
+$socket->on('connection', function (React\Socket\ConnectionInterface $conn) use ($logger) {
     $logger->debug($conn->getRemoteAddress() . ": connected: ");
 
     // buffer for received bytes for that connection
@@ -47,21 +47,23 @@ $socket->on('connection', function (React\Socket\ConnectionInterface $conn) use 
             try {
                 $request = RequestFactory::parseRequest($receivedData);
             } catch (Exception $exception) {
-                // something went totally wrong. we should end up here.
+                // something went totally wrong. we should not end up here. send error and close connection.
                 $response = new ErrorResponse(new ModbusApplicationHeader(2, 0, 0),
                     ModbusPacket::READ_HOLDING_REGISTERS,
                     4 // Server failure
                 );
                 $conn->write($response);
                 $conn->end();
+                return;
             } finally {
                 $receivedData = b'';
             }
 
             if ($request instanceof ErrorResponse) {
-                // could not parse request. something wrong with packet
+                // could not parse request. something wrong with packet. send error and close connection.
                 $conn->write($request);
                 $conn->end();
+                return;
             }
             if (!$request instanceof ReadHoldingRegistersRequest) {
                 // FIXME: send error for not implemented modbus functions
@@ -71,11 +73,12 @@ $socket->on('connection', function (React\Socket\ConnectionInterface $conn) use 
                 );
                 $conn->write($response);
                 $conn->end();
+                return;
             }
 
             // compose response out of request. respond with zeroed registers
             $header = $request->getHeader();
-            $quantity = $request->getQuantity();
+            $quantity = $request->getQuantity(); // NB: quantity is word/register and register is 2 bytes.
             $data = Types::toByte($quantity * 2) . str_repeat("\x00\x00", $quantity);
             $response = new ReadHoldingRegistersResponse(
                 $data,
