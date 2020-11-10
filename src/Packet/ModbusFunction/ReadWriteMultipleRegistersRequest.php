@@ -5,6 +5,8 @@ namespace ModbusTcpClient\Packet\ModbusFunction;
 
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Packet\ErrorResponse;
+use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
@@ -137,5 +139,42 @@ class ReadWriteMultipleRegistersRequest extends ProtocolDataUnitRequest implemen
         // number of bytes registers need for data
         // = 7 bytes
         return parent::getLengthInternal() + (7 + $this->writeRegistersBytesSize);
+    }
+
+    /**
+     * Parses binary string to ReadWriteMultipleRegistersRequest or return ErrorResponse on failure
+     *
+     * @param $binaryString
+     * @return ReadWriteMultipleRegistersRequest|ErrorResponse
+     */
+    public static function parse($binaryString)
+    {
+        return self::parseStartAddressPacket(
+            $binaryString,
+            19,
+            ModbusPacket::READ_WRITE_MULTIPLE_REGISTERS,
+            function (int $transactionId, int $unitId, int $startAddress) use ($binaryString) {
+                $readQuantity = Types::parseUInt16($binaryString[10] . $binaryString[11]);
+                $writeStartAddress = Types::parseUInt16($binaryString[12] . $binaryString[13]);
+                $writeQuantity = Types::parseUInt16($binaryString[14] . $binaryString[15]);
+                $byteCount = Types::parseByte($binaryString[16]);
+                $writeRegisters = str_split(substr($binaryString, 17, $byteCount), 2);
+                if ($writeQuantity !== count($writeRegisters)) {
+                    return new ErrorResponse(
+                        new ModbusApplicationHeader(2, $unitId, $transactionId),
+                        ModbusPacket::READ_WRITE_MULTIPLE_REGISTERS,
+                        3 // Illegal data value
+                    );
+                }
+                return new self(
+                    $startAddress,
+                    $readQuantity,
+                    $writeStartAddress,
+                    $writeRegisters,
+                    $unitId,
+                    $transactionId
+                );
+            }
+        );
     }
 }

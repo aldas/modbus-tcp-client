@@ -3,6 +3,7 @@
 namespace Tests\Packet\ModbusFunction;
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadWriteMultipleRegistersRequest;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Utils\Types;
@@ -153,5 +154,110 @@ class ReadWriteMultipleRegistersRequestTest extends TestCase
         $this->assertEquals(0, $header->getProtocolId());
         $this->assertEquals(15, $header->getLength());
         $this->assertEquals(0x11, $header->getUnitId());
+    }
+
+    public function testParse()
+    {
+        // Field:                    Size in packet
+        $payload = "\x01\x38" . // transaction id: 0138 (2 bytes)
+            "\x00\x00" . // protocol id: 0000           (2 bytes)
+            "\x00\x0f" .  // length: 000f               (2 bytes) (15 bytes after this field)
+            "\x11" . // unit id: 11                     (1 byte)
+            "\x17" . // function code: 17               (1 byte)
+            "\x04\x10" . // read start address: 0410    (2 bytes)
+            "\x00\x01" . // read quantity: 1            (2 bytes)
+            "\x01\x12" . // write start address: 0112   (2 bytes)
+            "\x00\x02" . // write quantity: 2           (2 bytes)
+            "\x04" . // registersBytesSize: 4           (1 byte)
+            "\x00\xc8\x00\x82" . // data: 00c8 0082     (2 registers = 4 bytes)
+            '';
+        $packet = ReadWriteMultipleRegistersRequest::parse($payload);
+        $this->assertEquals($packet, (new ReadWriteMultipleRegistersRequest(
+            0x0410,
+            1,
+            0x0112,
+            [Types::toByte(200), Types::toInt16(130)],
+            0x11,
+            0x0138
+        ))->__toString());
+        $this->assertEquals(0x0410, $packet->getStartAddress());
+        $this->assertEquals(2, $packet->getWriteRegisterCount());
+        $this->assertEquals(0x0112, $packet->getWriteStartAddress());
+        $this->assertEquals(["\x00\xC8", "\x00\x82"], $packet->getRegisters());
+
+        $header = $packet->getHeader();
+        $this->assertEquals(0x0138, $header->getTransactionId());
+        $this->assertEquals(0, $header->getProtocolId());
+        $this->assertEquals(15, $header->getLength());
+        $this->assertEquals(0x11, $header->getUnitId());
+    }
+
+    public function testParseShouldReturnErrorResponseForTooShortPacket()
+    {
+        // Field:                    Size in packet
+        $payload = "\x01\x38" . // transaction id: 0138 (2 bytes)
+            "\x00\x00" . // protocol id: 0000           (2 bytes)
+            "\x00\x0f" .  // length: 000f               (2 bytes) (15 bytes after this field)
+            "\x11" . // unit id: 11                     (1 byte)
+            "\x17" . // function code: 17               (1 byte)
+            "\x04\x10" . // read start address: 0410    (2 bytes)
+            "\x00\x01" . // read quantity: 1            (2 bytes)
+            "\x01\x12" . // write start address: 0112   (2 bytes)
+            "\x00\x02" . // write quantity: 2           (2 bytes)
+            "\x04" . // registersBytesSize: 4           (1 byte)
+            "\x00" . // shorter than expected (4)
+            '';
+        $packet = ReadWriteMultipleRegistersRequest::parse($payload);
+        self::assertInstanceOf(ErrorResponse::class, $packet);
+        $toString = $packet->__toString();
+        // transaction id is random
+        $toString[0] = "\x00";
+        $toString[1] = "\x00";
+        self::assertEquals("\x00\x00\x00\x00\x00\x03\x00\x97\x04", $toString);
+    }
+
+    public function testParseShouldReturnErrorResponseForTooShortPacketByByteCount()
+    {
+        // Field:                    Size in packet
+        $payload = "\x01\x38" . // transaction id: 0138 (2 bytes)
+            "\x00\x00" . // protocol id: 0000           (2 bytes)
+            "\x00\x0f" .  // length: 000f               (2 bytes) (15 bytes after this field)
+            "\x11" . // unit id: 11                     (1 byte)
+            "\x17" . // function code: 17               (1 byte)
+            "\x04\x10" . // read start address: 0410    (2 bytes)
+            "\x00\x01" . // read quantity: 1            (2 bytes)
+            "\x01\x12" . // write start address: 0112   (2 bytes)
+            "\x00\x01" . // write quantity: 1           (2 bytes) <-- should be 2 but is 1
+            "\x04" . // registersBytesSize: 4           (1 byte)
+            "\x00\xc8\x00\x82" . // data: 00c8 0082     (2 registers = 4 bytes)
+            '';
+        $packet = ReadWriteMultipleRegistersRequest::parse($payload);
+        self::assertInstanceOf(ErrorResponse::class, $packet);
+        $toString = $packet->__toString();
+        // transaction id is random
+        $toString[0] = "\x00";
+        $toString[1] = "\x00";
+        self::assertEquals("\x00\x00\x00\x00\x00\x03\x11\x97\x03", $toString);
+    }
+
+    public function testParseShouldReturnErrorResponseForInvalidFunction()
+    {
+        // Field:                    Size in packet
+        $payload = "\x01\x38" . // transaction id: 0138 (2 bytes)
+            "\x00\x00" . // protocol id: 0000           (2 bytes)
+            "\x00\x0f" .  // length: 000f               (2 bytes) (15 bytes after this field)
+            "\x11" . // unit id: 11                     (1 byte)
+            "\x00" . // function code: 00               (1 byte) <-- should be 17 but is 00
+            "\x04\x10" . // read start address: 0410    (2 bytes)
+            "\x00\x01" . // read quantity: 1            (2 bytes)
+            "\x01\x12" . // write start address: 0112   (2 bytes)
+            "\x00\x01" . // write quantity: 1           (2 bytes) <-- should be 2 but is 1
+            "\x04" . // registersBytesSize: 4           (1 byte)
+            "\x00\xc8\x00\x82" . // data: 00c8 0082     (2 registers = 4 bytes)
+            '';
+        $packet = ReadWriteMultipleRegistersRequest::parse($payload);
+        self::assertInstanceOf(ErrorResponse::class, $packet);
+        $toString = $packet->__toString();
+        self::assertEquals("\x01\x38\x00\x00\x00\x03\x11\x97\x01", $toString);
     }
 }

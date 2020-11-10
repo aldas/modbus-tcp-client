@@ -5,7 +5,15 @@ namespace ModbusTcpClient\Packet;
 
 
 use ModbusTcpClient\Exception\ModbusException;
+use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
+use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesRequest;
+use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
+use ModbusTcpClient\Packet\ModbusFunction\ReadWriteMultipleRegistersRequest;
+use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsRequest;
+use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersRequest;
+use ModbusTcpClient\Packet\ModbusFunction\WriteSingleCoilRequest;
+use ModbusTcpClient\Packet\ModbusFunction\WriteSingleRegisterRequest;
 
 class RequestFactory
 {
@@ -29,31 +37,22 @@ class RequestFactory
         switch ($functionCode) {
             case ModbusPacket::READ_HOLDING_REGISTERS:
                 return ReadHoldingRegistersRequest::parse($binaryString);
-                break;
-//            case ModbusPacket::READ_INPUT_REGISTERS:
-//                return new ReadInputRegistersResponse($rawData, $unitId, $transactionId);
-//                break;
-//            case ModbusPacket::READ_COILS:
-//                return new ReadCoilsResponse($rawData, $unitId, $transactionId);
-//                break;
-//            case ModbusPacket::READ_INPUT_DISCRETES:
-//                return new ReadInputDiscretesResponse($rawData, $unitId, $transactionId);
-//                break;
-//            case ModbusPacket::WRITE_SINGLE_COIL:
-//                return new WriteSingleCoilResponse($rawData, $unitId, $transactionId);
-//                break;
-//            case ModbusPacket::WRITE_SINGLE_REGISTER:
-//                return new WriteSingleRegisterResponse($rawData, $unitId, $transactionId);
-//                break;
-//            case ModbusPacket::WRITE_MULTIPLE_COILS:
-//                return new WriteMultipleCoilsResponse($rawData, $unitId, $transactionId);
-//                break;
-//            case ModbusPacket::WRITE_MULTIPLE_REGISTERS:
-//                return new WriteMultipleRegistersResponse($rawData, $unitId, $transactionId);
-//                break;
-//            case ModbusPacket::READ_WRITE_MULTIPLE_REGISTERS:
-//                return new ReadWriteMultipleRegistersResponse($rawData, $unitId, $transactionId);
-//                break;
+            case ModbusPacket::READ_INPUT_REGISTERS:
+                return ReadInputRegistersRequest::parse($binaryString);
+            case ModbusPacket::READ_COILS:
+                return ReadCoilsRequest::parse($binaryString);
+            case ModbusPacket::READ_INPUT_DISCRETES:
+                return ReadInputDiscretesRequest::parse($binaryString);
+            case ModbusPacket::WRITE_SINGLE_COIL:
+                return WriteSingleCoilRequest::parse($binaryString);
+            case ModbusPacket::WRITE_SINGLE_REGISTER:
+                return WriteSingleRegisterRequest::parse($binaryString);
+            case ModbusPacket::WRITE_MULTIPLE_COILS:
+                return WriteMultipleCoilsRequest::parse($binaryString);
+            case ModbusPacket::WRITE_MULTIPLE_REGISTERS:
+                return WriteMultipleRegistersRequest::parse($binaryString);
+            case ModbusPacket::READ_WRITE_MULTIPLE_REGISTERS:
+                return ReadWriteMultipleRegistersRequest::parse($binaryString);
             default:
                 return new ErrorResponse(ModbusApplicationHeader::parse($binaryString), $functionCode, 1);
 

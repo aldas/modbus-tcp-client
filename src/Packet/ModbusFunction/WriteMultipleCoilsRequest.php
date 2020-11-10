@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Packet\ErrorResponse;
+use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
@@ -49,7 +51,7 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest implements Modbu
         parent::validate();
 
         if ($this->coilCount === 0 || $this->coilCount > 2048) {
-            throw new InvalidArgumentException("coils count out of range (1-2048): {$this->coilCount}");
+            throw new InvalidArgumentException("coils count out of range (1-2048): {$this->coilCount}", 3);
         }
     }
 
@@ -77,5 +79,34 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest implements Modbu
     protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + (3 + $this->coilBytesSize); // coilCount + coilBytesSize + number of bytes coils need for data
+    }
+
+    /**
+     * Parses binary string to WriteMultipleCoilsRequest or return ErrorResponse on failure
+     *
+     * @param $binaryString
+     * @return WriteMultipleCoilsRequest|ErrorResponse
+     */
+    public static function parse($binaryString)
+    {
+        return self::parseStartAddressPacket(
+            $binaryString,
+            14,
+            ModbusPacket::WRITE_MULTIPLE_COILS,
+            function (int $transactionId, int $unitId, int $startAddress) use ($binaryString) {
+                $quantity = Types::parseUInt16($binaryString[10] . $binaryString[11]);
+                $byteCount = Types::parseByte($binaryString[12]);
+                $coils = Types::binaryStringToBooleanArray(substr($binaryString, 13, $byteCount));
+                if ($quantity > count($coils)) {
+                    return new ErrorResponse(
+                        new ModbusApplicationHeader(2, $unitId, $transactionId),
+                        ModbusPacket::WRITE_MULTIPLE_COILS,
+                        3 // Illegal data value
+                    );
+                }
+                $coils = array_slice($coils, 0, $quantity);
+                return new self($startAddress, $coils, $unitId, $transactionId);
+            }
+        );
     }
 }

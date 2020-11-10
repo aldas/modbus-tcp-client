@@ -68,8 +68,10 @@ $socket->on('connection', function (React\Socket\ConnectionInterface $conn) use 
             $conn->end();
             return;
         }
+        // TODO: implement handling of other requests. currently send errors for unsupported ones
         if (!$request instanceof ReadHoldingRegistersRequest) {
-            // FIXME: send error for not implemented modbus functions
+            $logger->debug($conn->getRemoteAddress() . ": sent unsupported modbus request for function: " . $request->getFunctionCode());
+
             $response = new ErrorResponse(new ModbusApplicationHeader(2, 0, 0),
                 ModbusPacket::READ_HOLDING_REGISTERS,
                 4 // Server failure

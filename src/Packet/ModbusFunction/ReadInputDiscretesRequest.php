@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
+use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Utils\Types;
 
 /**
  * Request for Read Input Discretes (FC=02)
@@ -23,5 +25,24 @@ class ReadInputDiscretesRequest extends ReadCoilsRequest
     public function getFunctionCode(): int
     {
         return ModbusPacket::READ_INPUT_DISCRETES;
+    }
+
+    /**
+     * Parses binary string to ReadInputDiscretesRequest or return ErrorResponse on failure
+     *
+     * @param $binaryString
+     * @return ReadInputDiscretesRequest|ErrorResponse
+     */
+    public static function parse($binaryString)
+    {
+        return self::parseStartAddressPacket(
+            $binaryString,
+            12,
+            ModbusPacket::READ_INPUT_DISCRETES,
+            function (int $transactionId, int $unitId, int $startAddress) use ($binaryString) {
+                $quantity = Types::parseUInt16($binaryString[10] . $binaryString[11]);
+                return new self($startAddress, $quantity, $unitId, $transactionId);
+            }
+        );
     }
 }

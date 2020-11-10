@@ -5,7 +5,6 @@ namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ErrorResponse;
-use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
@@ -82,36 +81,14 @@ class ReadHoldingRegistersRequest extends ProtocolDataUnitRequest implements Mod
      */
     public static function parse($binaryString)
     {
-        if ($binaryString === null || strlen($binaryString) !== 12) {
-            return new ErrorResponse(new ModbusApplicationHeader(2, 0, 0),
-                ModbusPacket::READ_HOLDING_REGISTERS,
-                4 // Server failure
-            );
-        }
-
-        $transactionId = Types::parseUInt16($binaryString[0] . $binaryString[1]);
-        $unitId = Types::parseByte($binaryString[6]);
-        if (ModbusPacket::READ_HOLDING_REGISTERS !== ord($binaryString[7])) {
-            return new ErrorResponse(
-                new ModbusApplicationHeader(2, $unitId, $transactionId),
-                ModbusPacket::READ_HOLDING_REGISTERS,
-                1 // Illegal function
-            );
-        }
-
-        $startAddress = Types::parseUInt16($binaryString[8] . $binaryString[9]);
-        $quantity = Types::parseUInt16($binaryString[10] . $binaryString[11]);
-        try {
-            return new ReadHoldingRegistersRequest($startAddress, $quantity, $unitId, $transactionId);
-        } catch (\Exception $exception) {
-            // constructor does validation and throws exception so not to mix returning errors and throwing exceptions
-            // we catch exception here and return it as a error response.
-            $errorCode = $exception instanceof InvalidArgumentException ? $exception->getCode() : 3; // Illegal data value
-            return new ErrorResponse(
-                new ModbusApplicationHeader(2, $unitId, $transactionId),
-                ModbusPacket::READ_HOLDING_REGISTERS,
-                $errorCode
-            );
-        }
+        return self::parseStartAddressPacket(
+            $binaryString,
+            12,
+            ModbusPacket::READ_HOLDING_REGISTERS,
+            function (int $transactionId, int $unitId, int $startAddress) use ($binaryString) {
+                $quantity = Types::parseUInt16($binaryString[10] . $binaryString[11]);
+                return new self($startAddress, $quantity, $unitId, $transactionId);
+            }
+        );
     }
 }

@@ -6,13 +6,45 @@ namespace Tests\Packet;
 
 use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Packet\ErrorResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
+use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesRequest;
+use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
+use ModbusTcpClient\Packet\ModbusFunction\ReadWriteMultipleRegistersRequest;
+use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsRequest;
+use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersRequest;
+use ModbusTcpClient\Packet\ModbusFunction\WriteSingleCoilRequest;
+use ModbusTcpClient\Packet\ModbusFunction\WriteSingleRegisterRequest;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\RequestFactory;
 use PHPUnit\Framework\TestCase;
 
 class RequestFactoryTest extends TestCase
 {
+    public function everyFunctionTypePacket()
+    {
+        return [
+            "ok, parse ReadCoilsRequest" => ["\x00\x01\x00\x00\x00\x06\x10\x01\x00\x6B\x00\x03", ReadCoilsRequest::class],
+            "ok, parse ReadInputRegistersRequest" => ["\x00\x01\x00\x00\x00\x06\x11\x04\x00\x6B\x00\x03", ReadInputRegistersRequest::class],
+            "ok, parse ReadHoldingRegistersRequest" => ["\x00\x01\x00\x00\x00\x06\x11\x03\x00\x6B\x00\x03", ReadHoldingRegistersRequest::class],
+            "ok, parse ReadInputDiscretesRequest" => ["\x00\x01\x00\x00\x00\x06\x11\x02\x00\x6B\x00\x03", ReadInputDiscretesRequest::class],
+            "ok, parse ReadWriteMultipleRegistersRequest" => ["\x01\x38\x00\x00\x00\x0f\x11\x17\x04\x10\x00\x01\x01\x12\x00\x02\x04\x00\xc8\x00\x82", ReadWriteMultipleRegistersRequest::class],
+            "ok, parse WriteMultipleCoilsRequest" => ["\x01\x38\x00\x00\x00\x08\x11\x0F\x04\x10\x00\x03\x01\x05", WriteMultipleCoilsRequest::class],
+            "ok, parse WriteMultipleRegistersRequest" => ["\x01\x38\x00\x00\x00\x0d\x11\x10\x04\x10\x00\x03\x06\x00\xC8\x00\x82\x87\x01", WriteMultipleRegistersRequest::class],
+            "ok, parse WriteSingleCoilRequest" => ["\x00\x01\x00\x00\x00\x06\x11\x05\x00\x6B\xFF\x00", WriteSingleCoilRequest::class],
+            "ok, parse WriteSingleRegisterRequest" => ["\x00\x01\x00\x00\x00\x06\x11\x06\x00\x6B\x01\x01", WriteSingleRegisterRequest::class],
+        ];
+    }
+
+    /**
+     * @dataProvider everyFunctionTypePacket
+     */
+    public function testShouldParseRequestPacket($packet, $expectedClass)
+    {
+        $request = RequestFactory::parseRequest($packet);
+        self::assertInstanceOf($expectedClass, $request);
+    }
+
     public function testShouldThrowExceptionOnGarbageData()
     {
         $this->expectExceptionMessage("Request null or data length too short to be valid packet!");
