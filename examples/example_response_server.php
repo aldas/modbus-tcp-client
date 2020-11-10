@@ -19,6 +19,9 @@ use ModbusTcpClient\Utils\Types;
 use React\EventLoop\Factory;
 use React\Socket\Server;
 
+// Install: 'composer require react/socket:^1.6'
+// OPTIONAL: install PHP extension ('ev', 'event' or 'uv') for better support of event loop within PHP.
+
 $address = getenv('MODBUS_SERVER_BIND_ADDRESS') ?: '127.0.0.1';
 $port = getenv('MODBUS_SERVER_PORT') ?: '5020';
 
