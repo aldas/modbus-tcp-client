@@ -5,6 +5,8 @@ namespace ModbusTcpClient\Packet\ModbusFunction;
 
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Packet\ErrorResponse;
+use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
@@ -22,7 +24,7 @@ use ModbusTcpClient\Utils\Types;
  * \x10 - function code
  * \x04\x10 - start address
  * \x00\x03 - count of register to write
- * \x06 - coils byte count
+ * \x06 - registers byte count
  * \x00\xC8\x00\x82\x87\x01 - registers data
  *
  */
@@ -53,7 +55,7 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest implements M
         if ($this->registersCount === 0 || $this->registersCount > 124) {
             // as request contain 1 byte field 'registersBytesSize' to indicate number of bytes to follow
             // there is no way more than 124 words (124*2 bytes) can be written as this field would overflow
-            throw new InvalidArgumentException("registers count out of range (1-124): {$this->registersCount}");
+            throw new InvalidArgumentException("registers count out of range (1-124): {$this->registersCount}", 3);
         }
     }
 
@@ -82,5 +84,34 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest implements M
     {
         // (function code size (1) + startAddress size (2)) + registers count size (2) + register byte size (1) + number of bytes registers need for data
         return parent::getLengthInternal() + (3 + $this->registersBytesSize);
+    }
+
+    /**
+     * Parses binary string to WriteMultipleRegistersRequest or return ErrorResponse on failure
+     *
+     * @param $binaryString
+     * @return WriteMultipleRegistersRequest|ErrorResponse
+     */
+    public static function parse($binaryString)
+    {
+        return self::parseStartAddressPacket(
+            $binaryString,
+            15,
+            ModbusPacket::WRITE_MULTIPLE_REGISTERS,
+            function (int $transactionId, int $unitId, int $startAddress) use ($binaryString) {
+                $quantity = Types::parseUInt16($binaryString[10] . $binaryString[11]);
+                $byteCount = Types::parseByte($binaryString[12]);
+
+                $registers = str_split(substr($binaryString, 13, $byteCount), 2);
+                if ($quantity !== count($registers)) {
+                    return new ErrorResponse(
+                        new ModbusApplicationHeader(2, $unitId, $transactionId),
+                        ModbusPacket::WRITE_MULTIPLE_REGISTERS,
+                        3 // Illegal data value
+                    );
+                }
+                return new self($startAddress, $registers, $unitId, $transactionId);
+            }
+        );
     }
 }

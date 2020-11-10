@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
@@ -45,7 +46,7 @@ class ReadHoldingRegistersRequest extends ProtocolDataUnitRequest implements Mod
         if ((null !== $this->quantity) && ($this->quantity > 0 && $this->quantity <= 124)) {
             return;
         }
-        throw new InvalidArgumentException("quantity is not set or out of range (0-124): {$this->quantity}");
+        throw new InvalidArgumentException("quantity is not set or out of range (0-124): {$this->quantity}", 3);
     }
 
     public function getFunctionCode(): int
@@ -70,5 +71,24 @@ class ReadHoldingRegistersRequest extends ProtocolDataUnitRequest implements Mod
     protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + 2; // quantity size (2 bytes)
+    }
+
+    /**
+     * Parses binary string to ReadHoldingRegistersRequest or return ErrorResponse on failure
+     *
+     * @param $binaryString
+     * @return ReadHoldingRegistersRequest|ErrorResponse
+     */
+    public static function parse($binaryString)
+    {
+        return self::parseStartAddressPacket(
+            $binaryString,
+            12,
+            ModbusPacket::READ_HOLDING_REGISTERS,
+            function (int $transactionId, int $unitId, int $startAddress) use ($binaryString) {
+                $quantity = Types::parseUInt16($binaryString[10] . $binaryString[11]);
+                return new self($startAddress, $quantity, $unitId, $transactionId);
+            }
+        );
     }
 }

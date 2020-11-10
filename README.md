@@ -162,6 +162,11 @@ See Linux example in 'examples/[rtu_usb_to_serial.php](examples/rtu_usb_to_seria
 * 'examples/[example_parallel_requests_reactphp.php](examples/example_parallel_requests_reactphp.php) - example of non-blocking socket IO with ReactPHP socket library (https://github.com/reactphp/socket)
 * 'examples/[example_parallel_requests_amp.php](examples/example_parallel_requests_amp.php) - example of non-blocking socket IO with Amp socket library https://github.com/amphp/socket 
 
+## Example Modbus server (accepting requests) with ReactPHP
+
+* 'examples/[example_response_server.php](examples/example_response_server.php) - example of modbus server 
+
+
 ## Try communication with PLCs quickly using php built-in web server
 
 Examples folder has [index.php](examples/index.php) which can be used with php built-in web server to test

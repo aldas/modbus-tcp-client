@@ -4,9 +4,11 @@ declare(strict_types=1);
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
+use ModbusTcpClient\Packet\Word;
 use ModbusTcpClient\Utils\Types;
 
 
@@ -46,7 +48,7 @@ class WriteSingleRegisterRequest extends ProtocolDataUnitRequest implements Modb
         if ((null !== $this->value) && (($this->value >= Types::MIN_VALUE_INT16) && ($this->value <= Types::MAX_VALUE_UINT16))) {
             return;
         }
-        throw new InvalidArgumentException("value is not set or out of range (u)int16: {$this->value}");
+        throw new InvalidArgumentException("value is not set or out of range (u)int16: {$this->value}", 3);
     }
 
     public function getFunctionCode(): int
@@ -68,8 +70,35 @@ class WriteSingleRegisterRequest extends ProtocolDataUnitRequest implements Modb
         return $this->value;
     }
 
+    /**
+     * @return Word
+     */
+    public function getValueAsWord(): Word
+    {
+        return new Word(Types::toInt16($this->value));
+    }
+
     protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + 2; // value size (2 bytes)
+    }
+
+    /**
+     * Parses binary string to WriteSingleRegisterRequest or return ErrorResponse on failure
+     *
+     * @param $binaryString
+     * @return WriteSingleRegisterRequest|ErrorResponse
+     */
+    public static function parse($binaryString)
+    {
+        return self::parseStartAddressPacket(
+            $binaryString,
+            12,
+            ModbusPacket::WRITE_SINGLE_REGISTER,
+            function (int $transactionId, int $unitId, int $startAddress) use ($binaryString) {
+                $value = Types::parseInt16($binaryString[10] . $binaryString[11]);
+                return new self($startAddress, $value, $unitId, $transactionId);
+            }
+        );
     }
 }

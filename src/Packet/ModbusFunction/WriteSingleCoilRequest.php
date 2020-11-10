@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet\ModbusFunction;
 
+use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
@@ -63,5 +64,24 @@ class WriteSingleCoilRequest extends ProtocolDataUnitRequest implements ModbusRe
     protected function getLengthInternal(): int
     {
         return parent::getLengthInternal() + 2; // coil size (1 byte + 1 byte)
+    }
+
+    /**
+     * Parses binary string to WriteSingleCoilRequest or return ErrorResponse on failure
+     *
+     * @param $binaryString
+     * @return WriteSingleCoilRequest|ErrorResponse
+     */
+    public static function parse($binaryString)
+    {
+        return self::parseStartAddressPacket(
+            $binaryString,
+            12,
+            ModbusPacket::WRITE_SINGLE_COIL,
+            function (int $transactionId, int $unitId, int $startAddress) use ($binaryString) {
+                $coil = Types::parseByte($binaryString[10]) === self::ON;
+                return new self($startAddress, $coil, $unitId, $transactionId);
+            }
+        );
     }
 }

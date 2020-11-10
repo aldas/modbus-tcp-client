@@ -47,7 +47,56 @@ abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
     protected function validate()
     {
         if ((null === $this->startAddress) || !($this->startAddress >= 0 && $this->startAddress <= Types::MAX_VALUE_UINT16)) {
-            throw new InvalidArgumentException("startAddress is not set or out of range: {$this->startAddress}");
+            throw new InvalidArgumentException("startAddress is not set or out of range: {$this->startAddress}", 2);
+        }
+    }
+
+    /**
+     * @param $binaryString
+     * @param $minLength
+     * @param $functionCode
+     * @param $createFunctor
+     * @return mixed|ErrorResponse
+     */
+    protected static function parseStartAddressPacket($binaryString, int $minLength, int $functionCode, $createFunctor)
+    {
+        if ($binaryString === null || strlen($binaryString) < $minLength) {
+            return new ErrorResponse(new ModbusApplicationHeader(2, 0, 0),
+                $functionCode,
+                4 // Server failure
+            );
+        }
+
+        $transactionId = Types::parseUInt16($binaryString[0] . $binaryString[1]);
+        $unitId = Types::parseByte($binaryString[6]);
+        if ($functionCode !== ord($binaryString[7])) {
+            return new ErrorResponse(
+                new ModbusApplicationHeader(2, $unitId, $transactionId),
+                $functionCode,
+                1 // Illegal function
+            );
+        }
+        $pduLength = Types::parseUInt16($binaryString[4] . $binaryString[5]);
+        if (($pduLength + 6) !== strlen($binaryString)) {
+            return new ErrorResponse(
+                new ModbusApplicationHeader(2, $unitId, $transactionId),
+                $functionCode,
+                3 // Illegal data value
+            );
+        }
+
+        $startAddress = Types::parseUInt16($binaryString[8] . $binaryString[9]);
+        try {
+            return $createFunctor($transactionId, $unitId, $startAddress);
+        } catch (\Exception $exception) {
+            // constructor does validation and throws exception so not to mix returning errors and throwing exceptions
+            // we catch exception here and return it as a error response.
+            $errorCode = $exception instanceof InvalidArgumentException ? $exception->getCode() : 3; // Illegal data value
+            return new ErrorResponse(
+                new ModbusApplicationHeader(2, $unitId, $transactionId),
+                $functionCode,
+                $errorCode
+            );
         }
     }
 
