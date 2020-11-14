@@ -9,6 +9,7 @@ assignees: ''
 ---
 
 * Describe the problem
+* Follow https://github.com/aldas/modbus-tcp-client/wiki/Debugging-guide and write down which steps are working for you and which not.
 
 * Environment:
  - OS: [e.g. Windows10/Ubuntu20.10/...]
