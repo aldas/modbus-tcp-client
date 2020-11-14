@@ -11,6 +11,9 @@ require __DIR__ . '/logger.php';
 $connection = BinaryStreamConnection::getBuilder()
     ->setPort(5020)
     ->setHost('127.0.0.1')
+    ->setConnectTimeoutSec(1.5) // timeout when establishing connection to the server
+    ->setWriteTimeoutSec(0.5) // timeout when writing/sending packet to the server
+    ->setReadTimeoutSec(0.3) // timeout when waiting response from server
     ->setLogger(new EchoLogger())
     ->build();
 
