@@ -3,7 +3,7 @@ name: Bug report
 about: 'Follow https://github.com/aldas/modbus-tcp-client/wiki/Debugging-guide and
   write down which steps are working for you and which not. '
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
