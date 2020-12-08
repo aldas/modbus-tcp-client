@@ -10,6 +10,13 @@ $connection = BinaryStreamConnection::getBuilder()
     ->setPort(502)
     ->setHost('127.0.0.1')
     ->setReadTimeoutSec(3) // increase read timeout to 3 seconds
+    ->setIsCompleteCallback(function ($binaryData, $streamIndex) {
+        // Do not check for complete TCP packet structure. Default implementation works only for Modbus TCP.
+        // Modbus TCP has 7 byte header and this function checks for it and whole packet to be complete. RTU does
+        // not have that.
+        // Read about differences here: https://www.simplymodbus.ca/TCP.htm
+        return true;
+    })
     ->build();
 
 $startAddress = 256;
