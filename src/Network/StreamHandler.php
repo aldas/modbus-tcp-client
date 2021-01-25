@@ -64,6 +64,9 @@ trait StreamHandler
                 $streamIndex = $streamMap[$streamId] ?? null;
                 if ($streamIndex !== null) {
                     $data = fread($stream, 256); // read max 256 bytes
+                    if ($data === false) {
+                        throw new IOException('fread error during receiveFrom');
+                    }
                     if (!empty($data)) {
                         if ($logger) {
                             $logger->debug("Stream {$streamId} @ index: {$streamIndex} received data: ", unpack('H*', $data));
@@ -89,8 +92,10 @@ trait StreamHandler
                 if ($timeSpentWaiting >= $timeout) {
                     throw new IOException('Read total timeout expired');
                 }
+            } else {
+                $lastAccess = microtime(true);
             }
-            $lastAccess = microtime(true);
+
         }
         return $result;
     }
