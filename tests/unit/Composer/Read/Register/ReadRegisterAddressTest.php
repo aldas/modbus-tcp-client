@@ -7,6 +7,7 @@ use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\Read\Register\ReadRegisterAddress;
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
+use ModbusTcpClient\Utils\Endian;
 use PHPUnit\Framework\TestCase;
 
 class ReadRegisterAddressTest extends TestCase
@@ -43,6 +44,12 @@ class ReadRegisterAddressTest extends TestCase
     {
         $address = new ReadRegisterAddress(1, Address::TYPE_INT16, 'temp1');
         $this->assertEquals('temp1', $address->getName());
+    }
+
+    public function testGetEndian()
+    {
+        $address = new ReadRegisterAddress(1, Address::TYPE_INT16, 'temp1', null, null, Endian::BIG_ENDIAN);
+        $this->assertEquals(Endian::BIG_ENDIAN, $address->getEndian());
     }
 
     public function testDefaultGetName()
@@ -170,6 +177,16 @@ class ReadRegisterAddressTest extends TestCase
         $this->assertEquals(-32768, $value);
     }
 
+    public function testExtractInt16WithCustomEndian()
+    {
+        $responsePacket = new ReadHoldingRegistersResponse("\x08\x00\x01\x80\x00\x00\x03\x00\x04", 3, 33152);
+        $address = new ReadRegisterAddress(1, Address::TYPE_INT16, null, null, null, Endian::LITTLE_ENDIAN);
+
+        $value = $address->extract($responsePacket);
+
+        $this->assertEquals(128, $value);
+    }
+
     public function testExtractUint16()
     {
         $responsePacket = new ReadHoldingRegistersResponse("\x08\x00\x01\x80\x00\x00\x03\x00\x04", 3, 33152);
@@ -178,6 +195,16 @@ class ReadRegisterAddressTest extends TestCase
         $value = $address->extract($responsePacket);
 
         $this->assertEquals(32768, $value);
+    }
+
+    public function testExtractUint16WithCustomEndian()
+    {
+        $responsePacket = new ReadHoldingRegistersResponse("\x08\x00\x01\x80\x00\x00\x03\x00\x04", 3, 33152);
+        $address = new ReadRegisterAddress(1, Address::TYPE_UINT16, null, null, null, Endian::LITTLE_ENDIAN);
+
+        $value = $address->extract($responsePacket);
+
+        $this->assertEquals(128, $value);
     }
 
     public function testExtractUint32()
@@ -190,6 +217,16 @@ class ReadRegisterAddressTest extends TestCase
         $this->assertEquals(2147483647, $value);
     }
 
+    public function testExtractUint32WithCustomEndian()
+    {
+        $responsePacket = new ReadHoldingRegistersResponse("\x08\x00\x01\xFF\xFF\x7F\xFF\x00\x04", 3, 33152);
+        $address = new ReadRegisterAddress(1, Address::TYPE_UINT32, null, null, null, Endian::LITTLE_ENDIAN);
+
+        $value = $address->extract($responsePacket);
+
+        $this->assertEquals(4294967167, $value);
+    }
+
     public function testExtractInt32()
     {
         $responsePacket = new ReadHoldingRegistersResponse("\x08\x00\x01\x00\x00\x80\x00\x00\x04", 3, 33152);
@@ -200,6 +237,16 @@ class ReadRegisterAddressTest extends TestCase
         $this->assertEquals(-2147483648, $value);
     }
 
+    public function testExtractInt32WithCustomEndian()
+    {
+        $responsePacket = new ReadHoldingRegistersResponse("\x08\x00\x01\x00\x00\x80\x00\x00\x04", 3, 33152);
+        $address = new ReadRegisterAddress(1, Address::TYPE_INT32, null, null, null, Endian::LITTLE_ENDIAN);
+
+        $value = $address->extract($responsePacket);
+
+        $this->assertEquals(128, $value);
+    }
+
     public function testExtractFloat()
     {
         $responsePacket = new ReadHoldingRegistersResponse("\x08\x00\x01\xAA\xAB\x3F\x2A\x00\x04", 3, 33152);
@@ -208,6 +255,16 @@ class ReadRegisterAddressTest extends TestCase
         $value = $address->extract($responsePacket);
 
         $this->assertEqualsWithDelta(0.6666666, $value, 0.0000001);
+    }
+
+    public function testExtractFloatWithCustomEndian()
+    {
+        $responsePacket = new ReadHoldingRegistersResponse("\x08\x00\x00\x00\x00\xcd\xcc\xec\x3f", 3, 33152);
+        $address = new ReadRegisterAddress(2, Address::TYPE_FLOAT, null, null, null, Endian::LITTLE_ENDIAN);
+
+        $value = $address->extract($responsePacket);
+
+        $this->assertEqualsWithDelta(1.85, $value, 0.0000001);
     }
 
     public function testExtractUInt64()
@@ -224,6 +281,20 @@ class ReadRegisterAddressTest extends TestCase
         $this->assertEquals(2147483647, $value);
     }
 
+    public function testExtractUInt64WithCustomEndian()
+    {
+        if (PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('32-bit version of PHP');
+        }
+
+        $responsePacket = new ReadHoldingRegistersResponse("\x08\xFF\xFF\x7F\xFF\x00\x00\x00\x00", 3, 33152);
+        $address = new ReadRegisterAddress(0, Address::TYPE_UINT64, null, null, null, Endian::LITTLE_ENDIAN);
+
+        $value = $address->extract($responsePacket);
+
+        $this->assertEquals(4286578687, $value);
+    }
+
     public function testExtractInt64()
     {
         if (PHP_INT_SIZE === 4) {
@@ -236,6 +307,20 @@ class ReadRegisterAddressTest extends TestCase
         $value = $address->extract($responsePacket);
 
         $this->assertEquals(-1, $value);
+    }
+
+    public function testExtractInt64WithCustomEndian()
+    {
+        if (PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('32-bit version of PHP');
+        }
+
+        $responsePacket = new ReadHoldingRegistersResponse("\x08\x01\x00\x00\x00\x00\x00\x00\x00", 3, 33152);
+        $address = new ReadRegisterAddress(0, Address::TYPE_INT64, null, null, null, Endian::LITTLE_ENDIAN);
+
+        $value = $address->extract($responsePacket);
+
+        $this->assertEquals(1, $value);
     }
 
 }

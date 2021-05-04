@@ -53,6 +53,13 @@ Library supports following byte and word orders:
 * Little endian (DCBA - word1 = 0x3412, word2 = 0x7856)
 * Little endian low word first (BADC - word1 = 0x7856, word2 = 0x3412)
 
+Default (global) endianess used for parsing can be changed with:
+```php
+Endian::$defaultEndian = Endian::BIG_ENDIAN_LOW_WORD_FIRST;
+```
+
+For non-global cases see API methods argument list if method support using custom endianess.
+
 See [Endian.php](src/Utils/Endian.php) for additional info and [Types.php](src/Utils/Types.php) for supported data types.
 
 ## Example of Modbus TCP (fc3 - read holding registers)
@@ -90,8 +97,9 @@ $fc3 = ReadRegistersBuilder::newReadHoldingRegisters($address, $unitID)
     ->build(); // returns array of 3 ReadHoldingRegistersRequest requests
 
 // this will use PHP non-blocking stream io to recieve responses
-$responses = (new NonBlockingClient(['readTimeoutSec' => 0.2]))->sendRequests($fc3);
-print_r($responses);
+$responseContainer = (new NonBlockingClient(['readTimeoutSec' => 0.2]))->sendRequests($fc3);
+print_r($responseContainer->getData()); // array of assoc. arrays (keyed by address name)
+print_r($responseContainer->getErrors());
 ```
 Response structure
 ```php
