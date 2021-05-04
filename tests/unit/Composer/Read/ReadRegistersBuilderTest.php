@@ -3,14 +3,16 @@
 namespace Tests\unit\Composer\Read;
 
 use ModbusTcpClient\Composer\Address;
+use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
 use ModbusTcpClient\Composer\Read\Register\BitReadRegisterAddress;
 use ModbusTcpClient\Composer\Read\Register\ByteReadRegisterAddress;
 use ModbusTcpClient\Composer\Read\Register\ReadRegisterAddress;
-use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
 use ModbusTcpClient\Composer\Read\Register\StringReadRegisterAddress;
+use ModbusTcpClient\Composer\RegisterAddress;
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
+use ModbusTcpClient\Utils\Endian;
 use PHPUnit\Framework\TestCase;
 
 class ReadRegistersBuilderTest extends TestCase
@@ -75,6 +77,33 @@ class ReadRegistersBuilderTest extends TestCase
         $this->assertCount(2, $requests[0]->getAddresses());
         $this->assertCount(4, $requests[1]->getAddresses());
         $this->assertCount(7, $requests[2]->getAddresses());
+    }
+
+    public function testBuildAllFromArraySingle()
+    {
+        $requests = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
+            ->allFromArray([
+                [
+                    'uri' => 'tcp://127.0.0.1:5023',
+                    'type' => 'uint16',
+                    'address' => 270,
+                    'name' => 'room7_temp_wo',
+                    'endian' => Endian::LITTLE_ENDIAN
+                ],
+            ])
+            ->build();
+
+        $this->assertCount(1, $requests);
+
+        $addresses = $requests[0]->getAddresses();
+        $this->assertCount(1, $addresses);
+
+        $address = $addresses[0];
+        $this->assertEquals(Address::TYPE_UINT16, $address->getType());
+        $this->assertEquals(270, $address->getAddress());
+        $this->assertEquals('room7_temp_wo', $address->getName());
+        $this->assertEquals(1, $address->getSize());
+        $this->assertEquals(Endian::LITTLE_ENDIAN, $address->getEndian());
     }
 
     public function testBuildAllFromArrayWithReadAddress()
@@ -308,6 +337,41 @@ class ReadRegistersBuilderTest extends TestCase
             'add uint32' => ['uint32', 2],
             'add float' => ['float', 2],
             'add uint64' => ['uint64', 4],
+        ];
+    }
+
+    /**
+     * @dataProvider typesWithEndianProvider
+     */
+    public function testAddressTypesWithEndian($type, $size, $endian)
+    {
+        $requests = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
+            ->$type(280, 'some_address', null, null, $endian)
+            ->build();
+
+        $this->assertCount(1, $requests);
+
+        $addresses = $requests[0]->getAddresses();
+        $this->assertCount(1, $addresses);
+
+        /** @var RegisterAddress $address */
+        $address = $addresses[0];
+        $this->assertEquals($type, $address->getType());
+        $this->assertEquals(280, $address->getAddress());
+        $this->assertEquals('some_address', $address->getName());
+        $this->assertEquals($size, $address->getSize());
+        $this->assertEquals($endian, $address->getEndian());
+    }
+
+    public function typesWithEndianProvider(): array
+    {
+        return [
+            'add int16' => ['int16', 1, Endian::LITTLE_ENDIAN],
+            'add uint16' => ['uint16', 1, Endian::LITTLE_ENDIAN],
+            'add int32 ' => ['int32', 2, Endian::LITTLE_ENDIAN],
+            'add uint32' => ['uint32', 2, Endian::LITTLE_ENDIAN],
+            'add float' => ['float', 2, Endian::LITTLE_ENDIAN],
+            'add uint64' => ['uint64', 4, Endian::LOW_WORD_FIRST],
         ];
     }
 

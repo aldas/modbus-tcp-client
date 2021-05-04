@@ -5,6 +5,9 @@ require __DIR__ . '/../vendor/autoload.php';
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
 use ModbusTcpClient\Network\NonBlockingClient;
+use ModbusTcpClient\Utils\Endian;
+
+Endian::$defaultEndian = Endian::BIG_ENDIAN_LOW_WORD_FIRST; // set default (global) endian used for parsing data
 
 $fc3 = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
     ->bit(256, 15, 'pump2_feedbackalarm_do')
@@ -14,7 +17,7 @@ $fc3 = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
     ->int16(657, 'battery3_voltage_wo')
     ->uint16(658, 'wind_angle_wo')
     ->int32(659, 'gps_speed')
-    ->uint32(661, 'distance_total_wo')
+    ->uint32(661, 'distance_total_wo', null, null, Endian::BIG_ENDIAN) // use custom endianess
     ->uint64(663, 'gen2_energyw0_wo')
     ->float(667, 'longitude')
     ->string(669, 10, 'username')
@@ -35,4 +38,5 @@ $fc3 = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
     ->build(); // returns array of 3 requests
 
 $responseContainer = (new NonBlockingClient(['readTimeoutSec' => 0.2]))->sendRequests($fc3);
-print_r($responseContainer);
+print_r($responseContainer->getData()); // array of assoc. arrays (keyed by address name)
+print_r($responseContainer->getErrors());

@@ -6,6 +6,7 @@ namespace ModbusTcpClient\Composer\Read\Register;
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\RegisterAddress;
 use ModbusTcpClient\Packet\ModbusResponse;
+use ModbusTcpClient\Utils\Endian;
 
 class ReadRegisterAddress extends RegisterAddress
 {
@@ -18,10 +19,21 @@ class ReadRegisterAddress extends RegisterAddress
     /** @var callable */
     private $errorCallback;
 
-    public function __construct(int $address, string $type, string $name = null, callable $callback = null, callable $errorCallback = null)
+    /** @var int */
+    private $endian;
+
+    public function __construct(
+        int $address,
+        string $type,
+        string $name = null,
+        callable $callback = null,
+        callable $errorCallback = null,
+        int $endian = null
+    )
     {
         parent::__construct($address, $type);
 
+        $this->endian = $endian === null ? Endian::$defaultEndian : $endian;
         $this->name = $name ?: "{$type}_{$address}";
         $this->callback = $callback;
         $this->errorCallback = $errorCallback;
@@ -45,25 +57,25 @@ class ReadRegisterAddress extends RegisterAddress
         $result = null;
         switch ($this->type) {
             case Address::TYPE_INT16:
-                $result = $response->getWordAt($this->address)->getInt16();
+                $result = $response->getWordAt($this->address)->getInt16($this->endian);
                 break;
             case Address::TYPE_UINT16:
-                $result = $response->getWordAt($this->address)->getUInt16();
+                $result = $response->getWordAt($this->address)->getUInt16($this->endian);
                 break;
             case Address::TYPE_INT32:
-                $result = $response->getDoubleWordAt($this->address)->getInt32();
+                $result = $response->getDoubleWordAt($this->address)->getInt32($this->endian);
                 break;
             case Address::TYPE_UINT32:
-                $result = $response->getDoubleWordAt($this->address)->getUInt32();
+                $result = $response->getDoubleWordAt($this->address)->getUInt32($this->endian);
                 break;
             case Address::TYPE_FLOAT:
-                $result = $response->getDoubleWordAt($this->address)->getFloat();
+                $result = $response->getDoubleWordAt($this->address)->getFloat($this->endian);
                 break;
             case Address::TYPE_INT64:
-                $result = $response->getQuadWordAt($this->address)->getInt64();
+                $result = $response->getQuadWordAt($this->address)->getInt64($this->endian);
                 break;
             case Address::TYPE_UINT64:
-                $result = $response->getQuadWordAt($this->address)->getUInt64();
+                $result = $response->getQuadWordAt($this->address)->getUInt64($this->endian);
                 break;
         }
         return $result;
@@ -95,5 +107,10 @@ class ReadRegisterAddress extends RegisterAddress
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getEndian(): int
+    {
+        return $this->endian;
     }
 }

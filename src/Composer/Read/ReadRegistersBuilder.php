@@ -14,6 +14,7 @@ use ModbusTcpClient\Composer\Read\Register\StringReadRegisterAddress;
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
+use ModbusTcpClient\Utils\Endian;
 
 class ReadRegistersBuilder
 {
@@ -109,6 +110,11 @@ class ReadRegistersBuilder
             throw new InvalidArgumentException('empty or unknown type for address given');
         }
 
+        $endian = $register['endian'] ?? null;
+        if ($endian === null) {
+            $endian = Endian::$defaultEndian;
+        }
+
         switch ($addressType) {
             case Address::TYPE_BIT:
                 $this->bit($address, $register['bit'] ?? 0, $register['name'] ?? null, $callback, $errorCallback);
@@ -117,25 +123,25 @@ class ReadRegistersBuilder
                 $this->byte($address, (bool)($register['firstByte'] ?? true), $register['name'] ?? null, $callback, $errorCallback);
                 break;
             case Address::TYPE_INT16:
-                $this->int16($address, $register['name'] ?? null, $callback, $errorCallback);
+                $this->int16($address, $register['name'] ?? null, $callback, $errorCallback, $endian);
                 break;
             case Address::TYPE_UINT16:
-                $this->uint16($address, $register['name'] ?? null, $callback, $errorCallback);
+                $this->uint16($address, $register['name'] ?? null, $callback, $errorCallback, $endian);
                 break;
             case Address::TYPE_INT32:
-                $this->int32($address, $register['name'] ?? null, $callback, $errorCallback);
+                $this->int32($address, $register['name'] ?? null, $callback, $errorCallback, $endian);
                 break;
             case Address::TYPE_UINT32:
-                $this->uint32($address, $register['name'] ?? null, $callback, $errorCallback);
+                $this->uint32($address, $register['name'] ?? null, $callback, $errorCallback, $endian);
                 break;
             case Address::TYPE_INT64:
-                $this->int64($address, $register['name'] ?? null, $callback, $errorCallback);
+                $this->int64($address, $register['name'] ?? null, $callback, $errorCallback, $endian);
                 break;
             case Address::TYPE_UINT64:
-                $this->uint64($address, $register['name'] ?? null, $callback, $errorCallback);
+                $this->uint64($address, $register['name'] ?? null, $callback, $errorCallback, $endian);
                 break;
             case Address::TYPE_FLOAT:
-                $this->float($address, $register['name'] ?? null, $callback, $errorCallback);
+                $this->float($address, $register['name'] ?? null, $callback, $errorCallback, $endian);
                 break;
             case Address::TYPE_STRING:
                 $byteLength = $register['length'] ?? null;
@@ -161,39 +167,137 @@ class ReadRegistersBuilder
         return $this->addAddress(new ByteReadRegisterAddress($address, $firstByte, $name, $callback, $errorCallback));
     }
 
-    public function int16(int $address, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
+    public function int16(
+        int $address,
+        string $name = null,
+        callable $callback = null,
+        callable $errorCallback = null,
+        int $endian = null
+    ): ReadRegistersBuilder
     {
-        return $this->addAddress(new ReadRegisterAddress($address, ReadRegisterAddress::TYPE_INT16, $name, $callback, $errorCallback));
+        $r = new ReadRegisterAddress(
+            $address,
+            ReadRegisterAddress::TYPE_INT16,
+            $name,
+            $callback,
+            $errorCallback,
+            $endian
+        );
+        return $this->addAddress($r);
     }
 
-    public function uint16(int $address, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
+    public function uint16(
+        int $address,
+        string $name = null,
+        callable $callback = null,
+        callable $errorCallback = null,
+        int $endian = null
+    ): ReadRegistersBuilder
     {
-        return $this->addAddress(new ReadRegisterAddress($address, ReadRegisterAddress::TYPE_UINT16, $name, $callback, $errorCallback));
+        $r = new ReadRegisterAddress(
+            $address,
+            ReadRegisterAddress::TYPE_UINT16,
+            $name,
+            $callback,
+            $errorCallback,
+            $endian
+        );
+        return $this->addAddress($r);
     }
 
-    public function int32(int $address, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
+    public function int32(
+        int $address,
+        string $name = null,
+        callable $callback = null,
+        callable $errorCallback = null,
+        int $endian = null
+    ): ReadRegistersBuilder
     {
-        return $this->addAddress(new ReadRegisterAddress($address, ReadRegisterAddress::TYPE_INT32, $name, $callback, $errorCallback));
+        $r = new ReadRegisterAddress(
+            $address,
+            ReadRegisterAddress::TYPE_INT32,
+            $name,
+            $callback,
+            $errorCallback,
+            $endian
+        );
+        return $this->addAddress($r);
     }
 
-    public function uint32(int $address, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
+    public function uint32(
+        int $address,
+        string $name = null,
+        callable $callback = null,
+        callable $errorCallback = null,
+        int $endian = null
+    ): ReadRegistersBuilder
     {
-        return $this->addAddress(new ReadRegisterAddress($address, ReadRegisterAddress::TYPE_UINT32, $name, $callback, $errorCallback));
+        $r = new ReadRegisterAddress(
+            $address,
+            ReadRegisterAddress::TYPE_UINT32,
+            $name,
+            $callback,
+            $errorCallback,
+            $endian
+        );
+        return $this->addAddress($r);
     }
 
-    public function uint64(int $address, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
+    public function uint64(
+        int $address,
+        string $name = null,
+        callable $callback = null,
+        callable $errorCallback = null,
+        int $endian = null
+    ): ReadRegistersBuilder
     {
-        return $this->addAddress(new ReadRegisterAddress($address, ReadRegisterAddress::TYPE_UINT64, $name, $callback, $errorCallback));
+        $r = new ReadRegisterAddress(
+            $address,
+            ReadRegisterAddress::TYPE_UINT64,
+            $name,
+            $callback,
+            $errorCallback,
+            $endian
+        );
+        return $this->addAddress($r);
     }
 
-    public function int64(int $address, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
+    public function int64(
+        int $address,
+        string $name = null,
+        callable $callback = null,
+        callable $errorCallback = null,
+        int $endian = null
+    ): ReadRegistersBuilder
     {
-        return $this->addAddress(new ReadRegisterAddress($address, ReadRegisterAddress::TYPE_INT64, $name, $callback, $errorCallback));
+        $r = new ReadRegisterAddress(
+            $address,
+            ReadRegisterAddress::TYPE_INT64,
+            $name,
+            $callback,
+            $errorCallback,
+            $endian
+        );
+        return $this->addAddress($r);
     }
 
-    public function float(int $address, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
+    public function float(
+        int $address,
+        string $name = null,
+        callable $callback = null,
+        callable $errorCallback = null,
+        int $endian = null
+    ): ReadRegistersBuilder
     {
-        return $this->addAddress(new ReadRegisterAddress($address, ReadRegisterAddress::TYPE_FLOAT, $name, $callback, $errorCallback));
+        $r = new ReadRegisterAddress(
+            $address,
+            ReadRegisterAddress::TYPE_FLOAT,
+            $name,
+            $callback,
+            $errorCallback,
+            $endian
+        );
+        return $this->addAddress($r);
     }
 
     public function string(int $address, int $byteLength, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder

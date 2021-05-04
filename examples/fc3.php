@@ -4,9 +4,12 @@ use ModbusTcpClient\Network\BinaryStreamConnection;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use ModbusTcpClient\Packet\ResponseFactory;
+use ModbusTcpClient\Utils\Endian;
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/logger.php';
+
+Endian::$defaultEndian = Endian::BIG_ENDIAN_LOW_WORD_FIRST; // set default (global) endian used for parsing data
 
 $connection = BinaryStreamConnection::getBuilder()
     ->setPort(5020)
