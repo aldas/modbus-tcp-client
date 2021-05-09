@@ -148,7 +148,7 @@ class ReadRegistersBuilder
                 if ($byteLength === null) {
                     throw new InvalidArgumentException('missing length for string address');
                 }
-                $this->string($address, $byteLength, $register['name'] ?? null, $callback, $errorCallback);
+                $this->string($address, $byteLength, $register['name'] ?? null, $callback, $errorCallback, $endian);
                 break;
         }
         return $this;
@@ -300,12 +300,19 @@ class ReadRegistersBuilder
         return $this->addAddress($r);
     }
 
-    public function string(int $address, int $byteLength, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
+    public function string(
+        int $address,
+        int $byteLength,
+        string $name = null,
+        callable $callback = null,
+        callable $errorCallback = null,
+        int $endian = null
+    ): ReadRegistersBuilder
     {
         if ($byteLength < 1 || $byteLength > 228) {
             throw new InvalidArgumentException("Out of range string length for given! length: '{$byteLength}', address: {$address}");
         }
-        return $this->addAddress(new StringReadRegisterAddress($address, $byteLength, $name, $callback, $errorCallback));
+        return $this->addAddress(new StringReadRegisterAddress($address, $byteLength, $name, $callback, $errorCallback, $endian));
     }
 
     /**

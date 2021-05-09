@@ -280,7 +280,7 @@ class ReadRegistersBuilderTest extends TestCase
     public function testAddString()
     {
         $requests = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
-            ->string(280, 10, 'username')
+            ->string(280, 10, 'username', null, null, Endian::LITTLE_ENDIAN)
             ->build();
 
         $this->assertCount(1, $requests);
@@ -294,6 +294,7 @@ class ReadRegistersBuilderTest extends TestCase
         $this->assertEquals(280, $address->getAddress());
         $this->assertEquals('username', $address->getName());
         $this->assertEquals(5, $address->getSize());
+        $this->assertEquals(Endian::LITTLE_ENDIAN, $address->getEndian());
     }
 
     public function testStringTooLong()
