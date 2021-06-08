@@ -32,6 +32,9 @@ $log[] = "Using: ip: {$ip}, port: {$port}, address: {$startAddress}, quantity: {
 $connection = BinaryStreamConnection::getBuilder()
     ->setPort($port)
     ->setHost($ip)
+    ->setConnectTimeoutSec(1.5) // timeout when establishing connection to the server
+    ->setWriteTimeoutSec(0.5) // timeout when writing/sending packet to the server
+    ->setReadTimeoutSec(1.0) // timeout when waiting response from server
     ->build();
 
 
@@ -69,8 +72,8 @@ try {
         $highByteAsInt = $word->getHighByteAsInt();
         $lowByteAsInt = $word->getLowByteAsInt();
         $result[$address] = [
-            'highByte' => '0x' . str_pad(dechex($highByteAsInt), 2, '0') . ' / ' . $highByteAsInt . ' / "&#' . $highByteAsInt . ';"',
-            'lowByte' => '0x' . str_pad(dechex($lowByteAsInt), 2, '0') . ' / ' . $lowByteAsInt . ' / "&#' . $lowByteAsInt . ';"',
+            'highByte' => '0x' . str_pad(dechex($highByteAsInt), 2, '0', STR_PAD_LEFT) . ' / ' . $highByteAsInt . ' / "&#' . $highByteAsInt . ';"',
+            'lowByte' => '0x' . str_pad(dechex($lowByteAsInt), 2, '0', STR_PAD_LEFT) . ' / ' . $lowByteAsInt . ' / "&#' . $lowByteAsInt . ';"',
             'highByteBits' => sprintf('%08d', decbin($highByteAsInt)),
             'lowByteBits' => sprintf('%08d', decbin($lowByteAsInt)),
             'int16' => $word->getInt16(),
