@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
-        php-version: ['7.3', '7.4', '8.0']
+        php-version: ['7.4', '8.0', '8.1']
     name: PHP ${{ matrix.php-version }} Test on ${{ matrix.operating-system }}
     steps:
     - uses: actions/checkout@v2
@@ -31,8 +31,8 @@ jobs:
       run: composer test-ci
 
     - name: Upload coverage to Codecov
-      if: matrix.php-version == '7.4' &&  matrix.operating-system == 'ubuntu-latest'
-      uses: codecov/codecov-action@v1
+      if: matrix.php-version == '8.1' &&  matrix.operating-system == 'ubuntu-latest'
+      uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./report/coverage.xml
