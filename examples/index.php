@@ -4,6 +4,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use ModbusTcpClient\Network\BinaryStreamConnection;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
 use ModbusTcpClient\Packet\ResponseFactory;
 use ModbusTcpClient\Utils\Endian;
 
@@ -20,6 +21,7 @@ if ($canChangeIpPort) {
     $port = (int)($_GET['port'] ?? $port);
 }
 
+$fc = (int)($_GET['fc'] ?? 3);
 $unitId = (int)($_GET['unitid'] ?? 0);
 $startAddress = (int)($_GET['address'] ?? 256);
 $quantity = (int)($_GET['quantity'] ?? 12);
@@ -27,7 +29,7 @@ $endianess = (int)($_GET['endianess'] ?? Endian::BIG_ENDIAN_LOW_WORD_FIRST);
 Endian::$defaultEndian = $endianess;
 
 $log = [];
-$log[] = "Using: ip: {$ip}, port: {$port}, address: {$startAddress}, quantity: {$quantity}, endianess: {$endianess}";
+$log[] = "Using: function code: {$fc}, ip: {$ip}, port: {$port}, address: {$startAddress}, quantity: {$quantity}, endianess: {$endianess}";
 
 $connection = BinaryStreamConnection::getBuilder()
     ->setPort($port)
@@ -38,10 +40,15 @@ $connection = BinaryStreamConnection::getBuilder()
     ->build();
 
 
-$packet = new ReadHoldingRegistersRequest($startAddress, $quantity, $unitId);
+if ($fc === 4) {
+    $packet = new ReadInputRegistersRequest($startAddress, $quantity, $unitId);
+} else {
+    $fc = 3;
+    $packet = new ReadHoldingRegistersRequest($startAddress, $quantity, $unitId);
+}
 $log[] = 'Packet to be sent (in hex): ' . $packet->toHex();
 
-$startTime = round(microtime(true) * 1000,3);
+$startTime = round(microtime(true) * 1000, 3);
 $result = [];
 try {
     $binaryData = $connection->connect()->sendAndReceive($packet);
@@ -114,12 +121,16 @@ if ($returnJson) {
 
 ?>
 
-<h2>Example FC3 request</h2>
+<h2>Example Modbus TCP FC3/FC4 request</h2>
 <form>
+    Function code: <select name="fc">
+        <option value="3" <?php if ($fc === 3) { echo 'selected'; } ?>>Read Holding Registers (FC=03)</option>
+        <option value="4" <?php if ($fc === 4) { echo 'selected'; } ?>>Read Input Registers (FC=04)</option>
+    </select><br>
     IP: <input type="text" name="ip" value="<?php echo $ip; ?>" <?php if (!$canChangeIpPort) { echo 'disabled'; } ?>><br>
     Port: <input type="number" name="port" value="<?php echo $port; ?>"><br>
     UnitID (SlaveID): <input type="number" name="unitid" value="<?php echo $unitId; ?>"><br>
-    Address: <input type="number" name="address" value="<?php echo $startAddress; ?>"><br>
+    Address: <input type="number" name="address" value="<?php echo $startAddress; ?>"> (NB: does your modbus server use `0` based addressing or `1` based?)<br>
     Quantity: <input type="number" name="quantity" value="<?php echo $quantity; ?>"><br>
     Endianess: <select name="endianess">
         <option value="1" <?php if ($endianess === 1) { echo 'selected'; } ?>>BIG_ENDIAN</option>

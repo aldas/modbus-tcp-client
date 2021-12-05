@@ -379,8 +379,7 @@ final class Types
      */
     public static function parseAsciiStringFromRegister(string $binaryData, int $length = 0, int $fromEndian = null): string
     {
-        // 'ASCII' is needed to for extended ascii characters as 'ø' (decimal 248)
-        return static::parseStringFromRegister($binaryData, $length, 'ASCII', $fromEndian);
+        return static::parseStringFromRegister($binaryData, $length, Charset::$defaultCharset, $fromEndian);
     }
 
     /**

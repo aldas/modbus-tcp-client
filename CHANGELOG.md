@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.1] - 2021-12-05
+
+### Added
+
+* Use PHP 8.1 in CI flow.
+* `examples/index.php` now supports FC3 and FC4 requests.
+
+### Fixed
+
+* From PHP 8.1 `Types::parseAsciiStringFromRegister()` fails to convert extended ASCII (8bit) characters to UTF-8. Introduced 
+   `Charset::$defaultCharset` to be able to set default charset used to convert strings.
+
 ## [2.3.0] - 2021-05-09
 
 ### Added
