@@ -14,6 +14,7 @@ interface Address
     const TYPE_INT64 = 'int64';
     const TYPE_UINT64 = 'uint64';
     const TYPE_FLOAT = 'float';
+    const TYPE_DOUBLE = 'double';
     const TYPE_STRING = 'string';
 
     const TYPES = [
@@ -26,6 +27,7 @@ interface Address
         Address::TYPE_UINT64,
         Address::TYPE_INT64,
         Address::TYPE_FLOAT,
+        Address::TYPE_DOUBLE,
         Address::TYPE_STRING,
     ];
 

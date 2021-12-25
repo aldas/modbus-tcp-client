@@ -23,12 +23,12 @@ class ReadRegisterAddress extends RegisterAddress
     private $endian;
 
     public function __construct(
-        int $address,
-        string $type,
-        string $name = null,
+        int      $address,
+        string   $type,
+        string   $name = null,
         callable $callback = null,
         callable $errorCallback = null,
-        int $endian = null
+        int      $endian = null
     )
     {
         parent::__construct($address, $type);
@@ -49,6 +49,7 @@ class ReadRegisterAddress extends RegisterAddress
             Address::TYPE_INT64,
             Address::TYPE_UINT64,
             Address::TYPE_FLOAT,
+            Address::TYPE_DOUBLE,
         ];
     }
 
@@ -70,6 +71,9 @@ class ReadRegisterAddress extends RegisterAddress
                 break;
             case Address::TYPE_FLOAT:
                 $result = $response->getDoubleWordAt($this->address)->getFloat($this->endian);
+                break;
+            case Address::TYPE_DOUBLE:
+                $result = $response->getQuadWordAt($this->address)->getDouble($this->endian);
                 break;
             case Address::TYPE_INT64:
                 $result = $response->getQuadWordAt($this->address)->getInt64($this->endian);

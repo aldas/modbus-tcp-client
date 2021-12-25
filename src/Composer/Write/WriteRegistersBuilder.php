@@ -125,6 +125,9 @@ class WriteRegistersBuilder
             case Address::TYPE_FLOAT:
                 $this->float($address, $value);
                 break;
+            case Address::TYPE_DOUBLE:
+                $this->double($address, $value);
+                break;
             case Address::TYPE_STRING:
                 $byteLength = $register['length'] ?? null;
                 if ($byteLength === null) {
@@ -169,6 +172,11 @@ class WriteRegistersBuilder
     public function float(int $address, float $value): WriteRegistersBuilder
     {
         return $this->addAddress(new WriteRegisterAddress($address, Address::TYPE_FLOAT, $value));
+    }
+
+    public function double(int $address, float $value): WriteRegistersBuilder
+    {
+        return $this->addAddress(new WriteRegisterAddress($address, Address::TYPE_DOUBLE, $value));
     }
 
     public function string(int $address, string $string, int $byteLength = null): WriteRegistersBuilder

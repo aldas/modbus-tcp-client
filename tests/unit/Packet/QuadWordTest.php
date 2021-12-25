@@ -53,6 +53,17 @@ class QuadWordTest extends TestCase
         $this->assertEquals(2147483647, $quadWord->getUInt64(Endian::BIG_ENDIAN_LOW_WORD_FIRST));
     }
 
+    public function testShouldGetDouble()
+    {
+        if (PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
+        }
+
+        $quadWord = new QuadWord("\x4d\x82\x30\x10\xcc\xc3\x41\xc1");
+
+        $this->assertEqualsWithDelta(597263968.12737, $quadWord->getDouble(Endian::BIG_ENDIAN_LOW_WORD_FIRST), 0.00001);
+    }
+
     public function testShouldGetInt64()
     {
         if (PHP_INT_SIZE === 4) {

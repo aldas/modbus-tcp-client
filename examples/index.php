@@ -73,6 +73,11 @@ try {
             } catch (Exception $e) {
                 $Int64 = '-';
             }
+            try {
+                $double = $quadWord->getDouble();
+            } catch (Exception $e) {
+                $double = '-';
+            }
 
         }
 
@@ -88,6 +93,7 @@ try {
             'int32' => $doubleWord ? $doubleWord->getInt32() : null,
             'UInt32' => $doubleWord ? $doubleWord->getUInt32() : null,
             'float' => $doubleWord ? $doubleWord->getFloat() : null,
+            'double' => $quadWord ? $double : null,
             'Int64' => $quadWord ? $Int64 : null,
             'UInt64' => $quadWord ? $UInt64 : null,
         ];
@@ -166,6 +172,7 @@ foreach ($log as $m) {
         <td>int32</td>
         <td>UInt32</td>
         <td>float</td>
+        <td>double</td>
         <td>int64</td>
         <td>UInt64</td>
     </tr>

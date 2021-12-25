@@ -269,7 +269,7 @@ final class Types
     }
 
     /**
-     * Parse binary string representing real in given endianness to float (double word/4 bytes to float)
+     * Parse binary string representing real (32bits) in given endianness to float (double word/4 bytes to float)
      *
      * @param string $binaryData binary byte string to be parsed to float
      * @param int $fromEndian byte and word order for modbus binary data
@@ -299,6 +299,37 @@ final class Types
     }
 
     /**
+     * Parse binary string representing double (64bits) in given endianness to float (quad word/8 bytes to float)
+     *
+     * @param string $binaryData binary byte string to be parsed to float
+     * @param int $fromEndian byte and word order for modbus binary data
+     * @return float
+     * @throws \RuntimeException
+     */
+    public static function parseDouble(string $binaryData, int $fromEndian = null): float
+    {
+        if (PHP_INT_SIZE !== 8) {
+            throw new ParseException('64-bit format codes are not available for 32-bit versions of PHP');
+        }
+        if (strlen($binaryData) !== 8) {
+            throw new ParseException('binaryData must be 8 bytes in length');
+        }
+
+        $fromEndian = Endian::getCurrentEndianness($fromEndian);
+        if ($fromEndian & Endian::LOW_WORD_FIRST) {
+            $binaryData = ($binaryData[6] . $binaryData[7]) .
+                ($binaryData[4] . $binaryData[5]) .
+                ($binaryData[2] . $binaryData[3]) .
+                ($binaryData[0] . $binaryData[1]);
+        }
+
+        if ($fromEndian & Endian::BIG_ENDIAN) {
+            return unpack('E', $binaryData)[1];
+        }
+        return unpack('e', $binaryData)[1];
+    }
+
+    /**
      * Parse binary string representing 64 bit unsigned integer to 64bit unsigned integer in given endianness (quad word/8 bytes to 64bit int)
      *
      * @param string $binaryData binary string representing 64 bit unsigned integer in big endian order
@@ -317,7 +348,10 @@ final class Types
 
         $fromEndian = Endian::getCurrentEndianness($fromEndian);
         if ($fromEndian & Endian::LOW_WORD_FIRST) {
-            $binaryData = implode('', array_reverse(str_split($binaryData, 2)));
+            $binaryData = ($binaryData[6] . $binaryData[7]) .
+                ($binaryData[4] . $binaryData[5]) .
+                ($binaryData[2] . $binaryData[3]) .
+                ($binaryData[0] . $binaryData[1]);
         }
 
         if ($fromEndian & Endian::BIG_ENDIAN) {
@@ -356,7 +390,10 @@ final class Types
 
         $fromEndian = Endian::getCurrentEndianness($fromEndian);
         if ($fromEndian & Endian::LOW_WORD_FIRST) {
-            $binaryData = implode('', array_reverse(str_split($binaryData, 2)));
+            $binaryData = ($binaryData[6] . $binaryData[7]) .
+                ($binaryData[4] . $binaryData[5]) .
+                ($binaryData[2] . $binaryData[3]) .
+                ($binaryData[0] . $binaryData[1]);
         }
 
         if ($fromEndian & Endian::BIG_ENDIAN) {
@@ -576,7 +613,7 @@ final class Types
     }
 
     /**
-     * Convert Php data as it would be float to binary string with given endian order
+     * Convert Php data as it would be float (32bit) to binary string with given endian order
      *
      * @param float $float float to be converted to binary byte string
      * @param int $toEndian byte and word order for modbus binary data
@@ -585,9 +622,45 @@ final class Types
      */
     public static function toReal($float, int $toEndian = null): string
     {
-        //pack to machine order float, unpack to machine order uint32, pack uint32 to binary big endian
-        //from php git seems that some day there will be 'g' and 'G' modifiers for float LE/BE conversion
-        return self::toInt32(unpack('L', pack('f', $float))[1], $toEndian, false);
+        $toEndian = Endian::getCurrentEndianness($toEndian);
+        $format = 'G'; // double (machine dependent size, big endian byte order)
+        if ($toEndian & Endian::LITTLE_ENDIAN) {
+            $format = 'g'; // double (machine dependent size, little endian byte order)
+        }
+        $data = pack($format, $float);
+
+        if ($toEndian & Endian::LOW_WORD_FIRST) {
+            $data = ($data[2] . $data[3]) . ($data[0] . $data[1]);
+        }
+        return $data;
+    }
+
+    /**
+     * Convert Php data as it would be double (64bit) to binary string with given endian order
+     *
+     * @param float $double float to be converted to binary byte string
+     * @param int $toEndian byte and word order for modbus binary data
+     * @return string binary string with big endian byte order
+     * @throws \ModbusTcpClient\Exception\ModbusException
+     */
+    public static function toDouble($double, int $toEndian = null): string
+    {
+        $toEndian = Endian::getCurrentEndianness($toEndian);
+
+        $format = 'E'; // double (machine dependent size, big endian byte order)
+        if ($toEndian & Endian::LITTLE_ENDIAN) {
+            $format = 'e'; // double (machine dependent size, little endian byte order)
+        }
+        $data = pack($format, $double);
+
+        if ($toEndian & Endian::LOW_WORD_FIRST) {
+            $data = ($data[6] . $data[7]) .
+                ($data[4] . $data[5]) .
+                ($data[2] . $data[3]) .
+                ($data[0] . $data[1]);
+        }
+
+        return $data;
     }
 
     /**

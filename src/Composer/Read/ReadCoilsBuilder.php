@@ -106,8 +106,8 @@ class ReadCoilsBuilder
     }
 
     public function coil(
-        int $address,
-        string $name = null,
+        int      $address,
+        string   $name = null,
         callable $callback = null,
         callable $errorCallback = null
     ): ReadCoilsBuilder
