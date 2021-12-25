@@ -30,6 +30,7 @@ class WriteRegisterAddress extends RegisterAddress
             Address::TYPE_INT64,
             Address::TYPE_UINT64,
             Address::TYPE_FLOAT,
+            Address::TYPE_DOUBLE,
         ];
     }
 
@@ -65,6 +66,9 @@ class WriteRegisterAddress extends RegisterAddress
                 break;
             case Address::TYPE_FLOAT:
                 $result = Types::toReal($this->getValue());
+                break;
+            case Address::TYPE_DOUBLE:
+                $result = Types::toDouble($this->getValue());
                 break;
 
         }

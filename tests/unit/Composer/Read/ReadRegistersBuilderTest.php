@@ -69,6 +69,7 @@ class ReadRegistersBuilderTest extends TestCase
                 ['uri' => 'tcp://127.0.0.1:5023', 'type' => 'uint64', 'address' => 271, 'name' => 'uint64_wo'],
                 ['uri' => 'tcp://127.0.0.1:5023', 'type' => 'int64', 'address' => 271, 'name' => 'int64_wo'],
                 ['uri' => 'tcp://127.0.0.1:5023', 'type' => 'float', 'address' => 271, 'name' => 'float_wo'],
+                ['uri' => 'tcp://127.0.0.1:5023', 'type' => 'double', 'address' => 271, 'name' => 'double_wo'],
             ])
             ->build();
 
@@ -76,7 +77,7 @@ class ReadRegistersBuilderTest extends TestCase
 
         $this->assertCount(2, $requests[0]->getAddresses());
         $this->assertCount(4, $requests[1]->getAddresses());
-        $this->assertCount(7, $requests[2]->getAddresses());
+        $this->assertCount(8, $requests[2]->getAddresses());
     }
 
     public function testBuildAllFromArraySingle()
@@ -337,6 +338,7 @@ class ReadRegistersBuilderTest extends TestCase
             'add int32 ' => ['int32', 2],
             'add uint32' => ['uint32', 2],
             'add float' => ['float', 2],
+            'add double' => ['double', 4],
             'add uint64' => ['uint64', 4],
         ];
     }
@@ -372,6 +374,7 @@ class ReadRegistersBuilderTest extends TestCase
             'add int32 ' => ['int32', 2, Endian::LITTLE_ENDIAN],
             'add uint32' => ['uint32', 2, Endian::LITTLE_ENDIAN],
             'add float' => ['float', 2, Endian::LITTLE_ENDIAN],
+            'add double' => ['double', 4, Endian::LITTLE_ENDIAN],
             'add uint64' => ['uint64', 4, Endian::LOW_WORD_FIRST],
         ];
     }

@@ -39,6 +39,7 @@ abstract class RegisterAddress implements Address
                 break;
             case Address::TYPE_INT64:
             case Address::TYPE_UINT64:
+            case Address::TYPE_DOUBLE:
                 $size = 4;
                 break;
         }

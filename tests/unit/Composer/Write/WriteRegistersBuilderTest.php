@@ -47,7 +47,8 @@ class WriteRegistersBuilderTest extends TestCase
             // will be another request as uri is different for subsequent string register
             ->useUri('tcp://127.0.0.1:5023')
             ->float(270, 1.2)
-            ->string(272, 'Hello', 10)
+            ->double(272, 1)
+            ->string(276, 'Hello', 10)
             ->build();
 
         $this->assertCount(3, $requests);
@@ -65,7 +66,7 @@ class WriteRegistersBuilderTest extends TestCase
         $writeRequest2 = $requests[2];
         $this->assertInstanceOf(WriteMultipleRegistersRequest::class, $writeRequest2->getRequest());
         $this->assertEquals('tcp://127.0.0.1:5023', $writeRequest2->getUri());
-        $this->assertCount(2, $writeRequest2->getAddresses());
+        $this->assertCount(3, $writeRequest2->getAddresses());
     }
 
     public function testBuildAllFromArray()
@@ -84,6 +85,7 @@ class WriteRegistersBuilderTest extends TestCase
                 ['uri' => 'tcp://127.0.0.1:5023', 'type' => 'uint64', 'value' => 1, 'address' => 276],
                 ['uri' => 'tcp://127.0.0.1:5023', 'type' => 'int64', 'value' => 1, 'address' => 280],
                 ['uri' => 'tcp://127.0.0.1:5023', 'type' => 'float', 'value' => 1, 'address' => 284],
+                ['uri' => 'tcp://127.0.0.1:5023', 'type' => 'double', 'value' => 1, 'address' => 286],
             ])
             ->build();
 
@@ -91,7 +93,7 @@ class WriteRegistersBuilderTest extends TestCase
 
         $this->assertCount(1, $requests[0]->getAddresses());
         $this->assertCount(2, $requests[1]->getAddresses());
-        $this->assertCount(7, $requests[2]->getAddresses());
+        $this->assertCount(8, $requests[2]->getAddresses());
     }
 
     public function testBuildAllFromArrayUsingObject()

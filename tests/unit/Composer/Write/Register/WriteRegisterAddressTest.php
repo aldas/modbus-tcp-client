@@ -44,6 +44,7 @@ class WriteRegisterAddressTest extends TestCase
             'int64 to binary' => ["\x00\x00\x00\x00\x00\x00\x80\x00", Address::TYPE_INT64, -9223372036854775808, null, true],
             'uint64 to binary' => ["\x00\x01\x00\x00\x00\x00\x00\x00", Address::TYPE_UINT64, 1, null, true],
             'float to binary' => ["\xcc\xcd\x3f\xec", Address::TYPE_FLOAT, 1.85],
+            'double to binary' => ["\x4d\xa9\x30\x10\xcc\xc3\x41\xc1", Address::TYPE_DOUBLE, 597263968.12737],
             'string to binary' => ["\x00\x6E\x65\x72\xF8\x53", Address::TYPE_STRING, 'Søren', \ModbusTcpClient\Exception\InvalidArgumentException::class],
         ];
     }

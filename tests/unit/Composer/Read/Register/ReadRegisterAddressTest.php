@@ -27,8 +27,10 @@ class ReadRegisterAddressTest extends TestCase
             'int16 size should be 1' => ['int16', 1],
             'uint16 size should be 1' => ['uint16', 1],
             'int32 size should be 2' => ['int32', 2],
+            'float size should be 2' => ['float', 2],
             'uint32 size should be 2' => ['uint32', 2],
             'uint64 size should be 4' => ['uint64', 4],
+            'double size should be 4' => ['double', 4],
         ];
     }
 
@@ -265,6 +267,26 @@ class ReadRegisterAddressTest extends TestCase
         $value = $address->extract($responsePacket);
 
         $this->assertEqualsWithDelta(1.85, $value, 0.0000001);
+    }
+
+    public function testExtractDouble()
+    {
+        $responsePacket = new ReadHoldingRegistersResponse("\x08\x4d\x82\x30\x10\xcc\xc3\x41\xc1", 3, 33152);
+        $address = new ReadRegisterAddress(0, Address::TYPE_DOUBLE);
+
+        $value = $address->extract($responsePacket);
+
+        $this->assertEqualsWithDelta(597263968.12737, $value, 0.00001);
+    }
+
+    public function testExtractDoubleWithCustomEndian()
+    {
+        $responsePacket = new ReadHoldingRegistersResponse("\x08\x82\x4d\x10\x30\xc3\xcc\xc1\x41", 3, 33152);
+        $address = new ReadRegisterAddress(0, Address::TYPE_DOUBLE, null, null, null, Endian::LITTLE_ENDIAN);
+
+        $value = $address->extract($responsePacket);
+
+        $this->assertEqualsWithDelta(597263968.12737, $value, 0.00001);
     }
 
     public function testExtractUInt64()

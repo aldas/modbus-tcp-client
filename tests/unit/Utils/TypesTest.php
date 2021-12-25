@@ -369,10 +369,31 @@ class TypesTest extends TestCase
 
     public function testShouldConvertFloatToRealWithLittleEndian()
     {
-        $this->assertEquals("\xec\x3f\xcd\xcc", Types::toReal(1.85, Endian::LITTLE_ENDIAN));
-        $this->assertEquals("\x2a\x3f\xab\xaa", Types::toReal(0.66666666666, Endian::LITTLE_ENDIAN));
+        $this->assertEquals("\xcd\xcc\xec\x3f", Types::toReal(1.85, Endian::LITTLE_ENDIAN));
+        $this->assertEquals("\xab\xaa\x2a\x3f", Types::toReal(0.66666666666, Endian::LITTLE_ENDIAN));
         $this->assertEquals("\x00\x00\x00\x00", Types::toReal(null, Endian::LITTLE_ENDIAN));
         $this->assertEquals("\x00\x00\x00\x00", Types::toReal(0, Endian::LITTLE_ENDIAN));
+    }
+
+    public function testShouldConvertFloatToDoubleWithBigEndianLowWordFirst()
+    {
+        $this->assertEquals("\x4d\xa9\x30\x10\xcc\xc3\x41\xc1", Types::toDouble(597263968.12737, Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals("\x00\x00\x00\x00\x00\x00\x00\x00", Types::toDouble(null, Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+        $this->assertEquals("\x00\x00\x00\x00\x00\x00\x00\x00", Types::toDouble(0, Endian::BIG_ENDIAN_LOW_WORD_FIRST));
+    }
+
+    public function testShouldConvertFloatToDoubleWithBigEndian()
+    {
+        $this->assertEquals("\x41\xc1\xcc\xc3\x30\x10\x4d\xa9", Types::toDouble(597263968.12737, Endian::BIG_ENDIAN));
+        $this->assertEquals("\x00\x00\x00\x00\x00\x00\x00\x00", Types::toDouble(null, Endian::BIG_ENDIAN));
+        $this->assertEquals("\x00\x00\x00\x00\x00\x00\x00\x00", Types::toDouble(0, Endian::BIG_ENDIAN));
+    }
+
+    public function testShouldConvertFloatToDoubleWithLittleEndian()
+    {
+        $this->assertEquals("\xa9\x4d\x10\x30\xc3\xcc\xc1\x41", Types::toDouble(597263968.12737, Endian::LITTLE_ENDIAN));
+        $this->assertEquals("\x00\x00\x00\x00\x00\x00\x00\x00", Types::toDouble(null, Endian::LITTLE_ENDIAN));
+        $this->assertEquals("\x00\x00\x00\x00\x00\x00\x00\x00", Types::toDouble(0, Endian::LITTLE_ENDIAN));
     }
 
     public function testShouldParseFloatAsBigEndianLowWordFirst()
@@ -406,6 +427,45 @@ class TypesTest extends TestCase
 
         $this->assertEqualsWithDelta(0.66666666666, Types::parseFloat("\xab\xaa\x2a\x3f", Endian::LITTLE_ENDIAN), 0.0000001);
         $this->assertEqualsWithDelta(0, Types::parseFloat("\x00\x00\x00\x00", Endian::LITTLE_ENDIAN), 0.0000001);
+    }
+
+    public function testShouldParseDoubleAsBigEndianLowWordFirst()
+    {
+        $float = Types::parseDouble("\x4d\x82\x30\x10\xcc\xc3\x41\xc1", Endian::BIG_ENDIAN_LOW_WORD_FIRST);
+
+        $this->assertTrue(is_float($float));
+        $this->assertEqualsWithDelta(597263968.12737, $float, 0.00001);
+    }
+
+    public function testShouldParsDoubleAsBigEndian()
+    {
+        $float = Types::parseDouble("\x41\xc1\xcc\xc3\x30\x10\x4d\x82", Endian::BIG_ENDIAN);
+
+        $this->assertTrue(is_float($float));
+        $this->assertEqualsWithDelta(597263968.12737, $float, 0.00001);
+
+        $this->assertEqualsWithDelta(0, Types::parseDouble("\x00\x00\x00\x00\x00\x00\x00\x00", Endian::BIG_ENDIAN), 0.0000001);
+    }
+
+    public function testShouldParseDoubleAsLittleEndian()
+    {
+        $float = Types::parseDouble("\x82\x4d\x10\x30\xc3\xcc\xc1\x41", Endian::LITTLE_ENDIAN);
+
+        $this->assertTrue(is_float($float));
+        $this->assertEqualsWithDelta(597263968.12737, $float, 0.00001);
+
+        $this->assertEqualsWithDelta(0, Types::parseDouble("\x00\x00\x00\x00\x00\x00\x00\x00", Endian::LITTLE_ENDIAN), 0.0000001);
+    }
+
+    public function testShouldFailToParseDoubleFromQuadWord()
+    {
+        $this->expectExceptionMessage("binaryData must be 8 bytes in length");
+        $this->expectException(ParseException::class);
+
+        if (PHP_INT_SIZE === 4) {
+            $this->markTestSkipped('64-bit format codes are not available for 32-bit versions of PHP');
+        }
+        Types::parseDouble("\xFF\xFF\xFF\xFF\xFF\xFF\xFF", Endian::BIG_ENDIAN);
     }
 
     public function testShouldParseStringFromRegisterAsLittleEndian()

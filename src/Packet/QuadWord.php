@@ -33,6 +33,16 @@ class QuadWord extends AbstractWord
     }
 
     /**
+     * @param int $endianness byte and word order for modbus binary data
+     * @return float
+     * @throws \RuntimeException
+     */
+    public function getDouble(int $endianness = null): float
+    {
+        return Types::parseDouble($this->getData(), $endianness);
+    }
+
+    /**
      * @return DoubleWord
      * @throws \ModbusTcpClient\Exception\ModbusException
      */
