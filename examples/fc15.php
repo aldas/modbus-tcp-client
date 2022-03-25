@@ -6,10 +6,12 @@ use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsResponse;
 use ModbusTcpClient\Packet\ResponseFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/logger.php';
 
 $connection = BinaryStreamConnection::getBuilder()
     ->setPort(5020)
     ->setHost('127.0.0.1')
+    ->setLogger(new EchoLogger())
     ->build();
 
 $startAddress = 12288;
@@ -18,7 +20,8 @@ $coils = [
     0, 0, 0, 0, 0, 0, 0, 0, // dec: 0, hex x0
     1, 0, 0, 1 // dec: 9, hex: x9
 ];
-$packet = new WriteMultipleCoilsRequest($startAddress, $coils);
+$unitID = 0;
+$packet = new WriteMultipleCoilsRequest($startAddress, $coils, $unitID); // NB: This is Modbus TCP packet not Modbus RTU over TCP!
 echo 'Packet to be sent (in hex): ' . $packet->toHex() . PHP_EOL;
 
 try {

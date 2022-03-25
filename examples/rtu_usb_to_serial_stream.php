@@ -6,6 +6,7 @@ use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersResponse;
 use ModbusTcpClient\Packet\RtuConverter;
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/logger.php';
 
 $connection = BinaryStreamConnection::getBuilder()
     ->setUri('/dev/ttyUSB0')
@@ -17,6 +18,7 @@ $connection = BinaryStreamConnection::getBuilder()
         // Example for FC4 with quantity 2: 8 bytes = 1 unit id + 1 byte for function code + 2 bytes start address + 2 * quantity
         return true;
     })
+    ->setLogger(new EchoLogger())
     ->build();
 
 $startAddress = 1;

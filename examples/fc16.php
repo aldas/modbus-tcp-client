@@ -7,10 +7,12 @@ use ModbusTcpClient\Packet\ResponseFactory;
 use ModbusTcpClient\Utils\Types;
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/logger.php';
 
 $connection = BinaryStreamConnection::getBuilder()
     ->setPort(5020)
     ->setHost('127.0.0.1')
+    ->setLogger(new EchoLogger())
     ->build();
 
 $startAddress = 12288;
@@ -20,7 +22,8 @@ $registers = [
     Types::toInt16(-1000), //hex: FC18 as word
     Types::toInt32(2000), //dec: 2000 -> hex: 7d00 is as 2 word 7D00 0000
 ];
-$packet = new WriteMultipleRegistersRequest($startAddress, $registers);
+$unitID = 0;
+$packet = new WriteMultipleRegistersRequest($startAddress, $registers, $unitID); // NB: This is Modbus TCP packet not Modbus RTU over TCP!
 echo 'Packet to be sent (in hex): ' . $packet->toHex() . PHP_EOL;
 
 try {
