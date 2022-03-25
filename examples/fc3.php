@@ -23,7 +23,7 @@ $connection = BinaryStreamConnection::getBuilder()
 $startAddress = 256;
 $quantity = 6;
 $unitID = 0;
-$packet = new ReadHoldingRegistersRequest($startAddress, $quantity, $unitID);
+$packet = new ReadHoldingRegistersRequest($startAddress, $quantity, $unitID); // NB: This is Modbus TCP packet not Modbus RTU over TCP!
 
 try {
     $binaryData = $connection->connect()->sendAndReceive($packet);

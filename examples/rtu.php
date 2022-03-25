@@ -5,6 +5,7 @@ use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\RtuConverter;
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/logger.php';
 
 $connection = BinaryStreamConnection::getBuilder()
     ->setPort(502)
@@ -17,6 +18,7 @@ $connection = BinaryStreamConnection::getBuilder()
         // Read about differences here: https://www.simplymodbus.ca/TCP.htm
         return true;
     })
+    ->setLogger(new EchoLogger())
     ->build();
 
 $startAddress = 256;

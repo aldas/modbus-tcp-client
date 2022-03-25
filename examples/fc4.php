@@ -6,15 +6,18 @@ use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersResponse;
 use ModbusTcpClient\Packet\ResponseFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/logger.php';
 
 $connection = BinaryStreamConnection::getBuilder()
     ->setPort(5020)
     ->setHost('127.0.0.1')
+    ->setLogger(new EchoLogger())
     ->build();
 
 $startAddress = 256;
 $quantity = 6;
-$packet = new ReadInputRegistersRequest($startAddress, $quantity);
+$unitID = 0;
+$packet = new ReadInputRegistersRequest($startAddress, $quantity, $unitID); // NB: This is Modbus TCP packet not Modbus RTU over TCP!
 echo 'Packet to be sent (in hex): ' . $packet->toHex() . PHP_EOL;
 
 try {
