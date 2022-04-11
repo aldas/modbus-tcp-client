@@ -32,7 +32,7 @@ class WriteSingleCoilResponse extends StartAddressResponse
     /**
      * @var bool
      */
-    private $coil;
+    private bool $coil;
 
     public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {

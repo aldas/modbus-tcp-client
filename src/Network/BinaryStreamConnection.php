@@ -1,13 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Network;
+
+use ModbusTcpClient\Packet\ModbusPacket;
 
 class BinaryStreamConnection extends BinaryStreamConnectionProperties
 {
     use StreamHandler;
 
     /**
-     * @var resource communication stream
+     * @var resource|null communication stream
      */
     private $stream;
 
@@ -37,9 +40,7 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
     {
         $this->stream = ($this->createStreamCallback)($this);
 
-        if ($this->logger) {
-            $this->logger->debug('Connected');
-        }
+        $this->logger?->debug('Connected');
 
         stream_set_blocking($this->stream, false); // use non-blocking stream
 
@@ -54,33 +55,35 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
         return $this;
     }
 
-    public function receive()
+    public function receive(): string
     {
         $result = $this->receiveFrom([$this->stream], $this->getReadTimeoutSec(), $this->getLogger());
         return reset($result);
     }
 
-    public function send($packet): BinaryStreamConnection
+    public function send(ModbusPacket|string $packet): BinaryStreamConnection
     {
         if (!\is_resource($this->stream) || @\feof($this->stream)) {
             throw new IOException('Can not write - stream closed by the peer');
         }
-
-        fwrite($this->stream, $packet, strlen($packet));
-
-        if ($this->logger) {
-            $this->logger->debug('Data sent', unpack('H*', $packet));
+        $packetBytes = $packet;
+        if ($packet instanceof ModbusPacket) {
+            $packetBytes = $packet->__tostring();
         }
+
+        fwrite($this->stream, $packetBytes, strlen($packetBytes));
+
+        $this->logger?->debug('Data sent', unpack('H*', $packetBytes));
 
         return $this;
     }
 
-    public function sendAndReceive($packet)
+    public function sendAndReceive(ModbusPacket|string $packet): string
     {
         return $this->send($packet)->receive();
     }
 
-    public function close()
+    public function close(): void
     {
         if (is_resource($this->stream)) {
             fclose($this->stream);
@@ -97,11 +100,14 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
      * @param float $seconds
      * @return int
      */
-    private function extractUsec($seconds)
+    private function extractUsec(float $seconds): int
     {
         return (int)(($seconds - (int)$seconds) * 1e6);
     }
 
+    /**
+     * @return resource|null
+     */
     public function getStream()
     {
         return $this->stream;

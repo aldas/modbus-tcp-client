@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Write\Coil;
 
@@ -6,7 +7,6 @@ namespace ModbusTcpClient\Composer\Write\Coil;
 use ModbusTcpClient\Composer\Request;
 use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Packet\ModbusRequest;
-use ModbusTcpClient\Packet\ModbusResponse;
 use ModbusTcpClient\Packet\ResponseFactory;
 
 class WriteCoilRequest implements Request
@@ -14,15 +14,20 @@ class WriteCoilRequest implements Request
     /**
      * @var string uri to modbus server. Example: 'tcp://192.168.100.1:502'
      */
-    private $uri;
+    private string $uri;
 
     /** @var ModbusRequest */
-    private $request;
+    private ModbusRequest $request;
 
     /** @var WriteCoilAddress[] */
-    private $addresses;
+    private array $addresses;
 
 
+    /**
+     * @param string $uri
+     * @param WriteCoilAddress[] $addresses
+     * @param ModbusRequest $request
+     */
     public function __construct(string $uri, array $addresses, ModbusRequest $request)
     {
         $this->request = $request;
@@ -33,7 +38,7 @@ class WriteCoilRequest implements Request
     /**
      * @return ModbusRequest
      */
-    public function getRequest()
+    public function getRequest(): ModbusRequest
     {
         return $this->request;
     }
@@ -58,10 +63,10 @@ class WriteCoilRequest implements Request
 
     /**
      * @param string $binaryData
-     * @return ModbusResponse
+     * @return mixed
      * @throws ModbusException
      */
-    public function parse(string $binaryData): ModbusResponse
+    public function parse(string $binaryData): mixed
     {
         return ResponseFactory::parseResponse($binaryData);
     }

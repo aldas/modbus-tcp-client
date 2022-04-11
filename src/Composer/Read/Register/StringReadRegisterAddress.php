@@ -1,23 +1,25 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read\Register;
 
 
 use ModbusTcpClient\Composer\Address;
-use ModbusTcpClient\Packet\ModbusResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
 
 class StringReadRegisterAddress extends ReadRegisterAddress
 {
     /** @var int */
-    private $byteLength;
+    private int $byteLength;
 
     public function __construct(
-        int $address,
-        int $byteLength,
-        string $name = null,
+        int      $address,
+        int      $byteLength,
+        string   $name = null,
         callable $callback = null,
         callable $errorCallback = null,
-        int $endian = null
+        int      $endian = null
     )
     {
         $type = Address::TYPE_STRING;
@@ -25,7 +27,7 @@ class StringReadRegisterAddress extends ReadRegisterAddress
         $this->byteLength = $byteLength;
     }
 
-    protected function extractInternal(ModbusResponse $response)
+    protected function extractInternal(ReadHoldingRegistersResponse|ReadInputRegistersRequest $response): mixed
     {
         return $response->getAsciiStringAt($this->address, $this->byteLength, $this->getEndian());
     }

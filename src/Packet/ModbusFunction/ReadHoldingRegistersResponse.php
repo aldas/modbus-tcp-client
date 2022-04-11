@@ -26,18 +26,20 @@ use Traversable;
  * \x02 - returned registers byte count
  * \xCD\x6B - holding registers data (1 register)
  *
+ * @implements \IteratorAggregate<int, Word>
+ * @implements \ArrayAccess<int, Word>
  */
 class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAccess, \IteratorAggregate
 {
     /**
      * @var string
      */
-    private $data;
+    private string $data;
 
     /** @var int[] */
-    private $dataBytes;
+    private array $dataBytes;
 
-    public function __construct($rawData, int $unitId = 0, int $transactionId = null)
+    public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {
         parent::__construct($rawData, $unitId, $transactionId);
         $this->data = substr($rawData, 1); //first byte is byteCount. remove it
@@ -60,10 +62,10 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
     /**
      * Iterator returning data by words. Each word contains 2 bytes
      *
-     * @return Traversable
-     * @throws \ModbusTcpClient\Exception\ModbusException
+     * @return Traversable<Word>|\Generator<Word>
+     * @throws ModbusException
      */
-    public function asWords()
+    public function asWords(): Traversable|\Generator
     {
         if ($this->getByteCount() % 2 !== 0) {
             throw new ModbusException('getWords needs packet byte count to be multiple of 2');
@@ -78,8 +80,8 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
     /**
      * Return data as splitted into words. Each word contains 2 bytes
      *
-     * @return Word[] array of Words. each arrays cointains 2 bytes
-     * @throws \ModbusTcpClient\Exception\ModbusException
+     * @return Word[] array of Words. each arrays contains 2 bytes
+     * @throws ModbusException
      */
     public function getWords(): array
     {
@@ -89,10 +91,9 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
     /**
      * Iterator returning data by double words. Each dword contains 4 bytes
      *
-     * @return Traversable
-     * @throws \ModbusTcpClient\Exception\ModbusException
+     * @return Traversable<DoubleWord>|\Generator<DoubleWord>
      */
-    public function asDoubleWords()
+    public function asDoubleWords(): Traversable|\Generator
     {
         $byteCount = $this->getByteCount();
         if ($byteCount % 4 !== 0) {
@@ -107,10 +108,10 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
     }
 
     /**
-     * Return data as splitted into double words. Each dword contains 4 bytes
+     * Return data as split into double words. Each dword contains 4 bytes
      *
-     * @return DoubleWord[] array of Double Words. each arrays cointains 4 bytes
-     * @throws \ModbusTcpClient\Exception\ModbusException
+     * @return DoubleWord[] array of Double Words. each arrays contains 4 bytes
+     * @throws ModbusException
      */
     public function getDoubleWords(): array
     {
@@ -128,23 +129,23 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
         return parent::getLengthInternal() + $this->getByteCount();
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         throw new ModbusException('setting value in response is not supported!');
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         throw new ModbusException('unsetting value in response is not supported!');
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         $address = ($offset - $this->getStartAddress()) * 2;
         return isset($this->dataBytes[$address]);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): Word
     {
         $address = ($offset - $this->getStartAddress()) * 2;
         $byteCount = $this->getByteCount();
@@ -154,21 +155,21 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
         return new Word(substr($this->data, $address, 2));
     }
 
-    public function getWordAt($wordAddress)
+    public function getWordAt(int $wordAddress): Word
     {
         return $this->offsetGet($wordAddress);
     }
 
-    public function getIterator()
+    public function getIterator(): Traversable|\Generator
     {
         return $this->asWords();
     }
 
     /**
-     * @param $firstWordAddress
+     * @param int $firstWordAddress
      * @return DoubleWord
      */
-    public function getDoubleWordAt(int $firstWordAddress)
+    public function getDoubleWordAt(int $firstWordAddress): DoubleWord
     {
         $address = ($firstWordAddress - $this->getStartAddress()) * 2;
         $byteCount = $this->getByteCount();
@@ -179,10 +180,10 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
     }
 
     /**
-     * @param $firstWordAddress
+     * @param int $firstWordAddress
      * @return QuadWord
      */
-    public function getQuadWordAt(int $firstWordAddress)
+    public function getQuadWordAt(int $firstWordAddress): QuadWord
     {
         $address = ($firstWordAddress - $this->getStartAddress()) * 2;
         $byteCount = $this->getByteCount();
@@ -195,12 +196,12 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
     /**
      * Parse ascii string from registers to utf-8 string
      *
-     * @param $startFromWord int start parsing string from that word/register
-     * @param $length int count of characters to parse
-     * @param int $endianness byte and word order for modbus binary data
+     * @param int $startFromWord start parsing string from that word/register
+     * @param int $length count of characters to parse
+     * @param int|null $endianness byte and word order for modbus binary data
      * @return string
      */
-    public function getAsciiStringAt(int $startFromWord, int $length, int $endianness = null)
+    public function getAsciiStringAt(int $startFromWord, int $length, int $endianness = null): string
     {
         $address = ($startFromWord - $this->getStartAddress()) * 2;
 

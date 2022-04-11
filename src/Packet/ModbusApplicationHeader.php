@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
 
@@ -28,20 +29,20 @@ class ModbusApplicationHeader
     /**
      * @var int 2 bytes set by the Client to uniquely identify each request. These bytes are echoed by the Server since its responses may not be received in the same order as the requests.
      */
-    private $transactionId;
+    private int $transactionId;
 
     /**
      * @var int 2 bytes identifying the number of bytes in the message (PDU = ProtocolDataUnit) to follow (function data size + 1 byte for unitId size)
      */
-    private $length;
+    private int $length;
 
     /**
      * @var int 1 byte set by the Client and echoed by the Server for identification of a remote slave connected on a serial line or on other buses
      * also known as SlaveID
      */
-    private $unitId = 0;
+    private int $unitId = 0;
 
-    public function __construct($length, $unitId = 0, $transactionId = null)
+    public function __construct(int $length, int $unitId = 0, int $transactionId = null)
     {
         $this->validate($length, $unitId, $transactionId);
 
@@ -92,7 +93,7 @@ class ModbusApplicationHeader
             . Types::toByte($this->getUnitId());
     }
 
-    public static function parse($binaryString): ModbusApplicationHeader
+    public static function parse(string $binaryString): ModbusApplicationHeader
     {
 
         if (strlen($binaryString) < 7) {
@@ -110,7 +111,7 @@ class ModbusApplicationHeader
         );
     }
 
-    private function validate($length, $unitId, $transactionId)
+    private function validate(int $length, int $unitId, int|null $transactionId): void
     {
         if (!$length || !($length > 0 && $length <= Types::MAX_VALUE_UINT16)) {
             throw new InvalidArgumentException("length is not set or out of range (uint16): {$length}");

@@ -1,30 +1,31 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Write;
 
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\AddressSplitter;
+use ModbusTcpClient\Composer\Request;
 use ModbusTcpClient\Composer\Write\Register\StringWriteRegisterAddress;
 use ModbusTcpClient\Composer\Write\Register\WriteRegisterAddress;
 use ModbusTcpClient\Composer\Write\Register\WriteRegisterAddressSplitter;
-use ModbusTcpClient\Composer\Write\Register\WriteRegisterRequest;
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersRequest;
 
 class WriteRegistersBuilder
 {
     /** @var WriteRegisterAddressSplitter */
-    private $addressSplitter;
+    private WriteRegisterAddressSplitter $addressSplitter;
 
-    /** @var WriteRegisterAddress[] */
-    private $addresses = [];
+    /** @var array<array<string,WriteRegisterAddress>> */
+    private array $addresses = [];
 
     /** @var string */
-    private $currentUri;
+    private string $currentUri;
 
     /** @var int */
-    private $unitId;
+    private int $unitId;
 
     public function __construct(string $requestClass, string $uri = null, int $unitId = 0)
     {
@@ -63,6 +64,10 @@ class WriteRegistersBuilder
         return $this;
     }
 
+    /**
+     * @param array<array<string, mixed>|WriteRegisterAddress> $registers
+     * @return $this
+     */
     public function allFromArray(array $registers): WriteRegistersBuilder
     {
         foreach ($registers as $register) {
@@ -75,6 +80,10 @@ class WriteRegistersBuilder
         return $this;
     }
 
+    /**
+     * @param array<string,mixed> $register
+     * @return $this
+     */
     public function fromArray(array $register): WriteRegistersBuilder
     {
         $uri = $register['uri'] ?? null;
@@ -88,7 +97,7 @@ class WriteRegistersBuilder
             throw new InvalidArgumentException('empty address given');
         }
 
-        $addressType = strtolower($register['type'] ?? null);
+        $addressType = isset($register['type']) ? strtolower($register['type']) : null;
         if (empty($addressType) || !\in_array($addressType, Address::TYPES, true)) {
             throw new InvalidArgumentException('empty or unknown type for address given');
         }
@@ -103,7 +112,6 @@ class WriteRegistersBuilder
             case Address::TYPE_BIT:
             case Address::TYPE_BYTE:
                 throw new InvalidArgumentException('writing bit/byte through register is not supported as 1 word is 2 bytes so we are touching more memory than needed');
-                break;
             case Address::TYPE_INT16:
                 $this->int16($address, $value);
                 break;
@@ -185,14 +193,14 @@ class WriteRegistersBuilder
     }
 
     /**
-     * @return WriteRegisterRequest[]
+     * @return Request[]
      */
     public function build(): array
     {
         return $this->addressSplitter->split($this->addresses);
     }
 
-    public function isNotEmpty()
+    public function isNotEmpty(): bool
     {
         return !empty($this->addresses);
     }

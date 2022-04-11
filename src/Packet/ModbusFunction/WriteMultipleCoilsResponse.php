@@ -25,7 +25,7 @@ class WriteMultipleCoilsResponse extends StartAddressResponse
     /**
      * @var int coils written
      */
-    private $coilCount;
+    private int $coilCount;
 
     public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {

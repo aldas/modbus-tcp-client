@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
 
+use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Utils\Types;
 
 /**
@@ -15,22 +17,20 @@ class DoubleWord extends AbstractWord
     }
 
     /**
-     * @param int $endianness byte and word order for modbus binary data
+     * @param int|null $endianness byte and word order for modbus binary data
      *
      * NB: On 32bit php and having highest bit set method will return float instead of int value. This is due 32bit php supports only 32bit signed integers
      *
      * @return int|float
-     * @throws \RuntimeException
      */
-    public function getUInt32(int $endianness = null)
+    public function getUInt32(int $endianness = null): int|float
     {
         return Types::parseUInt32($this->getData(), $endianness);
     }
 
     /**
-     * @param int $endianness byte and word order for modbus binary data
+     * @param int|null $endianness byte and word order for modbus binary data
      * @return int
-     * @throws \ModbusTcpClient\Exception\ModbusException
      */
     public function getInt32(int $endianness = null): int
     {
@@ -38,9 +38,8 @@ class DoubleWord extends AbstractWord
     }
 
     /**
-     * @param int $endianness byte and word order for modbus binary data
+     * @param int|null $endianness byte and word order for modbus binary data
      * @return float
-     * @throws \RuntimeException
      */
     public function getFloat(int $endianness = null): float
     {
@@ -49,7 +48,7 @@ class DoubleWord extends AbstractWord
 
     /**
      * @return Word
-     * @throws \ModbusTcpClient\Exception\ModbusException
+     * @throws ModbusException
      */
     public function getLowBytesAsWord(): Word
     {
@@ -58,7 +57,7 @@ class DoubleWord extends AbstractWord
 
     /**
      * @return Word
-     * @throws \ModbusTcpClient\Exception\ModbusException
+     * @throws ModbusException
      */
     public function getHighBytesAsWord(): Word
     {
@@ -70,7 +69,7 @@ class DoubleWord extends AbstractWord
      *
      * @param DoubleWord $lowDoubleWord
      * @return QuadWord
-     * @throws \ModbusTcpClient\Exception\ModbusException
+     * @throws ModbusException
      */
     public function combine(DoubleWord $lowDoubleWord): QuadWord
     {

@@ -8,6 +8,7 @@ use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Exception\ParseException;
 use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusApplicationHeader;
+use ModbusTcpClient\Packet\ModbusFunction\MaskWriteRegisterResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesResponse;
@@ -240,6 +241,30 @@ class ResponseFactoryTest extends TestCase
         $header = $response->getHeader();
         $this->assertEquals(1, $header->getUnitId());
         $this->assertEquals(0x8180, $header->getTransactionId());
+    }
+
+    public function testShouldParseMaskWriteRegisterResponse()
+    {
+        $data = "\x01\x38" . // transaction id: 0138    (2 bytes)
+            "\x00\x00" . // protocol id: 0000           (2 bytes)
+            "\x00\x08" .  // length: 0008               (2 bytes) (8 bytes after this field)
+            "\x11" . // unit id: 11                     (1 byte)
+            "\x16" . // function code: 16               (1 byte)
+            "\x04\x10" . // start address: 0410         (2 bytes)
+            "\x00\x01" . // AND mask: 0x01              (2 bytes)
+            "\x00\x02" . // OR mask: 0x02               (2 bytes)
+            '';
+
+        $response = ResponseFactory::parseResponse($data);
+
+        $this->assertInstanceOf(MaskWriteRegisterResponse::class, $response);
+        $this->assertEquals(ModbusPacket::MASK_WRITE_REGISTER, $response->getFunctionCode());
+        $this->assertEquals(0x0001, $response->getANDMask());
+        $this->assertEquals(0x0002, $response->getORMask());
+
+        $header = $response->getHeader();
+        $this->assertEquals(17, $header->getUnitId());
+        $this->assertEquals(0x0138, $header->getTransactionId());
     }
 
     public function testInvalidFunctionCodeParse()

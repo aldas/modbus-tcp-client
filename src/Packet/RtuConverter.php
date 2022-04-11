@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
 
@@ -41,9 +42,9 @@ final class RtuConverter
      * Converts binary string containing RTU response packet to Modbus TCP response instance
      *
      * @param string $binaryData rtu binary response
-     * @param array $options option to use during conversion
+     * @param array<string, bool> $options option to use during conversion
      * @return ModbusResponse converted Modbus TCP packet
-     * @throws \ModbusTcpClient\Exception\ParseException
+     * @throws ParseException
      * @throws \Exception if it was not possible to gather sufficient entropy
      */
     public static function fromRtu(string $binaryData, array $options = []): ModbusResponse

@@ -30,7 +30,7 @@ requestWithReactPhp($fc3);
 
 /**
  * This will do 'parallel' socket request with help of ReactPHP socket library (https://github.com/reactphp/socket)
- * Install dependency with 'composer require react/socket:^1.6'
+ * Install dependency with 'composer require react/socket:^1.11'
  *
  * NB: install PHP extension ('ev', 'event' or 'uv') if the concurrent socket connections are more than 1024.
  *
@@ -39,7 +39,7 @@ requestWithReactPhp($fc3);
 function requestWithReactPhp(array $requests)
 {
     $logger = new EchoLogger();
-    $loop = React\EventLoop\Factory::create();
+    $loop = React\EventLoop\Loop::get();
 
     $promises = [];
     foreach ($requests as $request) {

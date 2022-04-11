@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
 
@@ -14,7 +15,7 @@ abstract class AbstractWord
     /**
      * @var string
      */
-    protected $data;
+    protected string $data;
 
     /**
      * @param string $data
@@ -49,7 +50,7 @@ abstract class AbstractWord
     }
 
     /**
-     * @return array
+     * @return int[]
      */
     public function getBytes(): array
     {
@@ -59,11 +60,11 @@ abstract class AbstractWord
     /**
      * Check if N-th bit is set in data. NB: Bits are counted from 0 and right to left.
      *
-     * @param $bit
+     * @param int $bit
      * @return bool
      * @throws \InvalidArgumentException
      */
-    public function isBitSet($bit): bool
+    public function isBitSet(int $bit): bool
     {
         return Types::isBitSet($this->data, $bit);
     }

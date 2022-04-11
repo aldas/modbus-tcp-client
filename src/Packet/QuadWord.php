@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
 
+use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Utils\Types;
 
 /**
@@ -15,7 +17,7 @@ class QuadWord extends AbstractWord
     }
 
     /**
-     * @param int $endianness byte and word order for modbus binary data
+     * @param int|null $endianness byte and word order for modbus binary data
      * @return int
      */
     public function getUInt64(int $endianness = null): int
@@ -24,7 +26,7 @@ class QuadWord extends AbstractWord
     }
 
     /**
-     * @param int $endianness byte and word order for modbus binary data
+     * @param int|null $endianness byte and word order for modbus binary data
      * @return int
      */
     public function getInt64(int $endianness = null): int
@@ -33,9 +35,8 @@ class QuadWord extends AbstractWord
     }
 
     /**
-     * @param int $endianness byte and word order for modbus binary data
+     * @param int|null $endianness byte and word order for modbus binary data
      * @return float
-     * @throws \RuntimeException
      */
     public function getDouble(int $endianness = null): float
     {
@@ -44,7 +45,7 @@ class QuadWord extends AbstractWord
 
     /**
      * @return DoubleWord
-     * @throws \ModbusTcpClient\Exception\ModbusException
+     * @throws ModbusException
      */
     public function getLowBytesAsDoubleWord(): DoubleWord
     {
@@ -53,7 +54,7 @@ class QuadWord extends AbstractWord
 
     /**
      * @return DoubleWord
-     * @throws \ModbusTcpClient\Exception\ModbusException
+     * @throws ModbusException
      */
     public function getHighBytesAsDoubleWord(): DoubleWord
     {
@@ -63,8 +64,11 @@ class QuadWord extends AbstractWord
     /**
      * Create Quad Word of 4 words. word1 is highest bytes amd word4 lowest bytes
      *
+     * @param Word $word1
+     * @param Word $word2
+     * @param Word $word3
+     * @param Word $word4
      * @return QuadWord
-     * @throws \ModbusTcpClient\Exception\ModbusException
      */
     public static function fromWords(Word $word1, Word $word2, Word $word3, Word $word4): QuadWord
     {

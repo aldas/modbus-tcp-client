@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Utils;
 
@@ -16,10 +17,10 @@ final class Packet
      * isCompleteLength checks if binary string is complete modbus packet
      * NB: this function works only for MODBUS TCP packets
      *
-     * @param $binaryData string|null binary string to be checked
+     * @param string|null $binaryData binary string to be checked
      * @return bool true if data is actual error packet
      */
-    public static function isCompleteLength($binaryData): bool
+    public static function isCompleteLength(string|null $binaryData): bool
     {
         // minimal amount is 9 bytes (header + function code + 1 byte of something ala error code)
         $length = strlen($binaryData);

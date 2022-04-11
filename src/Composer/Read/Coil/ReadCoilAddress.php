@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read\Coil;
 
@@ -9,10 +10,10 @@ use ModbusTcpClient\Packet\ModbusResponse;
 class ReadCoilAddress implements Address
 {
     /** @var int */
-    protected $address;
+    protected int $address;
 
     /** @var string */
-    private $name;
+    private string $name;
 
     /** @var callable */
     protected $callback;
@@ -33,7 +34,7 @@ class ReadCoilAddress implements Address
      * @return null
      * @throws \Exception
      */
-    public function extract(ModbusResponse $response)
+    public function extract(ModbusResponse $response): mixed
     {
         try {
             $result = $response[$this->address];

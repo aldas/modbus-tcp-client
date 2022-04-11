@@ -21,7 +21,7 @@ class ProtocolDataUnitRequestTest extends TestCase
 
     public function testFailWithNegativeStartAddress()
     {
-        $this->expectExceptionMessage("startAddress is not set or out of range: -1");
+        $this->expectExceptionMessage("startAddress is out of range: -1");
         $this->expectException(InvalidArgumentException::class);
 
         new ProtocolDataUnitRequestImpl(-1);
@@ -29,7 +29,7 @@ class ProtocolDataUnitRequestTest extends TestCase
 
     public function testFailWithTooBigStartAddress()
     {
-        $this->expectExceptionMessage("startAddress is not set or out of range: 65536");
+        $this->expectExceptionMessage("startAddress is out of range: 65536");
         $this->expectException(InvalidArgumentException::class);
 
         new ProtocolDataUnitRequestImpl(Types::MAX_VALUE_UINT16 + 1);

@@ -29,12 +29,18 @@ use ModbusTcpClient\Utils\Types;
 class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {
     /**
-     * @var array coils (array of booleans)
+     * @var bool[] coils (array of booleans)
      */
-    private $coils;
-    private $coilCount;
-    private $coilBytesSize;
+    private array $coils;
+    private int $coilCount;
+    private int $coilBytesSize;
 
+    /**
+     * @param int $startAddress
+     * @param bool[] $coils
+     * @param int $unitId
+     * @param int|null $transactionId
+     */
     public function __construct(int $startAddress, array $coils, int $unitId = 0, int $transactionId = null)
     {
         $this->coils = $coils;
@@ -46,7 +52,7 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest implements Modbu
         $this->validate();
     }
 
-    public function validate()
+    public function validate(): void
     {
         parent::validate();
 
@@ -69,7 +75,7 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest implements Modbu
     }
 
     /**
-     * @return array
+     * @return bool[]
      */
     public function getCoils(): array
     {
@@ -84,10 +90,10 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest implements Modbu
     /**
      * Parses binary string to WriteMultipleCoilsRequest or return ErrorResponse on failure
      *
-     * @param $binaryString
+     * @param string $binaryString
      * @return WriteMultipleCoilsRequest|ErrorResponse
      */
-    public static function parse($binaryString)
+    public static function parse(string $binaryString): ErrorResponse|WriteMultipleCoilsRequest
     {
         return self::parseStartAddressPacket(
             $binaryString,

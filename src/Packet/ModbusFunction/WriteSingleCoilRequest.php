@@ -31,7 +31,7 @@ class WriteSingleCoilRequest extends ProtocolDataUnitRequest implements ModbusRe
     /**
      * @var bool value to be sent to modbus
      */
-    private $coil;
+    private bool $coil;
 
     public function __construct(int $startAddress, bool $coil, int $unitId = 0, int $transactionId = null)
     {
@@ -69,10 +69,10 @@ class WriteSingleCoilRequest extends ProtocolDataUnitRequest implements ModbusRe
     /**
      * Parses binary string to WriteSingleCoilRequest or return ErrorResponse on failure
      *
-     * @param $binaryString
+     * @param string $binaryString
      * @return WriteSingleCoilRequest|ErrorResponse
      */
-    public static function parse($binaryString)
+    public static function parse(string $binaryString): ErrorResponse|WriteSingleCoilRequest
     {
         return self::parseStartAddressPacket(
             $binaryString,

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read\Coil;
 
@@ -14,16 +15,21 @@ class ReadCoilRequest implements Request
     /**
      * @var string uri to modbus server. Example: 'tcp://192.168.100.1:502'
      */
-    private $uri;
+    private string $uri;
 
     /** @var ReadCoilAddress[] */
-    private $addresses;
+    private array $addresses;
 
     /** @var ReadCoilsRequest */
-    private $request;
+    private ReadCoilsRequest $request;
 
 
-    public function __construct(string $uri, array $addresses, $request)
+    /**
+     * @param string $uri
+     * @param ReadCoilAddress[] $addresses
+     * @param ReadCoilsRequest $request
+     */
+    public function __construct(string $uri, array $addresses, ReadCoilsRequest $request)
     {
         $this->addresses = $addresses;
         $this->request = $request;
@@ -51,18 +57,18 @@ class ReadCoilRequest implements Request
         return $this->addresses;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->request->__toString();
     }
 
     /**
      * @param string $binaryData
-     * @return array|ErrorResponse
+     * @return array<string,mixed>|ErrorResponse
      * @throws ModbusException
      * @throws \Exception
      */
-    public function parse(string $binaryData)
+    public function parse(string $binaryData): array|ErrorResponse
     {
         $response = ResponseFactory::parseResponse($binaryData)->withStartAddress($this->request->getStartAddress());
         if ($response instanceof ErrorResponse) {

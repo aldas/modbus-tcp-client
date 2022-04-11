@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Utils;
 
@@ -43,7 +44,7 @@ class Endian
      */
     const BIG_ENDIAN_LOW_WORD_FIRST = self::BIG_ENDIAN | self::LOW_WORD_FIRST;
 
-    public static $defaultEndian = self::BIG_ENDIAN_LOW_WORD_FIRST;
+    public static int $defaultEndian = self::BIG_ENDIAN_LOW_WORD_FIRST;
 
     public static function getCurrentEndianness(int $endianness = null): int
     {

@@ -333,7 +333,6 @@ class TypesTest extends TestCase
 
     public function testShouldSeeIfBitIsNotSet()
     {
-        $this->assertFalse(Types::isBitSet(null, 12));
         $this->assertFalse(Types::isBitSet(bindec('000110011'), 2));
         $this->assertFalse(Types::isBitSet(bindec('011111111'), 8));
         $this->assertFalse(Types::isBitSet("\x05\x01\xFF\x05", 1));
@@ -355,7 +354,6 @@ class TypesTest extends TestCase
     {
         $this->assertEquals("\xcc\xcd\x3f\xec", Types::toReal(1.85, Endian::BIG_ENDIAN_LOW_WORD_FIRST));
         $this->assertEquals("\xaa\xab\x3f\x2a", Types::toReal(0.66666666666, Endian::BIG_ENDIAN_LOW_WORD_FIRST));
-        $this->assertEquals("\x00\x00\x00\x00", Types::toReal(null, Endian::BIG_ENDIAN_LOW_WORD_FIRST));
         $this->assertEquals("\x00\x00\x00\x00", Types::toReal(0, Endian::BIG_ENDIAN_LOW_WORD_FIRST));
     }
 
@@ -363,7 +361,6 @@ class TypesTest extends TestCase
     {
         $this->assertEquals("\x3f\xec\xcc\xcd", Types::toReal(1.85, Endian::BIG_ENDIAN));
         $this->assertEquals("\x3f\x2a\xaa\xab", Types::toReal(0.66666666666, Endian::BIG_ENDIAN));
-        $this->assertEquals("\x00\x00\x00\x00", Types::toReal(null, Endian::BIG_ENDIAN));
         $this->assertEquals("\x00\x00\x00\x00", Types::toReal(0, Endian::BIG_ENDIAN));
     }
 
@@ -371,28 +368,24 @@ class TypesTest extends TestCase
     {
         $this->assertEquals("\xcd\xcc\xec\x3f", Types::toReal(1.85, Endian::LITTLE_ENDIAN));
         $this->assertEquals("\xab\xaa\x2a\x3f", Types::toReal(0.66666666666, Endian::LITTLE_ENDIAN));
-        $this->assertEquals("\x00\x00\x00\x00", Types::toReal(null, Endian::LITTLE_ENDIAN));
         $this->assertEquals("\x00\x00\x00\x00", Types::toReal(0, Endian::LITTLE_ENDIAN));
     }
 
     public function testShouldConvertFloatToDoubleWithBigEndianLowWordFirst()
     {
         $this->assertEquals("\x4d\xa9\x30\x10\xcc\xc3\x41\xc1", Types::toDouble(597263968.12737, Endian::BIG_ENDIAN_LOW_WORD_FIRST));
-        $this->assertEquals("\x00\x00\x00\x00\x00\x00\x00\x00", Types::toDouble(null, Endian::BIG_ENDIAN_LOW_WORD_FIRST));
         $this->assertEquals("\x00\x00\x00\x00\x00\x00\x00\x00", Types::toDouble(0, Endian::BIG_ENDIAN_LOW_WORD_FIRST));
     }
 
     public function testShouldConvertFloatToDoubleWithBigEndian()
     {
         $this->assertEquals("\x41\xc1\xcc\xc3\x30\x10\x4d\xa9", Types::toDouble(597263968.12737, Endian::BIG_ENDIAN));
-        $this->assertEquals("\x00\x00\x00\x00\x00\x00\x00\x00", Types::toDouble(null, Endian::BIG_ENDIAN));
         $this->assertEquals("\x00\x00\x00\x00\x00\x00\x00\x00", Types::toDouble(0, Endian::BIG_ENDIAN));
     }
 
     public function testShouldConvertFloatToDoubleWithLittleEndian()
     {
         $this->assertEquals("\xa9\x4d\x10\x30\xc3\xcc\xc1\x41", Types::toDouble(597263968.12737, Endian::LITTLE_ENDIAN));
-        $this->assertEquals("\x00\x00\x00\x00\x00\x00\x00\x00", Types::toDouble(null, Endian::LITTLE_ENDIAN));
         $this->assertEquals("\x00\x00\x00\x00\x00\x00\x00\x00", Types::toDouble(0, Endian::LITTLE_ENDIAN));
     }
 
@@ -686,7 +679,7 @@ class TypesTest extends TestCase
     /**
      * @dataProvider toStringProvider
      */
-    public function testShouldEncodeToBinaryString(string $expectedBinaryString, string $string = null, int $registersCount = null, int $endian, $expectedException = null)
+    public function testShouldEncodeToBinaryString(string $expectedBinaryString, string $string, int $registersCount, int $endian, $expectedException = null)
     {
         if ($expectedException !== null) {
             $this->expectException($expectedException);
@@ -697,7 +690,7 @@ class TypesTest extends TestCase
     public function toStringProvider()
     {
         return [
-            'null: toString "\x00\x00\x00\x00"' => ["\x00\x00\x00\x00", null, 2, Endian::BIG_ENDIAN],
+            'empty toString "\x00\x00\x00\x00"' => ["\x00\x00\x00\x00", '', 2, Endian::BIG_ENDIAN],
             'BigEndian: toString "Søren\x00"' => ["\xF8\x53\x65\x72\x00\x6E", 'Søren', 3, Endian::BIG_ENDIAN],
             'BigEndian: toString "Søre\x00\x00"' => ["\xF8\x53\x65\x72\x00\x00", 'Søre', 3, Endian::BIG_ENDIAN],
             'BigEndian: toString "Sør\x00"' => ["\xF8\x53\x00\x72", 'Søren', 2, Endian::BIG_ENDIAN],

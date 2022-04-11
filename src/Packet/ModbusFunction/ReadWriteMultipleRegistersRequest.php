@@ -33,24 +33,32 @@ use ModbusTcpClient\Utils\Types;
 class ReadWriteMultipleRegistersRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {
     /** @var int $readQuantity quantity of registers to return in response */
-    private $readQuantity;
+    private int $readQuantity;
     /** @var int $writeStartAddress start of address where data is written from request */
-    private $writeStartAddress;
+    private int $writeStartAddress;
 
     /**
-     * @var array registers (array of bytes)
+     * @var string[] registers (array of bytes)
      */
-    private $writeRegisters;
-    private $writeRegisterCount;
-    private $writeRegistersBytesSize;
+    private array $writeRegisters;
+    private int $writeRegisterCount;
+    private int $writeRegistersBytesSize;
 
+    /**
+     * @param int $readStartAddress
+     * @param int $readQuantity
+     * @param int $writeStartAddress
+     * @param string[] $writeRegisters
+     * @param int $unitId
+     * @param int|null $transactionId
+     */
     public function __construct(
-        int $readStartAddress,
-        int $readQuantity,
-        int $writeStartAddress,
+        int   $readStartAddress,
+        int   $readQuantity,
+        int   $writeStartAddress,
         array $writeRegisters,
-        int $unitId = 0,
-        int $transactionId = null
+        int   $unitId = 0,
+        int   $transactionId = null
     )
     {
         $this->readQuantity = $readQuantity;
@@ -64,7 +72,7 @@ class ReadWriteMultipleRegistersRequest extends ProtocolDataUnitRequest implemen
         $this->validate();
     }
 
-    public function validate()
+    public function validate(): void
     {
         parent::validate();
 
@@ -99,7 +107,7 @@ class ReadWriteMultipleRegistersRequest extends ProtocolDataUnitRequest implemen
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getRegisters(): array
     {
@@ -144,10 +152,10 @@ class ReadWriteMultipleRegistersRequest extends ProtocolDataUnitRequest implemen
     /**
      * Parses binary string to ReadWriteMultipleRegistersRequest or return ErrorResponse on failure
      *
-     * @param $binaryString
+     * @param string $binaryString
      * @return ReadWriteMultipleRegistersRequest|ErrorResponse
      */
-    public static function parse($binaryString)
+    public static function parse(string $binaryString): ErrorResponse|ReadWriteMultipleRegistersRequest
     {
         return self::parseStartAddressPacket(
             $binaryString,

@@ -29,7 +29,7 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest implements ModbusRequest
     /**
      * @var int total number of coils requested. Size 2 bytes
      */
-    private $quantity;
+    private int $quantity;
 
     public function __construct(int $startAddress, int $quantity, int $unitId = 0, int $transactionId = null)
     {
@@ -39,11 +39,11 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest implements ModbusRequest
         $this->validate();
     }
 
-    public function validate()
+    public function validate(): void
     {
         parent::validate();
 
-        if ((null !== $this->quantity) && ($this->quantity > 0 && $this->quantity <= 2048)) {
+        if (($this->quantity > 0 && $this->quantity <= 2048)) {
             // 2048 coils is due that in response data size field is 1 byte so max 256*8=2048 coils can be returned
             return;
         }
@@ -77,10 +77,10 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest implements ModbusRequest
     /**
      * Parses binary string to ReadCoilsRequest or return ErrorResponse on failure
      *
-     * @param $binaryString
+     * @param string $binaryString
      * @return ReadCoilsRequest|ErrorResponse
      */
-    public static function parse($binaryString)
+    public static function parse(string $binaryString): ErrorResponse|ReadCoilsRequest
     {
         return self::parseStartAddressPacket(
             $binaryString,

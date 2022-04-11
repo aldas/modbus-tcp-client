@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Network;
 
@@ -33,8 +34,14 @@ class SerialStreamCreator implements StreamCreator
         '-crtscts', // disable RTS/CTS handshaking
     ];
 
-    private $sttyModes = self::DEFAULT_STTY_MODES;
+    /**
+     * @var string[]
+     */
+    private array $sttyModes = self::DEFAULT_STTY_MODES;
 
+    /**
+     * @param array<string,mixed> $options
+     */
     public function __construct(array $options = [])
     {
         if (stripos(PHP_OS, 'WIN') === 0) {

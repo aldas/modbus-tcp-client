@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Network;
 
@@ -25,7 +26,7 @@ class InternetDomainStreamCreator implements StreamCreator
         }
 
         $opts = [];
-        if (strlen($conn->getClient()) > 0) {
+        if ($conn->getClient() != null) {
             // Bind the client stream to a specific local network interface and port
             $opts = [
                 'socket' => [

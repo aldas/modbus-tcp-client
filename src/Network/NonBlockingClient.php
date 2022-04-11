@@ -8,6 +8,8 @@ use ModbusTcpClient\Composer\Request;
 use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Packet\ModbusResponse;
+use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Packet\ResponseFactory;
 use ModbusTcpClient\Utils\Packet;
 
@@ -19,13 +21,16 @@ class NonBlockingClient
     const OPT_THROW_ON_ERROR = 'throwOnError';
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    private $options = [
+    private array $options = [
         self::OPT_FLAT_REQUEST_RESPONSE => true, // squash sendRequests responses to single array keyed by ... names for read requests
         self::OPT_THROW_ON_ERROR => false
     ];
 
+    /**
+     * @param array<string, mixed>|null $options
+     */
     public function __construct(array $options = null)
     {
         $this->options = $this->getMergeOptions($options);
@@ -34,12 +39,12 @@ class NonBlockingClient
     /**
      * Send multiple modbus packets to server and return responses
      *
-     * @param ModbusPacket[] $packets
+     * @param ProtocolDataUnitRequest[] $packets
      * @param string|null $uri
-     * @param array|null $options
-     * @return array
+     * @param array<string, mixed>|null $options
+     * @return ModbusResponse[]
      */
-    public function sendPackets(array $packets, string $uri = null, array $options = null)
+    public function sendPackets(array $packets, string $uri = null, array $options = null): array
     {
         $readStreams = [];
         $connections = [];
@@ -92,12 +97,12 @@ class NonBlockingClient
     /**
      * Send single modbus packet to server and return response
      *
-     * @param ModbusPacket $packet
+     * @param ProtocolDataUnitRequest $packet
      * @param string|null $uri
-     * @param array|null $options
+     * @param array<string, mixed>|null $options
      * @return ModbusPacket
      */
-    public function sendPacket(ModbusPacket $packet, string $uri = null, array $options = null)
+    public function sendPacket(ModbusPacket $packet, string $uri = null, array $options = null): ModbusPacket
     {
         $responses = $this->sendPackets([$packet], $uri, $options);
         return reset($responses);
@@ -107,7 +112,7 @@ class NonBlockingClient
      * Send multiple requests and extract responses
      *
      * @param Request[] $requests
-     * @param array|null $options options for tcp stream. See 'BinaryStreamConnection' properties.
+     * @param array<string, mixed>|null $options options for tcp stream. See 'BinaryStreamConnection' properties.
      * @return ResultContainer
      */
     public function sendRequests(array $requests, array $options = null): ResultContainer
@@ -158,6 +163,10 @@ class NonBlockingClient
         return $this->extractErrors($result);
     }
 
+    /**
+     * @param mixed[] $results
+     * @return ResultContainer
+     */
     private function extractErrors(array $results): ResultContainer
     {
         $data = [];
@@ -181,7 +190,7 @@ class NonBlockingClient
      * Send single request and extract response
      *
      * @param Request $request
-     * @param array|null $options
+     * @param array<string, mixed>|null $options
      * @return ResultContainer
      */
     public function sendRequest(Request $request, array $options = null): ResultContainer
@@ -189,7 +198,11 @@ class NonBlockingClient
         return $this->sendRequests([$request], $options);
     }
 
-    private function getMergeOptions(array $options = null)
+    /**
+     * @param array<string, mixed>|null $options
+     * @return array<string, mixed>
+     */
+    private function getMergeOptions(array $options = null): array
     {
         if (!empty($options)) {
             return array_merge($this->options, $options);

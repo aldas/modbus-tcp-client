@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read;
 
@@ -9,8 +10,8 @@ use ModbusTcpClient\Composer\Read\Register\BitReadRegisterAddress;
 use ModbusTcpClient\Composer\Read\Register\ByteReadRegisterAddress;
 use ModbusTcpClient\Composer\Read\Register\ReadRegisterAddress;
 use ModbusTcpClient\Composer\Read\Register\ReadRegisterAddressSplitter;
-use ModbusTcpClient\Composer\Read\Register\ReadRegisterRequest;
 use ModbusTcpClient\Composer\Read\Register\StringReadRegisterAddress;
+use ModbusTcpClient\Composer\Request;
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
@@ -19,15 +20,18 @@ use ModbusTcpClient\Utils\Endian;
 class ReadRegistersBuilder
 {
     /** @var ReadRegisterAddressSplitter */
-    private $addressSplitter;
+    private ReadRegisterAddressSplitter $addressSplitter;
 
-    private $addresses = [];
+    /**
+     * @var array<array<string, ReadRegisterAddress>>
+     */
+    private array $addresses = [];
 
     /** @var string */
-    private $currentUri;
+    private string $currentUri;
 
     /** @var int */
-    private $unitId;
+    private int $unitId;
 
     public function __construct(string $requestClass, string $uri = null, int $unitId = 0)
     {
@@ -70,6 +74,10 @@ class ReadRegistersBuilder
         return $this;
     }
 
+    /**
+     * @param array<array<string,mixed>|ReadRegisterAddress> $registers
+     * @return $this
+     */
     public function allFromArray(array $registers): ReadRegistersBuilder
     {
         foreach ($registers as $register) {
@@ -82,6 +90,10 @@ class ReadRegistersBuilder
         return $this;
     }
 
+    /**
+     * @param array<string,mixed> $register
+     * @return $this
+     */
     public function fromArray(array $register): ReadRegistersBuilder
     {
         $uri = $register['uri'] ?? null;
@@ -105,7 +117,7 @@ class ReadRegistersBuilder
             throw new InvalidArgumentException('error callback must be a an anonymous function');
         }
 
-        $addressType = strtolower($register['type'] ?? null);
+        $addressType = isset($register['type']) ? strtolower($register['type']) : null;
         if (empty($addressType) || !\in_array($addressType, Address::TYPES, true)) {
             throw new InvalidArgumentException('empty or unknown type for address given');
         }
@@ -180,7 +192,7 @@ class ReadRegistersBuilder
     {
         $r = new ReadRegisterAddress(
             $address,
-            ReadRegisterAddress::TYPE_INT16,
+            Address::TYPE_INT16,
             $name,
             $callback,
             $errorCallback,
@@ -199,7 +211,7 @@ class ReadRegistersBuilder
     {
         $r = new ReadRegisterAddress(
             $address,
-            ReadRegisterAddress::TYPE_UINT16,
+            Address::TYPE_UINT16,
             $name,
             $callback,
             $errorCallback,
@@ -218,7 +230,7 @@ class ReadRegistersBuilder
     {
         $r = new ReadRegisterAddress(
             $address,
-            ReadRegisterAddress::TYPE_INT32,
+            Address::TYPE_INT32,
             $name,
             $callback,
             $errorCallback,
@@ -237,7 +249,7 @@ class ReadRegistersBuilder
     {
         $r = new ReadRegisterAddress(
             $address,
-            ReadRegisterAddress::TYPE_UINT32,
+            Address::TYPE_UINT32,
             $name,
             $callback,
             $errorCallback,
@@ -256,7 +268,7 @@ class ReadRegistersBuilder
     {
         $r = new ReadRegisterAddress(
             $address,
-            ReadRegisterAddress::TYPE_UINT64,
+            Address::TYPE_UINT64,
             $name,
             $callback,
             $errorCallback,
@@ -275,7 +287,7 @@ class ReadRegistersBuilder
     {
         $r = new ReadRegisterAddress(
             $address,
-            ReadRegisterAddress::TYPE_INT64,
+            Address::TYPE_INT64,
             $name,
             $callback,
             $errorCallback,
@@ -294,7 +306,7 @@ class ReadRegistersBuilder
     {
         $r = new ReadRegisterAddress(
             $address,
-            ReadRegisterAddress::TYPE_FLOAT,
+            Address::TYPE_FLOAT,
             $name,
             $callback,
             $errorCallback,
@@ -313,7 +325,7 @@ class ReadRegistersBuilder
     {
         $r = new ReadRegisterAddress(
             $address,
-            ReadRegisterAddress::TYPE_DOUBLE,
+            Address::TYPE_DOUBLE,
             $name,
             $callback,
             $errorCallback,
@@ -338,14 +350,14 @@ class ReadRegistersBuilder
     }
 
     /**
-     * @return ReadRegisterRequest[]
+     * @return Request[]
      */
     public function build(): array
     {
         return $this->addressSplitter->split($this->addresses);
     }
 
-    public function isNotEmpty()
+    public function isNotEmpty(): bool
     {
         return !empty($this->addresses);
     }

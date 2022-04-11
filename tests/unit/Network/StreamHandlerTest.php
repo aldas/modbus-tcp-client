@@ -79,6 +79,7 @@ use ModbusTcpClient\Network\MockData;
 use ModbusTcpClient\Network\StreamHandler;
 use ModbusTcpClient\Utils\Packet;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class StreamHandlerTest extends TestCase
 {
@@ -220,12 +221,52 @@ class ForTestStreamHandler
     }
 }
 
-class MockLogger
+class MockLogger implements LoggerInterface
 {
-    public static $data = [];
+    public static array $data = [];
 
     public function debug($message, array $context = array())
     {
-        $data[] = $message;
+        static::$data[] = $message;
+    }
+
+    public function emergency($message, array $context = array())
+    {
+        static::$data[] = $message;
+    }
+
+    public function alert($message, array $context = array())
+    {
+        static::$data[] = $message;
+    }
+
+    public function critical($message, array $context = array())
+    {
+        static::$data[] = $message;
+    }
+
+    public function error($message, array $context = array())
+    {
+        static::$data[] = $message;
+    }
+
+    public function warning($message, array $context = array())
+    {
+        static::$data[] = $message;
+    }
+
+    public function notice($message, array $context = array())
+    {
+        static::$data[] = $message;
+    }
+
+    public function info($message, array $context = array())
+    {
+        static::$data[] = $message;
+    }
+
+    public function log($level, $message, array $context = array())
+    {
+        static::$data[] = $message;
     }
 }

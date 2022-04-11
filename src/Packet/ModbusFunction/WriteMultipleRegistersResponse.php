@@ -25,7 +25,7 @@ class WriteMultipleRegistersResponse extends StartAddressResponse
     /**
      * @var int number of registers written
      */
-    private $registersCount;
+    private int $registersCount;
 
     public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {

@@ -21,18 +21,20 @@ use ModbusTcpClient\Utils\Types;
  * \x02 - coils byte count
  * \xCD\x6B - coils data (2 bytes = 2 * 8 coils)
  *
+ * @implements \IteratorAggregate<int, bool>
+ * @implements \ArrayAccess<int, bool>
  */
 class ReadCoilsResponse extends ByteCountResponse implements \ArrayAccess, \IteratorAggregate
 {
     /**
-     * @var array
+     * @var bool[]
      */
-    private $coils;
+    private array $coils;
 
     /**
      * @var int
      */
-    private $coilsBytesLength;
+    private int $coilsBytesLength;
 
     public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {
@@ -48,6 +50,9 @@ class ReadCoilsResponse extends ByteCountResponse implements \ArrayAccess, \Iter
         return ModbusPacket::READ_COILS;
     }
 
+    /**
+     * @return bool[]
+     */
     public function getCoils(): array
     {
         return iterator_to_array($this->getIterator());
@@ -64,7 +69,10 @@ class ReadCoilsResponse extends ByteCountResponse implements \ArrayAccess, \Iter
         return parent::getLengthInternal() + $this->coilsBytesLength;
     }
 
-    public function getIterator()
+    /**
+     * @return \Generator<bool>
+     */
+    public function getIterator(): \Generator
     {
         $index = $this->getStartAddress();
         foreach ($this->coils as $coil) {
@@ -73,30 +81,38 @@ class ReadCoilsResponse extends ByteCountResponse implements \ArrayAccess, \Iter
     }
 
     /**
-     * @param $offset
-     * @param $value
+     * @param int $offset
+     * @param bool $value
      * @throws ModbusException
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         throw new ModbusException('setting value in response is not supported!');
     }
 
     /**
-     * @param $offset
+     * @param int $offset
      * @throws ModbusException
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         throw new ModbusException('unsetting value in response is not supported!');
     }
 
-    public function offsetExists($offset)
+    /**
+     * @param int $offset
+     * @return bool
+     */
+    public function offsetExists($offset): bool
     {
         return isset($this->coils[$offset - $this->getStartAddress()]);
     }
 
-    public function offsetGet($offset)
+    /**
+     * @param int $offset
+     * @return bool
+     */
+    public function offsetGet($offset): bool
     {
         $address = $offset - $this->getStartAddress();
         $endAddress = ($this->getByteCount() * 8);

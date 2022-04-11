@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Write\Register;
 
@@ -14,15 +15,20 @@ class WriteRegisterRequest implements Request
     /**
      * @var string uri to modbus server. Example: 'tcp://192.168.100.1:502'
      */
-    private $uri;
+    private string $uri;
 
     /** @var ModbusRequest */
-    private $request;
+    private ModbusRequest $request;
 
-    /** @var array */
-    private $addresses;
+    /** @var WriteRegisterAddress[] */
+    private array $addresses;
 
 
+    /**
+     * @param string $uri
+     * @param WriteRegisterAddress[] $addresses
+     * @param ModbusRequest $request
+     */
     public function __construct(string $uri, array $addresses, ModbusRequest $request)
     {
         $this->request = $request;
@@ -33,7 +39,7 @@ class WriteRegisterRequest implements Request
     /**
      * @return ModbusRequest
      */
-    public function getRequest()
+    public function getRequest(): ModbusRequest
     {
         return $this->request;
     }

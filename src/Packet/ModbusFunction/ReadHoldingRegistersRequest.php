@@ -28,7 +28,7 @@ class ReadHoldingRegistersRequest extends ProtocolDataUnitRequest implements Mod
     /**
      * @var int total number of registers (words) requested. Size 2 bytes
      */
-    private $quantity;
+    private int $quantity;
 
     public function __construct(int $startAddress, int $quantity, int $unitId = 0, int $transactionId = null)
     {
@@ -40,10 +40,10 @@ class ReadHoldingRegistersRequest extends ProtocolDataUnitRequest implements Mod
 
     }
 
-    public function validate()
+    public function validate(): void
     {
         parent::validate();
-        if ((null !== $this->quantity) && ($this->quantity > 0 && $this->quantity <= 124)) {
+        if (($this->quantity > 0 && $this->quantity <= 124)) {
             return;
         }
         throw new InvalidArgumentException("quantity is not set or out of range (0-124): {$this->quantity}", 3);
@@ -76,10 +76,10 @@ class ReadHoldingRegistersRequest extends ProtocolDataUnitRequest implements Mod
     /**
      * Parses binary string to ReadHoldingRegistersRequest or return ErrorResponse on failure
      *
-     * @param $binaryString
+     * @param string $binaryString
      * @return ReadHoldingRegistersRequest|ErrorResponse
      */
-    public static function parse($binaryString)
+    public static function parse(string $binaryString): ErrorResponse|ReadHoldingRegistersRequest
     {
         return self::parseStartAddressPacket(
             $binaryString,

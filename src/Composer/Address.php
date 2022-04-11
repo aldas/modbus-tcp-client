@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer;
 
@@ -34,4 +35,6 @@ interface Address
     public function getSize(): int;
 
     public function getAddress(): int;
+
+    public function getType(): string;
 }

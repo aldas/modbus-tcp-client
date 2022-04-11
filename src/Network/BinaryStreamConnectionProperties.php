@@ -1,6 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Network;
+
+use Psr\Log\LoggerInterface;
 
 /**
  * BinaryStreamConnection immutable properties base class
@@ -10,51 +13,51 @@ namespace ModbusTcpClient\Network;
 abstract class BinaryStreamConnectionProperties
 {
     /**
-     * @var string (optional) client IP address when binding client
+     * @var string|null (optional) client IP address when binding client
      */
-    protected $client = null;
+    protected ?string $client = null;
     /**
-     * @var string client port set when binding client to local ip&port
+     * @var int client port set when binding client to local ip&port
      */
-    protected $clientPort = 502;
+    protected int $clientPort = 502;
     /**
      * @var float Total response timeout (seconds, decimals allowed)
      */
-    protected $timeoutSec = 5;
+    protected float $timeoutSec = 5;
     /**
      * @var float maximum timeout when establishing connection (seconds, decimals allowed)
      */
-    protected $connectTimeoutSec = 1;
+    protected float $connectTimeoutSec = 1;
     /**
      * @var float read timeout (seconds, decimals allowed)
      */
-    protected $readTimeoutSec = 0.3;
+    protected float $readTimeoutSec = 0.3;
     /**
      * @var float maximum timeout for write operation on connection (seconds, decimals allowed)
      */
-    protected $writeTimeoutSec = 1;
+    protected float $writeTimeoutSec = 1;
 
     /**
-     * @var string uri to connect to. Has higher priority than $protocol/$host/$port. Example: 'tcp://192.168.0.1:502'
+     * @var string|null uri to connect to. Has higher priority than $protocol/$host/$port. Example: 'tcp://192.168.0.1:502'
      */
-    protected $uri;
+    protected ?string $uri = null;
     /**
      * @var string network protocol (TCP, UDP)
      */
-    protected $protocol = StreamCreator::TYPE_TCP;
+    protected string $protocol = StreamCreator::TYPE_TCP;
     /**
      * @var string|null Modbus device IP address
      */
-    protected $host;
+    protected ?string $host = null;
     /**
-     * @var string gateway port
+     * @var int gateway port
      */
-    protected $port = 502;
+    protected int $port = 502;
 
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface|null
      */
-    protected $logger;
+    protected ?LoggerInterface $logger = null;
 
     /**
      * @var callable callable to create stream
@@ -67,17 +70,17 @@ abstract class BinaryStreamConnectionProperties
     protected $isCompleteCallback;
 
     /**
-     * @return string (optional) client IP address when binding client
+     * @return string|null (optional) client IP address when binding client
      */
-    public function getClient()
+    public function getClient(): ?string
     {
         return $this->client;
     }
 
     /**
-     * @return string client port set when binding client to local ip&port
+     * @return int client port set when binding client to local ip&port
      */
-    public function getClientPort()
+    public function getClientPort(): int
     {
         return $this->clientPort;
     }
@@ -85,7 +88,7 @@ abstract class BinaryStreamConnectionProperties
     /**
      * @return float Total response timeout (seconds, decimals allowed)
      */
-    public function getTimeoutSec()
+    public function getTimeoutSec(): float
     {
         return $this->timeoutSec;
     }
@@ -93,7 +96,7 @@ abstract class BinaryStreamConnectionProperties
     /**
      * @return float maximum timeout when establishing connection (seconds, decimals allowed)
      */
-    public function getConnectTimeoutSec()
+    public function getConnectTimeoutSec(): float
     {
         return $this->connectTimeoutSec;
     }
@@ -101,7 +104,7 @@ abstract class BinaryStreamConnectionProperties
     /**
      * @return float read timeout (seconds, decimals allowed)
      */
-    public function getReadTimeoutSec()
+    public function getReadTimeoutSec(): float
     {
         return $this->readTimeoutSec;
     }
@@ -109,7 +112,7 @@ abstract class BinaryStreamConnectionProperties
     /**
      * @return float maximum timeout for write operation on connection (seconds, decimals allowed)
      */
-    public function getWriteTimeoutSec()
+    public function getWriteTimeoutSec(): float
     {
         return $this->writeTimeoutSec;
     }
@@ -117,39 +120,39 @@ abstract class BinaryStreamConnectionProperties
     /**
      * @return string network protocol (TCP, UDP)
      */
-    public function getProtocol()
+    public function getProtocol(): string
     {
         return $this->protocol;
     }
 
     /**
-     * @return string Modbus device IP address
+     * @return string|null Modbus device IP address
      */
-    public function getHost()
+    public function getHost(): ?string
     {
         return $this->host;
     }
 
     /**
-     * @return string gateway port
+     * @return int gateway port
      */
-    public function getPort()
+    public function getPort(): int
     {
         return $this->port;
     }
 
     /**
-     * @return \Psr\Log\LoggerInterface
+     * @return LoggerInterface|null
      */
-    public function getLogger()
+    public function getLogger(): LoggerInterface|null
     {
         return $this->logger;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUri()
+    public function getUri(): ?string
     {
         return $this->uri;
     }
@@ -157,7 +160,7 @@ abstract class BinaryStreamConnectionProperties
     /**
      * @return callable
      */
-    public function getCreateStreamCallback()
+    public function getCreateStreamCallback(): callable
     {
         return $this->createStreamCallback;
     }
@@ -165,7 +168,7 @@ abstract class BinaryStreamConnectionProperties
     /**
      * @return callable
      */
-    protected function getIsCompleteCallback()
+    protected function getIsCompleteCallback(): callable
     {
         return $this->isCompleteCallback;
     }

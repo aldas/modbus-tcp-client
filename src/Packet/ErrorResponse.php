@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
 
@@ -28,17 +28,17 @@ class ErrorResponse implements ModbusResponse
     /**
      * @var ModbusApplicationHeader
      */
-    private $header;
+    private ModbusApplicationHeader $header;
 
     /**
      * @var int
      */
-    private $functionCode;
+    private int $functionCode;
 
     /**
      * @var int
      */
-    private $errorCode;
+    private int $errorCode;
 
     public function __construct(ModbusApplicationHeader $header, int $functionCode, int $errorCode)
     {
@@ -114,7 +114,7 @@ class ErrorResponse implements ModbusResponse
         return unpack('H*', $this->__toString())[1];
     }
 
-    public function withStartAddress(int $startAddress)
+    public function withStartAddress(int $startAddress): static
     {
         return clone $this; // just to have same interface as 'success' responses
     }
@@ -123,10 +123,10 @@ class ErrorResponse implements ModbusResponse
      * is checks if given binary string is complete MODBUS TCP error packet
      * NB: do not use for RTU packets
      *
-     * @param $binaryData string|null binary string to be checked
+     * @param string|null $binaryData binary string to be checked
      * @return bool true if data is actual error packet
      */
-    public static function is($binaryData): bool
+    public static function is(string|null $binaryData): bool
     {
         // a) data is too short. can not determine packet.
         // b) data is too long. can not be an error packet
