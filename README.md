@@ -24,6 +24,7 @@ composer require aldas/modbus-tcp-client
 * FC6 - Write Single Register ([WriteSingleRegisterRequest](src/Packet/ModbusFunction/WriteSingleRegisterRequest.php) / [WriteSingleRegisterResponse](src/Packet/ModbusFunction/WriteSingleRegisterResponse.php))
 * FC15 - Write Multiple Coils ([WriteMultipleCoilsRequest](src/Packet/ModbusFunction/WriteMultipleCoilsRequest.php) / [WriteMultipleCoilsResponse](src/Packet/ModbusFunction/WriteMultipleCoilsResponse.php))
 * FC16 - Write Multiple Registers ([WriteMultipleRegistersRequest](src/Packet/ModbusFunction/WriteMultipleRegistersRequest.php) / [WriteMultipleRegistersResponse](src/Packet/ModbusFunction/WriteMultipleRegistersResponse.php))
+* FC22 - Mask Write Register ([MaskWriteRegisterRequest](src/Packet/ModbusFunction/MaskWriteRegisterRequest.php) / [MaskWriteRegisterResponse](src/Packet/ModbusFunction/MaskWriteRegisterResponse.php))
 * FC23 - Read / Write Multiple Registers ([ReadWriteMultipleRegistersRequest](src/Packet/ModbusFunction/ReadWriteMultipleRegistersRequest.php) / [ReadWriteMultipleRegistersResponse](src/Packet/ModbusFunction/ReadWriteMultipleRegistersResponse.php))
 
 ### Utility functions
@@ -33,7 +34,8 @@ composer require aldas/modbus-tcp-client
 
 ## Requirements
 
-* PHP 7.0+
+* PHP 8.0+
+* Release [2.4.0](https://github.com/aldas/modbus-tcp-client/tree/2.4.0) was last to support PHP 7 (7.4 might work with v3.0.0)
 * Release [0.2.0](https://github.com/aldas/modbus-tcp-client/tree/0.2.0) was last to support PHP 5.6
 
 ## Intention
