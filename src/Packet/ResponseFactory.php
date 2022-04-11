@@ -6,6 +6,7 @@ namespace ModbusTcpClient\Packet;
 
 use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Exception\ParseException;
+use ModbusTcpClient\Packet\ModbusFunction\MaskWriteRegisterResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesResponse;
@@ -21,10 +22,10 @@ class ResponseFactory
 {
     /**
      * @param string|null $binaryString
-     * @return ModbusResponse
-     * @throws \ModbusTcpClient\Exception\ModbusException
+     * @return ModbusResponse|ErrorResponse
+     * @throws ModbusException
      */
-    public static function parseResponse($binaryString): ModbusResponse
+    public static function parseResponse(string|null $binaryString): ModbusResponse|ErrorResponse
     {
         if ($binaryString === null || strlen($binaryString) < 9) { // 7 bytes for MBAP header and at least 2 bytes for PDU
             throw new ModbusException('Response null or data length too short to be valid packet!');
@@ -47,38 +48,36 @@ class ResponseFactory
         switch ($functionCode) {
             case ModbusPacket::READ_HOLDING_REGISTERS:
                 return new ReadHoldingRegistersResponse($rawData, $unitId, $transactionId);
-                break;
             case ModbusPacket::READ_INPUT_REGISTERS:
                 return new ReadInputRegistersResponse($rawData, $unitId, $transactionId);
-                break;
             case ModbusPacket::READ_COILS:
                 return new ReadCoilsResponse($rawData, $unitId, $transactionId);
-                break;
             case ModbusPacket::READ_INPUT_DISCRETES:
                 return new ReadInputDiscretesResponse($rawData, $unitId, $transactionId);
-                break;
             case ModbusPacket::WRITE_SINGLE_COIL:
                 return new WriteSingleCoilResponse($rawData, $unitId, $transactionId);
-                break;
             case ModbusPacket::WRITE_SINGLE_REGISTER:
                 return new WriteSingleRegisterResponse($rawData, $unitId, $transactionId);
-                break;
             case ModbusPacket::WRITE_MULTIPLE_COILS:
                 return new WriteMultipleCoilsResponse($rawData, $unitId, $transactionId);
-                break;
             case ModbusPacket::WRITE_MULTIPLE_REGISTERS:
                 return new WriteMultipleRegistersResponse($rawData, $unitId, $transactionId);
-                break;
+            case ModbusPacket::MASK_WRITE_REGISTER:
+                return new MaskWriteRegisterResponse($rawData, $unitId, $transactionId);
             case ModbusPacket::READ_WRITE_MULTIPLE_REGISTERS:
                 return new ReadWriteMultipleRegistersResponse($rawData, $unitId, $transactionId);
-                break;
             default:
                 throw new ParseException("Unknown function code '{$functionCode}' read from response packet");
 
         }
     }
 
-    public static function parseResponseOrThrow($binaryString): ModbusResponse
+    /**
+     * @param string|null $binaryString
+     * @return ModbusResponse
+     * @throws ModbusException
+     */
+    public static function parseResponseOrThrow(string|null $binaryString): ModbusResponse
     {
         $response = static::parseResponse($binaryString);
         if ($response instanceof ErrorResponse) {

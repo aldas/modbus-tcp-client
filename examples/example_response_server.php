@@ -16,8 +16,7 @@ use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\RequestFactory;
 use ModbusTcpClient\Utils\Packet;
 use ModbusTcpClient\Utils\Types;
-use React\EventLoop\Factory;
-use React\Socket\Server;
+use React\Socket\SocketServer;
 
 // Install: 'composer require react/socket:^1.6'
 // OPTIONAL: install PHP extension ('ev', 'event' or 'uv') for better support of event loop within PHP.
@@ -27,8 +26,8 @@ $port = getenv('MODBUS_SERVER_PORT') ?: '5020';
 
 $logger = new EchoLogger();
 
-$loop = Factory::create();
-$socket = new Server("${address}:{$port}", $loop);
+$loop = React\EventLoop\Loop::get();
+$socket = new SocketServer("${address}:{$port}", [], $loop);
 
 $socket->on('connection', function (React\Socket\ConnectionInterface $conn) use ($logger) {
     $logger->debug($conn->getRemoteAddress() . ": connected: ");

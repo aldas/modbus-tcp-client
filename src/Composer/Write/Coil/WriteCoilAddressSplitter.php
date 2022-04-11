@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Write\Coil;
 
@@ -10,7 +11,7 @@ use ModbusTcpClient\Exception\InvalidArgumentException;
 class WriteCoilAddressSplitter extends AddressSplitter
 {
     /** @var string */
-    private $requestClass;
+    private string $requestClass;
 
     public function __construct(string $requestClass)
     {
@@ -25,7 +26,7 @@ class WriteCoilAddressSplitter extends AddressSplitter
      * @param int $unitId
      * @return WriteCoilRequest
      */
-    protected function createRequest(string $uri, array $addressesChunk, int $startAddress, int $quantity, int $unitId = 0)
+    protected function createRequest(string $uri, array $addressesChunk, int $startAddress, int $quantity, int $unitId = 0): WriteCoilRequest
     {
         $values = [];
         foreach ($addressesChunk as $address) {
@@ -44,7 +45,7 @@ class WriteCoilAddressSplitter extends AddressSplitter
     {
         $isOverAddressLimit = $currentQuantity >= $this->getMaxAddressesPerModbusRequest();
         if ($isOverAddressLimit) {
-            return $isOverAddressLimit;
+            return true;
         }
         if ($previousAddress === null) {
             return false;

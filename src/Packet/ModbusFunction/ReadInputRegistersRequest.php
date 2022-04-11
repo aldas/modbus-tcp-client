@@ -30,10 +30,10 @@ class ReadInputRegistersRequest extends ReadHoldingRegistersRequest
     /**
      * Parses binary string to ReadInputRegistersRequest or return ErrorResponse on failure
      *
-     * @param $binaryString
+     * @param string $binaryString
      * @return ReadInputRegistersRequest|ErrorResponse
      */
-    public static function parse($binaryString)
+    public static function parse(string $binaryString): ReadInputRegistersRequest|ErrorResponse
     {
         return self::parseStartAddressPacket(
             $binaryString,

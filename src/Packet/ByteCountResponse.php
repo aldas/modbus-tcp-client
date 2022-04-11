@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
 
@@ -9,10 +10,10 @@ use ModbusTcpClient\Utils\Types;
 abstract class ByteCountResponse extends ProtocolDataUnit implements ModbusResponse
 {
     /** @var int */
-    private $byteCount;
+    private int $byteCount;
 
     /** @var int */
-    private $startAddress = 0;
+    private int $startAddress = 0;
 
     public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {
@@ -54,10 +55,9 @@ abstract class ByteCountResponse extends ProtocolDataUnit implements ModbusRespo
 
     /**
      * @param int $startAddress
-     * @param int $addressStep
      * @return static
      */
-    public function withStartAddress(int $startAddress)
+    public function withStartAddress(int $startAddress): static
     {
         $new = clone $this;
         $new->startAddress = $startAddress;

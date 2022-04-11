@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Write\Coil;
 
@@ -8,10 +9,10 @@ use ModbusTcpClient\Composer\Address;
 class WriteCoilAddress implements Address
 {
     /** @var int */
-    protected $address;
+    protected int $address;
 
     /** @var bool */
-    private $value;
+    private bool $value;
 
     public function __construct(int $address, bool $value)
     {

@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
 
+use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Utils\Types;
 
 /**
@@ -15,9 +17,8 @@ class Word extends AbstractWord
     }
 
     /**
-     * @param int $endianness byte and word order for modbus binary data
+     * @param int|null $endianness byte and word order for modbus binary data
      * @return int
-     * @throws \ModbusTcpClient\Exception\ModbusException
      */
     public function getInt16(int $endianness = null): int
     {
@@ -25,9 +26,8 @@ class Word extends AbstractWord
     }
 
     /**
-     * @param int $endianness byte and word order for modbus binary data
+     * @param int|null $endianness byte and word order for modbus binary data
      * @return int
-     * @throws \ModbusTcpClient\Exception\ModbusException
      */
     public function getUInt16(int $endianness = null): int
     {
@@ -55,7 +55,7 @@ class Word extends AbstractWord
      *
      * @param Word $lowWord
      * @return DoubleWord
-     * @throws \ModbusTcpClient\Exception\ModbusException
+     * @throws ModbusException
      */
     public function combine(Word $lowWord): DoubleWord
     {

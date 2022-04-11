@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
 
@@ -17,7 +18,7 @@ use ModbusTcpClient\Utils\Types;
 
 abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
 {
-    private $startAddress;
+    private int $startAddress;
 
     public function __construct(int $startAddress, int $unitId = 0, int $transactionId = null)
     {
@@ -44,21 +45,21 @@ abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
         return 3; // size of function code (1 byte) + startAddress (2 bytes)
     }
 
-    protected function validate()
+    protected function validate(): void
     {
-        if ((null === $this->startAddress) || !($this->startAddress >= 0 && $this->startAddress <= Types::MAX_VALUE_UINT16)) {
-            throw new InvalidArgumentException("startAddress is not set or out of range: {$this->startAddress}", 2);
+        if (!($this->startAddress >= 0 && $this->startAddress <= Types::MAX_VALUE_UINT16)) {
+            throw new InvalidArgumentException("startAddress is out of range: {$this->startAddress}", 2);
         }
     }
 
     /**
-     * @param $binaryString
-     * @param $minLength
-     * @param $functionCode
-     * @param $createFunctor
+     * @param string|null $binaryString
+     * @param int $minLength
+     * @param int $functionCode
+     * @param callable $createFunctor
      * @return mixed|ErrorResponse
      */
-    protected static function parseStartAddressPacket($binaryString, int $minLength, int $functionCode, $createFunctor)
+    protected static function parseStartAddressPacket(string|null $binaryString, int $minLength, int $functionCode, callable $createFunctor): mixed
     {
         if ($binaryString === null || strlen($binaryString) < $minLength) {
             return new ErrorResponse(new ModbusApplicationHeader(2, 0, 0),

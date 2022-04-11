@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer;
 
@@ -15,11 +16,19 @@ abstract class AddressSplitter
         return static::MAX_REGISTERS_PER_MODBUS_REQUEST;
     }
 
-    abstract protected function createRequest(string $uri, array $addressesChunk, int $startAddress, int $quantity, int $unitId);
+    /**
+     * @param string $uri
+     * @param Address[] $addressesChunk
+     * @param int $startAddress
+     * @param int $quantity
+     * @param int $unitId
+     * @return Request
+     */
+    abstract protected function createRequest(string $uri, array $addressesChunk, int $startAddress, int $quantity, int $unitId): Request;
 
     /**
-     * @param Address[] $addresses
-     * @return array
+     * @param array<array<string, Address>> $addresses
+     * @return Request[]
      */
     public function split(array $addresses): array
     {
@@ -27,7 +36,7 @@ abstract class AddressSplitter
         foreach ($addresses as $modbusPath => $addrs) {
             $pathParts = explode(static::UNIT_ID_PREFIX, $modbusPath);
             $uri = $pathParts[0];
-            $unitId = $pathParts[1];
+            $unitId = (int)$pathParts[1];
             // sort by address and size to help chunking
             usort($addrs, function (Address $a, Address $b) {
                 $aAddr = $a->getAddress();

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Utils;
 
@@ -17,7 +18,7 @@ class Charset
     // See: https://en.wikipedia.org/wiki/ISO/IEC_8859-1#Code_page_layout
     const ISO_8859_1 = "ISO-8859-1";
 
-    public static $defaultCharset = self::ISO_8859_1;
+    public static string $defaultCharset = self::ISO_8859_1;
 
     public static function getCurrentEndianness(string $charset = null): string
     {

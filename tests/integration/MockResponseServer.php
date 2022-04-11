@@ -3,9 +3,9 @@
 namespace Test\integration;
 
 use React\Datagram\Socket;
-use React\EventLoop\Factory;
+use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
-use React\Socket\Server;
+use React\Socket\SocketServer;
 
 require __DIR__ . '/../../vendor/autoload.php';
 
@@ -18,7 +18,7 @@ class MockResponseServer
     {
         $this->port = $port;
 
-        $loop = Factory::create();
+        $loop = Loop::get();
 
         if ('TCP' === $protocol) {
             $this->startTcpServer($loop, $answerTimeout, $responsePacket);
@@ -35,7 +35,7 @@ class MockResponseServer
     private function startTcpServer(LoopInterface $loop, $answerTimeout, $responsePacket)
     {
         $address = getenv('MOCKSERVER_BIND_ADDRESS') ?: '127.0.0.1';
-        $socket = new Server("${address}:{$this->port}", $loop);
+        $socket = new SocketServer("${address}:{$this->port}", [], $loop);
 
         $socket->on('connection', function ($conn) use ($socket, $loop, $answerTimeout, $responsePacket) {
             $conn->on('data', function ($data) use ($conn, $answerTimeout, $responsePacket) {

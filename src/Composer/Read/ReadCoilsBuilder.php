@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read;
 
@@ -6,7 +7,7 @@ use Closure;
 use ModbusTcpClient\Composer\AddressSplitter;
 use ModbusTcpClient\Composer\Read\Coil\ReadCoilAddress;
 use ModbusTcpClient\Composer\Read\Coil\ReadCoilAddressSplitter;
-use ModbusTcpClient\Composer\Read\Coil\ReadCoilRequest;
+use ModbusTcpClient\Composer\Request;
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesRequest;
@@ -14,15 +15,18 @@ use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesRequest;
 class ReadCoilsBuilder
 {
     /** @var ReadCoilAddressSplitter */
-    private $addressSplitter;
+    private ReadCoilAddressSplitter $addressSplitter;
 
-    private $addresses = [];
+    /**
+     * @var array<array<string,ReadCoilAddress>>
+     */
+    private array $addresses = [];
 
     /** @var string */
-    private $currentUri;
+    private string $currentUri;
 
     /** @var int */
-    private $unitId;
+    private int $unitId;
 
     public function __construct(string $requestClass, string $uri = null, int $unitId = 0)
     {
@@ -65,6 +69,10 @@ class ReadCoilsBuilder
         return $this;
     }
 
+    /**
+     * @param array<array<string,mixed>|ReadCoilAddress> $coils
+     * @return $this
+     */
     public function allFromArray(array $coils): ReadCoilsBuilder
     {
         foreach ($coils as $coil) {
@@ -77,6 +85,10 @@ class ReadCoilsBuilder
         return $this;
     }
 
+    /**
+     * @param array<string,mixed> $coil
+     * @return $this
+     */
     public function fromArray(array $coil): ReadCoilsBuilder
     {
         $uri = $coil['uri'] ?? null;
@@ -116,14 +128,14 @@ class ReadCoilsBuilder
     }
 
     /**
-     * @return ReadCoilRequest[]
+     * @return Request[]
      */
     public function build(): array
     {
         return $this->addressSplitter->split($this->addresses);
     }
 
-    public function isNotEmpty()
+    public function isNotEmpty(): bool
     {
         return !empty($this->addresses);
     }

@@ -10,15 +10,18 @@ use ModbusTcpClient\Utils\Types;
 class WriteRegisterAddress extends RegisterAddress
 {
     /** @var int|float|string */
-    private $value;
+    private string|int|float $value;
 
-    public function __construct(int $address, string $type, $value)
+    public function __construct(int $address, string $type, string|int|float $value)
     {
         parent::__construct($address, $type);
 
         $this->value = $value;
     }
 
+    /**
+     * @return string[]
+     */
     protected function getAllowedTypes(): array
     {
         // writing bit/byte with registers should not be allowed - word is 2 bytes so there is memory that are actually touching by writing single bit or even 1 byte
@@ -37,7 +40,7 @@ class WriteRegisterAddress extends RegisterAddress
     /**
      * @return int|float|string
      */
-    public function getValue()
+    public function getValue(): float|int|string
     {
         return $this->value;
     }

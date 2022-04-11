@@ -1,6 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Network;
+
+use Psr\Log\LoggerInterface;
 
 trait StreamHandler
 {
@@ -9,12 +12,12 @@ trait StreamHandler
      * NB: return when 1 full packet is silly and you should not use this method for multiple streams.
      * for "backwards compatibility" this is not changed/fixed atm
      *
-     * @param array $readStreams
-     * @param float $timeout
-     * @param \Psr\Log\LoggerInterface $logger
-     * @return array
+     * @param resource[] $readStreams
+     * @param float|null $timeout
+     * @param LoggerInterface|null $logger
+     * @return string[]
      */
-    protected function receiveFrom(array $readStreams, float $timeout = null, $logger = null): array
+    protected function receiveFrom(array $readStreams, float $timeout = null, LoggerInterface $logger = null): array
     {
         if ($timeout === null) {
             $timeout = 0.3;
@@ -49,13 +52,11 @@ trait StreamHandler
                 (int)$timeout,
                 $timeoutUsec
             );
-            if (false === $modifiedStreams) {
+            if (false == $modifiedStreams) {
                 throw new IOException('stream_select interrupted by an incoming signal');
             }
 
-            if ($logger) {
-                $logger->debug('Polling data');
-            }
+            $logger?->debug('Polling data');
 
             $dataReceived = false;
             foreach ($read as $stream) {
@@ -68,9 +69,7 @@ trait StreamHandler
                         throw new IOException('fread error during receiveFrom');
                     }
                     if (!empty($data)) {
-                        if ($logger) {
-                            $logger->debug("Stream {$streamId} @ index: {$streamIndex} received data: ", unpack('H*', $data));
-                        }
+                        $logger?->debug("Stream {$streamId} @ index: {$streamIndex} received data: ", unpack('H*', $data));
                         $packetData = ($result[$streamIndex] ?? b'') . $data;
                         $result[$streamIndex] = $packetData;
 

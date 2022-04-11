@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Network;
 
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Utils\Packet;
+use Psr\Log\LoggerInterface;
 
 class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
 {
@@ -14,7 +16,7 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
      * @return BinaryStreamConnection built instance
      * @throws InvalidArgumentException
      */
-    public function build()
+    public function build(): BinaryStreamConnection
     {
         if ($this->host === null && $this->uri === null) {
             throw new InvalidArgumentException('host or uri property can not be left null or empty!');
@@ -42,19 +44,19 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
 
     /**
      * @param string $client
-     * @return BinaryStreamConnectionBuilder
+     * @return static
      */
-    public function setClient($client)
+    public function setClient(string $client): static
     {
         $this->client = $client;
         return $this;
     }
 
     /**
-     * @param string $clientPort
-     * @return BinaryStreamConnectionBuilder
+     * @param int $clientPort
+     * @return static
      */
-    public function setClientPort($clientPort)
+    public function setClientPort(int $clientPort): static
     {
         $this->clientPort = $clientPort;
         return $this;
@@ -62,9 +64,9 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
 
     /**
      * @param float $timeoutSec
-     * @return BinaryStreamConnectionBuilder
+     * @return static
      */
-    public function setTimeoutSec($timeoutSec)
+    public function setTimeoutSec(float $timeoutSec): static
     {
         $this->timeoutSec = $timeoutSec;
         return $this;
@@ -72,9 +74,9 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
 
     /**
      * @param float $connectTimeoutSec
-     * @return BinaryStreamConnectionBuilder
+     * @return static
      */
-    public function setConnectTimeoutSec($connectTimeoutSec)
+    public function setConnectTimeoutSec(float $connectTimeoutSec): static
     {
         $this->connectTimeoutSec = $connectTimeoutSec;
         return $this;
@@ -82,9 +84,9 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
 
     /**
      * @param float $readTimeoutSec
-     * @return BinaryStreamConnectionBuilder
+     * @return static
      */
-    public function setReadTimeoutSec($readTimeoutSec)
+    public function setReadTimeoutSec(float $readTimeoutSec): static
     {
         $this->readTimeoutSec = $readTimeoutSec;
         return $this;
@@ -92,9 +94,9 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
 
     /**
      * @param float $writeTimeoutSec
-     * @return BinaryStreamConnectionBuilder
+     * @return static
      */
-    public function setWriteTimeoutSec($writeTimeoutSec)
+    public function setWriteTimeoutSec(float $writeTimeoutSec): static
     {
         $this->writeTimeoutSec = $writeTimeoutSec;
         return $this;
@@ -102,9 +104,9 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
 
     /**
      * @param string $protocol
-     * @return BinaryStreamConnectionBuilder
+     * @return static
      */
-    public function setProtocol($protocol)
+    public function setProtocol(string $protocol): static
     {
         $this->protocol = $protocol;
         return $this;
@@ -112,29 +114,29 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
 
     /**
      * @param string $host
-     * @return BinaryStreamConnectionBuilder
+     * @return static
      */
-    public function setHost($host)
+    public function setHost(string $host): static
     {
         $this->host = $host;
         return $this;
     }
 
     /**
-     * @param string $port
-     * @return BinaryStreamConnectionBuilder
+     * @param int $port
+     * @return static
      */
-    public function setPort($port)
+    public function setPort(int $port): static
     {
         $this->port = $port;
         return $this;
     }
 
     /**
-     * @param \Psr\Log\LoggerInterface $logger
-     * @return BinaryStreamConnectionBuilder
+     * @param LoggerInterface $logger
+     * @return static
      */
-    public function setLogger($logger)
+    public function setLogger(LoggerInterface $logger): static
     {
         $this->logger = $logger;
         return $this;
@@ -142,15 +144,19 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
 
     /**
      * @param string $uri
-     * @return BinaryStreamConnectionBuilder
+     * @return static
      */
-    public function setUri(string $uri)
+    public function setUri(string $uri): static
     {
         $this->uri = $uri;
         return $this;
     }
 
-    public function setFromOptions(array $options = null)
+    /**
+     * @param array<string,mixed>|null $options
+     * @return $this
+     */
+    public function setFromOptions(array $options = null): static
     {
         if ($options !== null) {
             foreach ($options as $option => $value) {
@@ -164,20 +170,20 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
     }
 
     /**
-     * @param callable callable to create stream
-     * @return BinaryStreamConnectionBuilder
+     * @param callable $createStreamCallback callable to create stream
+     * @return static
      */
-    public function setCreateStreamCallback(callable $createStreamCallback)
+    public function setCreateStreamCallback(callable $createStreamCallback): static
     {
         $this->createStreamCallback = $createStreamCallback;
         return $this;
     }
 
     /**
-     * @param callable callable to check if data received from stream is complete/all that is needed
-     * @return BinaryStreamConnectionBuilder
+     * @param callable $isCompleteCallback callable to check if data received from stream is complete/all that is needed
+     * @return static
      */
-    public function setIsCompleteCallback(callable $isCompleteCallback)
+    public function setIsCompleteCallback(callable $isCompleteCallback): static
     {
         $this->isCompleteCallback = $isCompleteCallback;
         return $this;

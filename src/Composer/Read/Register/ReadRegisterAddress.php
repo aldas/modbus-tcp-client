@@ -1,17 +1,20 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read\Register;
 
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\RegisterAddress;
-use ModbusTcpClient\Packet\ModbusResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
+use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersResponse;
 use ModbusTcpClient\Utils\Endian;
 
 class ReadRegisterAddress extends RegisterAddress
 {
     /** @var string */
-    private $name;
+    private string $name;
 
     /** @var callable */
     protected $callback;
@@ -20,7 +23,7 @@ class ReadRegisterAddress extends RegisterAddress
     private $errorCallback;
 
     /** @var int */
-    private $endian;
+    private int $endian;
 
     public function __construct(
         int      $address,
@@ -53,7 +56,7 @@ class ReadRegisterAddress extends RegisterAddress
         ];
     }
 
-    protected function extractInternal(ModbusResponse $response)
+    protected function extractInternal(ReadHoldingRegistersResponse|ReadInputRegistersRequest $response): mixed
     {
         $result = null;
         switch ($this->type) {
@@ -86,11 +89,11 @@ class ReadRegisterAddress extends RegisterAddress
     }
 
     /**
-     * @param ModbusResponse $response
-     * @return null
+     * @param ReadHoldingRegistersResponse|ReadInputRegistersResponse $response
+     * @return mixed
      * @throws \Exception
      */
-    public function extract(ModbusResponse $response)
+    public function extract(ReadHoldingRegistersResponse|ReadInputRegistersResponse $response): mixed
     {
         try {
             $result = $this->extractInternal($response);

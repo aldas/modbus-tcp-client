@@ -7,6 +7,7 @@ use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Network\BinaryStreamConnection;
 use ModbusTcpClient\Network\StreamCreator;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class BinaryStreamConnectionTest extends TestCase
 {
@@ -79,12 +80,52 @@ class BinaryStreamConnectionTest extends TestCase
 
 }
 
-class SetLogger
+class SetLogger implements LoggerInterface
 {
-    public static $data = [];
+    public static array $data = [];
 
     public function debug($message, array $context = array())
     {
-        $data[] = $message;
+        static::$data[] = $message;
+    }
+
+    public function emergency($message, array $context = array())
+    {
+        static::$data[] = $message;
+    }
+
+    public function alert($message, array $context = array())
+    {
+        static::$data[] = $message;
+    }
+
+    public function critical($message, array $context = array())
+    {
+        static::$data[] = $message;
+    }
+
+    public function error($message, array $context = array())
+    {
+        static::$data[] = $message;
+    }
+
+    public function warning($message, array $context = array())
+    {
+        static::$data[] = $message;
+    }
+
+    public function notice($message, array $context = array())
+    {
+        static::$data[] = $message;
+    }
+
+    public function info($message, array $context = array())
+    {
+        static::$data[] = $message;
+    }
+
+    public function log($level, $message, array $context = array())
+    {
+        static::$data[] = $message;
     }
 }

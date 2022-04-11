@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer;
 
@@ -8,10 +9,15 @@ use ModbusTcpClient\Exception\InvalidArgumentException;
 abstract class RegisterAddress implements Address
 {
     /** @var int */
-    protected $address;
+    protected int $address;
 
     /** @var string */
-    protected $type;
+    protected string $type;
+
+    /**
+     * @return string[]
+     */
+    protected abstract function getAllowedTypes(): array;
 
     public function __construct(int $address, string $type)
     {

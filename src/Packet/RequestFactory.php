@@ -20,9 +20,9 @@ class RequestFactory
     /**
      * @param string|null $binaryString
      * @return ModbusRequest|ErrorResponse
-     * @throws \ModbusTcpClient\Exception\ModbusException
+     * @throws ModbusException
      */
-    public static function parseRequest($binaryString)
+    public static function parseRequest(string|null $binaryString): ModbusRequest|ErrorResponse
     {
         if ($binaryString === null || strlen($binaryString) < 9) { // 7 bytes for MBAP header and at least 2 bytes for PDU
             throw new ModbusException('Request null or data length too short to be valid packet!');
@@ -59,7 +59,12 @@ class RequestFactory
         }
     }
 
-    public static function parseRequestOrThrow($binaryString): ModbusRequest
+    /**
+     * @param string|null $binaryString
+     * @return ModbusRequest
+     * @throws ModbusException
+     */
+    public static function parseRequestOrThrow(string|null $binaryString): ModbusRequest
     {
         $response = static::parseRequest($binaryString);
         if ($response instanceof ErrorResponse) {

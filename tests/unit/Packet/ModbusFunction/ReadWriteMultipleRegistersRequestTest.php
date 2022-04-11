@@ -80,7 +80,7 @@ class ReadWriteMultipleRegistersRequestTest extends TestCase
 
     public function testValidateReadStartAddressUnderflow()
     {
-        $this->expectExceptionMessage("startAddress is not set or out of range: -1");
+        $this->expectExceptionMessage("startAddress is out of range: -1");
         $this->expectException(InvalidArgumentException::class);
 
         (new ReadWriteMultipleRegistersRequest(
@@ -93,7 +93,7 @@ class ReadWriteMultipleRegistersRequestTest extends TestCase
 
     public function testValidateReadStartAddressOverflow()
     {
-        $this->expectExceptionMessage("startAddress is not set or out of range: 65536");
+        $this->expectExceptionMessage("startAddress is out of range: 65536");
         $this->expectException(InvalidArgumentException::class);
 
         (new ReadWriteMultipleRegistersRequest(

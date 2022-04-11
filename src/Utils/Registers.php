@@ -1,10 +1,17 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Utils;
 
 
 class Registers
 {
+    /**
+     * Calculates size in bytes of array of strings
+     *
+     * @param string[] $registers
+     * @return int
+     */
     public static function getRegisterArrayByteSize(array $registers): int
     {
         $result = 0;
@@ -19,6 +26,12 @@ class Registers
         return $result;
     }
 
+    /**
+     * Combines array of bytes (string) into one byte string by making sure that register odd bytes are filled
+     *
+     * @param string[]|null[] $registers
+     * @return string
+     */
     public static function getRegisterArrayAsByteString(array $registers): string
     {
         $result = '';

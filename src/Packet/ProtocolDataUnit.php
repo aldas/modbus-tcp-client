@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
 
@@ -17,7 +18,7 @@ abstract class ProtocolDataUnit implements ModbusPacket
     /**
      * @var ModbusApplicationHeader
      */
-    private $header;
+    private ModbusApplicationHeader $header;
 
     public function __construct(int $unitId = 0, int $transactionId = null)
     {

@@ -30,10 +30,10 @@ class ReadInputDiscretesRequest extends ReadCoilsRequest
     /**
      * Parses binary string to ReadInputDiscretesRequest or return ErrorResponse on failure
      *
-     * @param $binaryString
+     * @param string $binaryString
      * @return ReadInputDiscretesRequest|ErrorResponse
      */
-    public static function parse($binaryString)
+    public static function parse(string $binaryString): ReadInputDiscretesRequest|ErrorResponse
     {
         return self::parseStartAddressPacket(
             $binaryString,

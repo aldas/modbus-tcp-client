@@ -23,9 +23,9 @@ use ModbusTcpClient\Packet\Word;
 class WriteSingleRegisterResponse extends StartAddressResponse
 {
     /**
-     * @var int
+     * @var Word
      */
-    private $word;
+    private Word $word;
 
     public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {

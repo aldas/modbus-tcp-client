@@ -12,7 +12,7 @@ class RegistersTest extends TestCase
     public function testRegisterArrayByteSize()
     {
         $this->assertEquals(2, Registers::getRegisterArrayByteSize([Types::toByte(200)]));
-        $this->assertEquals(4, Registers::getRegisterArrayByteSize([null, Types::toByte(200)]));
+        $this->assertEquals(4, Registers::getRegisterArrayByteSize([Types::toByte(200), Types::toByte(200)]));
 
         $this->assertEquals(4, Registers::getRegisterArrayByteSize([Types::toByte(200), Types::toInt16(1)]));
         $this->assertEquals(6, Registers::getRegisterArrayByteSize([Types::toInt16(1), Types::toByte(200), Types::toInt16(1)]));

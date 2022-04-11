@@ -1,28 +1,29 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Write;
 
 
 use ModbusTcpClient\Composer\AddressSplitter;
+use ModbusTcpClient\Composer\Request;
 use ModbusTcpClient\Composer\Write\Coil\WriteCoilAddress;
 use ModbusTcpClient\Composer\Write\Coil\WriteCoilAddressSplitter;
-use ModbusTcpClient\Composer\Write\Coil\WriteCoilRequest;
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsRequest;
 
 class WriteCoilsBuilder
 {
     /** @var WriteCoilAddressSplitter */
-    private $addressSplitter;
+    private WriteCoilAddressSplitter $addressSplitter;
 
-    /** @var WriteCoilAddress[] */
-    private $addresses = [];
+    /** @var array<array<string,WriteCoilAddress>> */
+    private array $addresses = [];
 
     /** @var string */
-    private $currentUri;
+    private string $currentUri;
 
     /** @var int */
-    private $unitId;
+    private int $unitId;
 
     public function __construct(string $requestClass, string $uri = null, int $unitId = 0)
     {
@@ -61,6 +62,10 @@ class WriteCoilsBuilder
         return $this;
     }
 
+    /**
+     * @param array<array<string,mixed>|WriteCoilAddress> $coils
+     * @return $this
+     */
     public function allFromArray(array $coils): WriteCoilsBuilder
     {
         foreach ($coils as $coil) {
@@ -73,6 +78,10 @@ class WriteCoilsBuilder
         return $this;
     }
 
+    /**
+     * @param array<string,mixed> $coil
+     * @return $this
+     */
     public function fromArray(array $coil): WriteCoilsBuilder
     {
         $uri = $coil['uri'] ?? null;
@@ -101,14 +110,14 @@ class WriteCoilsBuilder
     }
 
     /**
-     * @return WriteCoilRequest[]
+     * @return Request[]
      */
     public function build(): array
     {
         return $this->addressSplitter->split($this->addresses);
     }
 
-    public function isNotEmpty()
+    public function isNotEmpty(): bool
     {
         return !empty($this->addresses);
     }

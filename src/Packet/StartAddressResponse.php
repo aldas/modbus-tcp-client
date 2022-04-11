@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
 
@@ -10,7 +11,7 @@ abstract class StartAddressResponse extends ProtocolDataUnit implements ModbusRe
     /**
      * @var int
      */
-    private $startAddress;
+    private int $startAddress;
 
     public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {
@@ -36,10 +37,9 @@ abstract class StartAddressResponse extends ProtocolDataUnit implements ModbusRe
 
     /**
      * @param int $startAddress
-     * @param int $addressStep
      * @return static
      */
-    public function withStartAddress(int $startAddress)
+    public function withStartAddress(int $startAddress): static
     {
         // do not use argument as this kind of packet gets start address from data
         return clone $this;

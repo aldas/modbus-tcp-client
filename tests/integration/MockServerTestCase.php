@@ -7,13 +7,13 @@ use ModbusTcpClient\Network\NonBlockingClient;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use PHPUnit\Framework\TestCase;
 use React\ChildProcess\Process;
-use React\EventLoop\Factory;
+use React\EventLoop\Loop;
 
 abstract class MockServerTestCase extends TestCase
 {
     public static function executeWithMockServer($packetToRespond, \Closure $closure, $protocol = 'TCP', $answerTimeout = 0, $port = 0)
     {
-        $loop = Factory::create();
+        $loop = Loop::get();
 
         $port = $port ?: random_int(10000, 50000);
         $process = new Process(PHP_BINARY . ' ' . __DIR__ . DIRECTORY_SEPARATOR . "MockResponseServer.php {$protocol} {$port} {$answerTimeout} {$packetToRespond}");
@@ -21,7 +21,6 @@ abstract class MockServerTestCase extends TestCase
         $clientData = [];
         $loop->addTimer(0.001, function () use ($process, $closure, $port, &$clientData, $loop) {
             $process->start($loop);
-
             $process->stdout->on('data', function ($output) use (&$clientData) {
                 $clientData[] = $output;
             });

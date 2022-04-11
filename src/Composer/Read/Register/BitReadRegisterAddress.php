@@ -1,14 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read\Register;
 
 use ModbusTcpClient\Composer\Address;
-use ModbusTcpClient\Packet\ModbusResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
 
 class BitReadRegisterAddress extends ReadRegisterAddress
 {
     /** @var int */
-    private $bit;
+    private int $bit;
 
     public function __construct(int $address, int $bit, string $name = null, callable $callback = null, callable $errorCallback = null)
     {
@@ -17,7 +19,7 @@ class BitReadRegisterAddress extends ReadRegisterAddress
         $this->bit = $bit;
     }
 
-    protected function extractInternal(ModbusResponse $response)
+    protected function extractInternal(ReadHoldingRegistersResponse|ReadInputRegistersRequest $response): mixed
     {
         return $response->getWordAt($this->address)->isBitSet($this->bit);
     }

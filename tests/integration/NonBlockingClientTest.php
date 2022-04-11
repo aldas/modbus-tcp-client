@@ -12,6 +12,9 @@ use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersResponse;
 
 class NonBlockingClientTest extends MockServerTestCase
 {
+    /**
+     * @runInSeparateProcess
+     */
     public function testSendReadRequests()
     {
         $mockResponse = '8180000000050003020003'; // respond with 1 WORD (2 bytes) [0, 3]
@@ -35,6 +38,9 @@ class NonBlockingClientTest extends MockServerTestCase
         $this->assertEquals(0.3, $response['temperature']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testSendReadRequestsNoflatRequestResponse()
     {
         $mockResponse = '8180000000050003020003'; // respond with 1 WORD (2 bytes) [0, 3]
@@ -59,6 +65,9 @@ class NonBlockingClientTest extends MockServerTestCase
         $this->assertEquals(0.3, $responses->getData()[0]['temperature']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testSendWriteRequests()
     {
         $mockResponse = '013800000006111004100003'; // respond with 1 WORD (2 bytes) [0, 3]
@@ -81,6 +90,9 @@ class NonBlockingClientTest extends MockServerTestCase
         $this->assertInstanceOf(WriteMultipleRegistersResponse::class, $extracted);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testSendSingleRequest()
     {
         $mockResponse = '8180000000050003020003'; // respond with 1 WORD (2 bytes) [0, 3]
@@ -105,6 +117,9 @@ class NonBlockingClientTest extends MockServerTestCase
         $this->assertEquals([0, 3], $response[0]->getData());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testSendSingleRequestWithflatRequestResponse()
     {
         $mockResponse = '8180000000050003020003'; // respond with 1 WORD (2 bytes) [0, 3]
@@ -131,6 +146,9 @@ class NonBlockingClientTest extends MockServerTestCase
         $this->assertEquals(['temperature' => 0.3], $response->getData());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testSendSingleRequestWithErrorResponse()
     {
         $mockResponse = 'da8700000003008103'; // respond with error response
@@ -155,7 +173,9 @@ class NonBlockingClientTest extends MockServerTestCase
         $this->assertEquals('Illegal data value', $response->getErrors()[0]->getErrorMessage());
     }
 
-
+    /**
+     * @runInSeparateProcess
+     */
     public function testSendSingleRequestShouldThrowException()
     {
         $this->expectExceptionMessage("sendRequests resulted with modbus error. msg: Illegal data value");
@@ -177,6 +197,9 @@ class NonBlockingClientTest extends MockServerTestCase
         });
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testSendSinglePacketShouldThrowException()
     {
         $this->expectExceptionMessage("sendPackets resulted with modbus error. msg: Illegal data value");
@@ -193,7 +216,9 @@ class NonBlockingClientTest extends MockServerTestCase
             $response = $client->sendPacket(new ReadHoldingRegistersRequest(256, 1), $uri);
         });
     }
-
+    /**
+     * @runInSeparateProcess
+     */
     public function testSendSinglePacketShouldThrowException2()
     {
         $this->expectExceptionMessage("sendPackets resulted with modbus error. msg: Illegal data value");
@@ -211,6 +236,9 @@ class NonBlockingClientTest extends MockServerTestCase
         });
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testSendPacket()
     {
         $mockResponse = '8180000000050003020003'; // respond with 1 WORD (2 bytes) [0, 3]
@@ -231,6 +259,9 @@ class NonBlockingClientTest extends MockServerTestCase
         $this->assertEquals([0, 3], $response->getData());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testSendAllPackets()
     {
         $mockResponse = '8180000000050003020003'; // respond with 1 WORD (2 bytes) [0, 3]

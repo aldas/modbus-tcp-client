@@ -31,12 +31,18 @@ use ModbusTcpClient\Utils\Types;
 class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {
     /**
-     * @var array registers (array of bytes)
+     * @var string[] registers (array of bytes)
      */
-    private $registers;
-    private $registersCount;
-    private $registersBytesSize;
+    private array $registers;
+    private int $registersCount;
+    private int $registersBytesSize;
 
+    /**
+     * @param int $startAddress
+     * @param string[] $registers
+     * @param int $unitId
+     * @param int|null $transactionId
+     */
     public function __construct(int $startAddress, array $registers, int $unitId = 0, int $transactionId = null)
     {
         $this->registers = $registers;
@@ -48,7 +54,7 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest implements M
         $this->validate();
     }
 
-    public function validate()
+    public function validate(): void
     {
         parent::validate();
 
@@ -73,7 +79,7 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest implements M
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getRegisters(): array
     {
@@ -89,10 +95,10 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest implements M
     /**
      * Parses binary string to WriteMultipleRegistersRequest or return ErrorResponse on failure
      *
-     * @param $binaryString
+     * @param string $binaryString
      * @return WriteMultipleRegistersRequest|ErrorResponse
      */
-    public static function parse($binaryString)
+    public static function parse(string $binaryString): ErrorResponse|WriteMultipleRegistersRequest
     {
         return self::parseStartAddressPacket(
             $binaryString,
