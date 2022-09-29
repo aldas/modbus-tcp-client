@@ -1,6 +1,13 @@
 name: Tests
 
-on: push
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
 
 jobs:
   build:
@@ -35,7 +42,7 @@ jobs:
 
     - name: Upload coverage to Codecov
       if: matrix.php-version == '8.1' &&  matrix.operating-system == 'ubuntu-latest'
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./report/coverage.xml
