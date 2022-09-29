@@ -204,3 +204,7 @@ For Windows users:
 * all ` vendor/bin/phpunit`
 * unit tests ` vendor/bin/phpunit --testsuite 'unit-tests'`
 * integration tests ` vendor/bin/phpunit --testsuite 'integration-tests'`
+
+# Static analysis
+
+Run [PHPStan](https://phpstan.org/) analysis `compose check`
