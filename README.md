@@ -30,6 +30,7 @@ composer require aldas/modbus-tcp-client
 ### Utility functions
 
 * [Packet::isCompleteLength](src/Utils/Packet.php) - checks if data is complete Modbus TCP packet
+* [Packet::isCompleteLengthRTU()](src/Utils/Packet.php) - checks if data is complete Modbus RTU packet
 * [ErrorResponse::is](src/Packet/ErrorResponse.php) - checks if data is Modbus TCP error packet
 
 ## Requirements
@@ -164,6 +165,11 @@ $responseAsTcpPacket = RtuConverter::fromRtu($binaryData);
 ## Example of Modbus RTU over USB to Serial (RS485) adapter
 
 See Linux example in 'examples/[rtu_usb_to_serial.php](examples/rtu_usb_to_serial.php)'
+
+
+## Example of Modbus RTU over TCP + higher level API usage
+
+See example in 'examples/[rtu_over_tcp_with_higherlevel_api.php](examples/rtu_over_tcp_with_higherlevel_api.php)'
 
 
 ## Example of non-blocking socket IO with ReactPHP/Amp (i.e. modbus request are run in 'parallel')
