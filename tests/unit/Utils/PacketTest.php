@@ -37,4 +37,31 @@ class PacketTest extends TestCase
         Packet::isCompleteLength("\x81\x80\x00\x00\x00\x05\x03\x03\x02\xCD\x6B\xFF");
     }
 
+    public function isCompleteLengthRTUProvider(): array
+    {
+        return [
+            'complete error packet is complete' => ["\x00\x81\x03\x51\x91", true],
+            'short incomplete error packet is not complete' => ["\x00\x81\x03\x51", false],
+            'read holding registers (f3) response packet is complete' => ["\x01\x03\x04\x00\x00\x00\x00\xfa\x33", true],
+            'incomplete read holding registers (f3) response packet is not complete' => ["\x01\x03\x04\x00\x00\x00\x00", false],
+        ];
+    }
+
+    /**
+     * @dataProvider isCompleteLengthRTUProvider
+     */
+    public function testIsCompleteLengthRTUh($binaryData, $expect)
+    {
+        $is = Packet::isCompleteLengthRTU($binaryData);
+        $this->assertEquals($expect, $is);
+    }
+
+    public function testIsCompleteLengthRTUTooLong()
+    {
+        $this->expectExceptionMessage("packet length more bytes than expected");
+        $this->expectException(IOException::class);
+
+        Packet::isCompleteLengthRTU("\x01\x03\x04\x00\x00\x00\x00\xfa\x33\xFF");
+    }
+
 }

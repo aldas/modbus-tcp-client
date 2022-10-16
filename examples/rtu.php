@@ -3,6 +3,7 @@
 use ModbusTcpClient\Network\BinaryStreamConnection;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\RtuConverter;
+use ModbusTcpClient\Utils\Packet;
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/logger.php';
@@ -12,11 +13,7 @@ $connection = BinaryStreamConnection::getBuilder()
     ->setHost('127.0.0.1')
     ->setReadTimeoutSec(3) // increase read timeout to 3 seconds
     ->setIsCompleteCallback(function ($binaryData, $streamIndex) {
-        // Do not check for complete TCP packet structure. Default implementation works only for Modbus TCP.
-        // Modbus TCP has 7 byte header and this function checks for it and whole packet to be complete. RTU does
-        // not have that.
-        // Read about differences here: https://www.simplymodbus.ca/TCP.htm
-        return true;
+        return Packet::isCompleteLengthRTU($binaryData);
     })
     ->setLogger(new EchoLogger())
     ->build();
