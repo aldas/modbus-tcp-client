@@ -2,15 +2,9 @@
 
 namespace Tests\unit\Composer\Read\Register;
 
-
 use ModbusTcpClient\Composer\AddressSplitter;
-use ModbusTcpClient\Composer\Read\Coil\ReadCoilAddress;
-use ModbusTcpClient\Composer\Read\Coil\ReadCoilAddressSplitter;
-use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
 use ModbusTcpClient\Composer\Read\Register\ByteReadRegisterAddress;
 use ModbusTcpClient\Composer\Read\Register\ReadRegisterAddressSplitter;
-use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsRequest;
-use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
 use PHPUnit\Framework\TestCase;
 
 class ReadByteAddressSplitterTest extends TestCase
