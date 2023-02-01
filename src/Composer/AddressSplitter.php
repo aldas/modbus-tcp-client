@@ -38,6 +38,7 @@ abstract class AddressSplitter
             $uri = $pathParts[0];
             $unitId = (int)$pathParts[1];
             // sort by address and size to help chunking
+            // for bytes address type with same address: first byte, second byte
             usort($addrs, function (Address $a, Address $b) {
                 $aAddr = $a->getAddress();
                 $bAddr = $b->getAddress();
