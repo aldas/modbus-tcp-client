@@ -43,7 +43,17 @@ abstract class AddressSplitter
                 $bAddr = $b->getAddress();
                 if ($aAddr === $bAddr) {
                     $sizeCmp = $a->getSize() <=> $b->getSize();
-                    return $sizeCmp !== 0 ? $sizeCmp : $a->getType() <=> $b->getType();
+                    if ($sizeCmp !== 0) {
+                        return $sizeCmp;
+                    }
+                    $typeCmp = $a->getType() <=> $b->getType();
+                    if ($typeCmp !== 0) {
+                        return $typeCmp;
+                    }
+                    if ($a->getType() === Address::TYPE_BYTE) {
+                        return $b->isFirstByte();
+                    }
+                    return $typeCmp;
                 }
                 return $aAddr <=> $bAddr;
 
