@@ -51,7 +51,7 @@ abstract class AddressSplitter
                     if ($typeCmp !== 0) {
                         return $typeCmp;
                     }
-                    if ($a->getType() === Address::TYPE_BYTE) {
+                    if ($a instanceof ByteReadRegisterAddress && $b instanceof ByteReadRegisterAddress) {
                         return $b->isFirstByte();
                     }
                     return $typeCmp;
