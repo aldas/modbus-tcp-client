@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer;
 
+use ModbusTcpClient\Composer\Read\Register\ByteReadRegisterAddress;
 
 abstract class AddressSplitter
 {
@@ -38,12 +39,23 @@ abstract class AddressSplitter
             $uri = $pathParts[0];
             $unitId = (int)$pathParts[1];
             // sort by address and size to help chunking
+            // for bytes address type with same address: first byte, second byte
             usort($addrs, function (Address $a, Address $b) {
                 $aAddr = $a->getAddress();
                 $bAddr = $b->getAddress();
                 if ($aAddr === $bAddr) {
                     $sizeCmp = $a->getSize() <=> $b->getSize();
-                    return $sizeCmp !== 0 ? $sizeCmp : $a->getType() <=> $b->getType();
+                    if ($sizeCmp !== 0) {
+                        return $sizeCmp;
+                    }
+                    $typeCmp = $a->getType() <=> $b->getType();
+                    if ($typeCmp !== 0) {
+                        return $typeCmp;
+                    }
+                    if ($a instanceof ByteReadRegisterAddress && $b instanceof ByteReadRegisterAddress) {
+                        return $b->isFirstByte();
+                    }
+                    return $typeCmp;
                 }
                 return $aAddr <=> $bAddr;
 
