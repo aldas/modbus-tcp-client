@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer;
 
+use ModbusTcpClient\Composer\Read\Register\ByteReadRegisterAddress;
 
 abstract class AddressSplitter
 {
