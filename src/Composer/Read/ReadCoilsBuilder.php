@@ -15,7 +15,7 @@ use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesRequest;
 class ReadCoilsBuilder
 {
     /** @var ReadCoilAddressSplitter */
-    private ReadCoilAddressSplitter $addressSplitter;
+    protected ReadCoilAddressSplitter $addressSplitter;
 
     /**
      * @var array<array<string,ReadCoilAddress>>

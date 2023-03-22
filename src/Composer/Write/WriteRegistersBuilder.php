@@ -16,7 +16,7 @@ use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersRequest;
 class WriteRegistersBuilder
 {
     /** @var WriteRegisterAddressSplitter */
-    private WriteRegisterAddressSplitter $addressSplitter;
+    protected WriteRegisterAddressSplitter $addressSplitter;
 
     /** @var array<array<string,WriteRegisterAddress>> */
     private array $addresses = [];
