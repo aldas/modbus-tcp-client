@@ -14,7 +14,7 @@ use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsRequest;
 class WriteCoilsBuilder
 {
     /** @var WriteCoilAddressSplitter */
-    private WriteCoilAddressSplitter $addressSplitter;
+    protected WriteCoilAddressSplitter $addressSplitter;
 
     /** @var array<array<string,WriteCoilAddress>> */
     private array $addresses = [];

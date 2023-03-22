@@ -20,7 +20,7 @@ use ModbusTcpClient\Utils\Endian;
 class ReadRegistersBuilder
 {
     /** @var ReadRegisterAddressSplitter */
-    private ReadRegisterAddressSplitter $addressSplitter;
+    protected ReadRegisterAddressSplitter $addressSplitter;
 
     /**
      * @var array<array<string, ReadRegisterAddress>>
