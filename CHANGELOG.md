@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-# [3.2.0] - 2023-XX-xX
+# [3.2.0] - 2023-05-05
 
 * Made `Compose/*Builder` classes `*AddressSplitter` field protected so extending classes can change that field.
-
+* `AddressSplitter` uses `isFirstByte()` for byte sorting
+* Fixed parsing composer `WriteRegisterRequest` and `WriteCoilRequest` requests - they should act as composer `Read*Request` classes and return an array (empty in this case). `Composer\Write\Register\WriteRegisterRequest` and `Composer\Write\Coil\WriteCoilRequest` method `Parse` now returns `array|ErrorResponse` as interface implementation should.
 
 # [3.1.1] - 2023-01-25
 
