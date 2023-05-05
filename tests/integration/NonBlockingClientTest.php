@@ -3,12 +3,12 @@
 namespace Tests\integration;
 
 use ModbusTcpClient\Composer\Read\ReadRegistersBuilder;
+use ModbusTcpClient\Composer\Write\WriteCoilsBuilder;
 use ModbusTcpClient\Composer\Write\WriteRegistersBuilder;
 use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Network\NonBlockingClient;
 use ModbusTcpClient\Network\ResultContainer;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
-use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersResponse;
 
 class NonBlockingClientTest extends MockServerTestCase
 {
@@ -68,34 +68,57 @@ class NonBlockingClientTest extends MockServerTestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSendWriteRequests()
+    public function testSendWriteCoilsRequests()
     {
-        $mockResponse = '013800000006111004100003'; // respond with 1 WORD (2 bytes) [0, 3]
+        $mockResponse = '013800000006110F04100003';
 
         list($responses, $clientSentData) = static::executeWithNonBlockingClient($mockResponse, function ($uri) {
-            return WriteRegistersBuilder::newWriteMultipleRegisters($uri)
-                ->int16(256, 1)
+            return WriteCoilsBuilder::newWriteMultipleCoils($uri)
+                ->coil(278, true)
                 ->build();
         }, [NonBlockingClient::OPT_FLAT_REQUEST_RESPONSE => false]);
 
         // did we sent correct packet?
         $packetWithoutTransactionId = substr($clientSentData[0], 4);
-        $this->assertEquals('00000009001001000001020001', $packetWithoutTransactionId);
+        $this->assertEquals('00000008000f011600010101', $packetWithoutTransactionId);
 
         // is response as we expect?
-        $this->assertCount(1, $responses);
+        $this->assertCount(1, $responses); // is array of single empty array
 
         // was data extracted?
-        $extracted = $responses[0];
-        $this->assertInstanceOf(WriteMultipleRegistersResponse::class, $extracted);
+        $this->assertEquals([0 => []], $responses->getData()); // not flatted
     }
 
     /**
      * @runInSeparateProcess
      */
-    public function testSendSingleRequest()
+    public function testSendWriteCoilsRequestsFlatted()
     {
-        $mockResponse = '8180000000050003020003'; // respond with 1 WORD (2 bytes) [0, 3]
+        $mockResponse = '013800000006110F04100003';
+
+        list($responses, $clientSentData) = static::executeWithNonBlockingClient($mockResponse, function ($uri) {
+            return WriteCoilsBuilder::newWriteMultipleCoils($uri)
+                ->coil(278, true)
+                ->build();
+        }, [NonBlockingClient::OPT_FLAT_REQUEST_RESPONSE => true]);
+
+        // did we sent correct packet?
+        $packetWithoutTransactionId = substr($clientSentData[0], 4);
+        $this->assertEquals('00000008000f011600010101', $packetWithoutTransactionId);
+
+        // is response as we expect?
+        $this->assertCount(0, $responses); // is empty array
+
+        // was data extracted?
+        $this->assertEquals([], $responses->getData()); // flatted
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSendSingleComposerWriteRequest()
+    {
+        $mockResponse = '013800000006111004100003';
 
         $response = null;
         $clientSentData = static::executeWithMockServer($mockResponse, function ($port) use (&$response) {
@@ -114,7 +137,34 @@ class NonBlockingClientTest extends MockServerTestCase
         $packetWithoutTransactionId = substr($clientSentData[0], 4);
         $this->assertEquals('00000009001001000001020001', $packetWithoutTransactionId);
 
-        $this->assertEquals([0, 3], $response[0]->getData());
+        $this->assertEquals([0 => []], $response->getData()); // not flatted
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSendSingleComposerWriteRequestFlatted()
+    {
+        $mockResponse = '013800000006111004100003';
+
+        $response = null;
+        $clientSentData = static::executeWithMockServer($mockResponse, function ($port) use (&$response) {
+            $host = getenv('MOCKSERVER_BIND_ADDRESS') ?: '127.0.0.1';
+            $uri = "tcp://{$host}:{$port}";
+
+            $request = WriteRegistersBuilder::newWriteMultipleRegisters($uri)
+                ->int16(256, 1)
+                ->build()[0];
+
+            $client = new NonBlockingClient(['readTimeoutSec' => 0.1, NonBlockingClient::OPT_FLAT_REQUEST_RESPONSE => true]);
+            $response = $client->sendRequest($request);
+        });
+
+        // did we sent correct packet?
+        $packetWithoutTransactionId = substr($clientSentData[0], 4);
+        $this->assertEquals('00000009001001000001020001', $packetWithoutTransactionId);
+
+        $this->assertEquals([], $response->getData()); // is flatted
     }
 
     /**
@@ -216,6 +266,7 @@ class NonBlockingClientTest extends MockServerTestCase
             $response = $client->sendPacket(new ReadHoldingRegistersRequest(256, 1), $uri);
         });
     }
+
     /**
      * @runInSeparateProcess
      */

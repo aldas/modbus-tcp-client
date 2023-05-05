@@ -5,7 +5,10 @@ namespace ModbusTcpClient\Composer\Write\Coil;
 
 
 use ModbusTcpClient\Composer\Request;
+use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Exception\ModbusException;
+use ModbusTcpClient\Packet\ErrorResponse;
+use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsResponse;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ResponseFactory;
 
@@ -63,11 +66,18 @@ class WriteCoilRequest implements Request
 
     /**
      * @param string $binaryData
-     * @return mixed
+     * @return array<string, mixed>|ErrorResponse
      * @throws ModbusException
      */
-    public function parse(string $binaryData): mixed
+    public function parse(string $binaryData): array|ErrorResponse
     {
-        return ResponseFactory::parseResponse($binaryData);
+        $response = ResponseFactory::parseResponse($binaryData);
+        if ($response instanceof ErrorResponse) {
+            return $response;
+        }
+        if (!$response instanceof WriteMultipleCoilsResponse) {
+            throw new InvalidArgumentException("given data is not valid modbus response");
+        }
+        return []; // write requests do not return any data
     }
 }
