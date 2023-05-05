@@ -41,7 +41,7 @@ jobs:
       run: composer test-ci
 
     - name: Upload coverage to Codecov
-      if: matrix.php-version == '8.1' &&  matrix.operating-system == 'ubuntu-latest'
+      if: matrix.php-version == '8.2' &&  matrix.operating-system == 'ubuntu-latest'
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
