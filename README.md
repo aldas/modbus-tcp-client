@@ -80,6 +80,7 @@ Request multiple packets with higher level API:
 $address = 'tcp://127.0.0.1:5022';
 $unitID = 0; // also known as 'slave ID'
 $fc3 = ReadRegistersBuilder::newReadHoldingRegisters($address, $unitID)
+    ->unaddressableRanges([[100,110], [1512]])
     ->bit(256, 15, 'pump2_feedbackalarm_do')
     // will be split into 2 requests as 1 request can return only range of 124 registers max
     ->int16(657, 'battery3_voltage_wo')
