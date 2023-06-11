@@ -50,6 +50,54 @@ class ReadRegistersBuilderTest extends TestCase
         $this->assertCount(1, $readRequest2->getAddresses());
     }
 
+    public function unaddressableRangeProvider(): array
+    {
+        return [
+            'ok, empty range' => [[], [3], null],
+            'ok, split to 2 requests because range is between 110 and 111' => [[[90, 99], [105, 110]], [1, 2], null],
+            'nok, address fall directly to range beginning' => [[[112, 113]], [], 'address at 112 with size 1 overlaps unaddressable range'],
+            'nok, address fall directly to range center' => [[[99, 101]], [], 'address at 100 with size 1 overlaps unaddressable range'],
+            'nok, address fall directly to range end' => [[[99, 100]], [], 'address at 100 with size 1 overlaps unaddressable range'],
+            'nok, address fall directly to range' => [[[100]], [], 'address at 100 with size 1 overlaps unaddressable range'],
+            'nok, invalid range' => [[[1, 2, 3]], [], 'Range can only be created from array with 1 or 2 elements'],
+        ];
+    }
+
+    /**
+     * @dataProvider unaddressableRangeProvider
+     */
+    public function testBuildSplitRequestUnaddressableRange($unaddressable, $expectRequestCounts, $expectExceptionMessage)
+    {
+        if ($expectExceptionMessage !== null) {
+            $this->expectExceptionMessage($expectExceptionMessage);
+        }
+
+        $requests = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
+            ->unaddressableRanges($unaddressable)
+            ->uint16(100, 'gen1_fuel_rate_wo')
+            ->uint16(111, 'gen2_fuel_rate_wo')
+            ->uint16(112, 'gen3_fuel_rate_wo')
+            ->build();
+
+        $this->assertCount(count($expectRequestCounts), $requests);
+        foreach ($expectRequestCounts as $idx => $expectedCount) {
+            $readRequest = $requests[$idx];
+            $this->assertInstanceOf(ReadHoldingRegistersRequest::class, $readRequest->getRequest());
+            $this->assertCount($expectedCount, $readRequest->getAddresses());
+        }
+    }
+
+    public function testCanNotUnaddressableRangesWithoutUri()
+    {
+        $this->expectExceptionMessage("unaddressable ranges can not be added when uri is empty");
+        $this->expectException(InvalidArgumentException::class);
+
+        ReadRegistersBuilder::newReadHoldingRegisters()
+            ->unaddressableRanges([[111]])
+            ->uint16(100, 'gen1_fuel_rate_wo')
+            ->build();
+    }
+
     public function testBuildAllFromArray()
     {
         $requests = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
