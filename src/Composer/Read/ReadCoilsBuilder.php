@@ -5,6 +5,7 @@ namespace ModbusTcpClient\Composer\Read;
 
 use Closure;
 use ModbusTcpClient\Composer\AddressSplitter;
+use ModbusTcpClient\Composer\Range;
 use ModbusTcpClient\Composer\Read\Coil\ReadCoilAddress;
 use ModbusTcpClient\Composer\Read\Coil\ReadCoilAddressSplitter;
 use ModbusTcpClient\Composer\Request;
@@ -21,6 +22,11 @@ class ReadCoilsBuilder
      * @var array<array<string,ReadCoilAddress>>
      */
     private array $addresses = [];
+
+    /**
+     * @var array<Range[]>
+     */
+    private array $unaddressableRanges = [];
 
     /** @var string */
     private string $currentUri;
@@ -55,6 +61,38 @@ class ReadCoilsBuilder
         }
         $this->currentUri = $uri;
         $this->unitId = $unitId;
+        return $this;
+    }
+
+    /**
+     * unaddressableRanges are address ranges that Modbus server does not allow to be read. By settings unaddressable
+     * range(s) address splitter can avoid including these ranges into requests (if possible).
+     * Range min and max values are inclusive.
+     *
+     * Example: `[ [100,110], [256, 300], [512] ]` this will add 3 ranges.
+     *
+     *
+     * @param array<array<int>> $ranges
+     * @return $this
+     */
+    public function unaddressableRanges(array $ranges): ReadCoilsBuilder
+    {
+        if (count($ranges) == 0) {
+            return $this;
+        }
+        if (empty($this->currentUri)) {
+            throw new InvalidArgumentException('unaddressable ranges can not be added when uri is empty');
+        }
+
+        $unitIdPrefix = AddressSplitter::UNIT_ID_PREFIX;
+        $modbusPath = "{$this->currentUri}{$unitIdPrefix}{$this->unitId}";
+
+        $tmpRanges = [];
+        foreach ($ranges as $range) {
+            $tmpRanges[] = Range::fromIntArray($range);
+        }
+        $this->unaddressableRanges[$modbusPath] = $tmpRanges;
+
         return $this;
     }
 
@@ -132,7 +170,7 @@ class ReadCoilsBuilder
      */
     public function build(): array
     {
-        return $this->addressSplitter->split($this->addresses);
+        return $this->addressSplitter->splitWithUnaddressableRanges($this->addresses, $this->unaddressableRanges);
     }
 
     public function isNotEmpty(): bool

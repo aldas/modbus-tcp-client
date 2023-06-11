@@ -41,6 +41,53 @@ class ReadCoilsBuilderTest extends TestCase
         $this->assertCount(1, $readRequest2->getAddresses());
     }
 
+    public function unaddressableRangeProvider(): array
+    {
+        return [
+            'ok, empty range' => [[], [3], null],
+            'ok, split to 2 requests because range is between 110 and 111' => [[[90, 99], [105, 110]], [1, 2], null],
+            'nok, address fall directly to range beginning' => [[[112, 113]], [], 'address at 112 with size 1 overlaps unaddressable range'],
+            'nok, address fall directly to range center' => [[[99, 101]], [], 'address at 100 with size 1 overlaps unaddressable range'],
+            'nok, address fall directly to range end' => [[[99, 100]], [], 'address at 100 with size 1 overlaps unaddressable range'],
+            'nok, address fall directly to range' => [[[100]], [], 'address at 100 with size 1 overlaps unaddressable range'],
+            'nok, invalid range' => [[[1, 2, 3]], [], 'Range can only be created from array with 1 or 2 elements'],
+        ];
+    }
+
+    /**
+     * @dataProvider unaddressableRangeProvider
+     */
+    public function testBuildSplitRequestUnaddressableRange($unaddressable, $expectRequestCounts, $expectExceptionMessage)
+    {
+        if ($expectExceptionMessage !== null) {
+            $this->expectExceptionMessage($expectExceptionMessage);
+        }
+
+        $requests = ReadCoilsBuilder::newReadInputDiscretes('tcp://127.0.0.1:5022')
+            ->unaddressableRanges($unaddressable)
+            ->coil(100, 'me_dirchange1_status_di')
+            ->coil(111, 'me_dirchange2_status_di')
+            ->coil(112, 'me_dirchange3_status_di')
+            ->build();
+
+        $this->assertCount(count($expectRequestCounts), $requests);
+        foreach ($expectRequestCounts as $idx => $expectedCount) {
+            $readRequest = $requests[$idx];
+            $this->assertInstanceOf(ReadInputDiscretesRequest::class, $readRequest->getRequest());
+            $this->assertCount($expectedCount, $readRequest->getAddresses());
+        }
+    }
+
+    public function testCanNotUnaddressableRangesWithoutUri()
+    {
+        $this->expectExceptionMessage("unaddressable ranges can not be added when uri is empty");
+        $this->expectException(InvalidArgumentException::class);
+
+        ReadCoilsBuilder::newReadCoils()
+            ->unaddressableRanges([[111]])
+            ->coil(278, 'dirchange1_status')
+            ->build();
+    }
 
     public function testBuildReadInputDiscretes()
     {

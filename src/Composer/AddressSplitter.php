@@ -4,9 +4,15 @@ declare(strict_types=1);
 namespace ModbusTcpClient\Composer;
 
 use ModbusTcpClient\Composer\Read\Register\ByteReadRegisterAddress;
+use ModbusTcpClient\Exception\InvalidArgumentException;
 
 abstract class AddressSplitter
 {
+    /**
+     * @var Range[]
+     */
+    private array $currentUnaddressableRanges = [];
+
     const UNIT_ID_PREFIX = '||unitId=';
 
     const MAX_REGISTERS_PER_MODBUS_REQUEST = 124;
@@ -15,6 +21,17 @@ abstract class AddressSplitter
     protected function getMaxAddressesPerModbusRequest(): int
     {
         return static::MAX_REGISTERS_PER_MODBUS_REQUEST;
+    }
+
+    /**
+     * currentUnaddressableRanges contains temporary values during `split` function execution so we can access current
+     * modbus server ranges inside `shouldSplit` function.
+     *
+     * @return Range[]
+     */
+    protected function currentUnaddressableRanges(): array
+    {
+        return $this->currentUnaddressableRanges;
     }
 
     /**
@@ -33,8 +50,27 @@ abstract class AddressSplitter
      */
     public function split(array $addresses): array
     {
+        return $this->splitWithUnaddressableRanges($addresses, []);
+    }
+
+    /**
+     * @param array<array<string, Address>> $addresses
+     * @param array<array<Range>> $unaddressableRanges
+     * @return Request[]
+     */
+    public function splitWithUnaddressableRanges(array $addresses, array $unaddressableRanges): array
+    {
         $result = [];
+        // $modbusPath is uri(server+port)+unitid
         foreach ($addresses as $modbusPath => $addrs) {
+            $this->currentUnaddressableRanges = [];
+            foreach ($unaddressableRanges as $mbPath => $ranges) {
+                if ($modbusPath === $mbPath) {
+                    $this->currentUnaddressableRanges = $ranges;
+                    break;
+                }
+            }
+
             $pathParts = explode(static::UNIT_ID_PREFIX, $modbusPath);
             $uri = $pathParts[0];
             $unitId = (int)$pathParts[1];
@@ -105,7 +141,31 @@ abstract class AddressSplitter
 
     protected function shouldSplit(Address $currentAddress, int $currentQuantity, Address $previousAddress = null, int $previousQuantity = null): bool
     {
-        return $currentQuantity >= $this->getMaxAddressesPerModbusRequest();
+        if ($currentQuantity >= $this->getMaxAddressesPerModbusRequest()) {
+            return true;
+        }
+
+        $from = $currentAddress->getAddress();
+        $to = $from + $currentAddress->getSize() - 1;
+
+        // we use previous address end as range start because there could be cap between previous and current addresses which could
+        // contain also unaddressable addresses
+        $previousEnd = $previousAddress !== null ? $previousAddress->getAddress() + $previousAddress->getSize() : -1;
+        if (($from - $previousEnd) <= 1) { // directly adjacent or overlapping current does not need checking
+            $previousEnd = -1;
+        }
+
+        foreach ($this->currentUnaddressableRanges() as $range) {
+            if ($range->overlaps($from, $to)) {
+                // when currentAddress directly overlaps unaddressable range we have to error out as there is no way to request from that range
+                $size = $currentAddress->getSize();
+                throw new InvalidArgumentException("address at ${from} with size ${size} overlaps unaddressable range");
+            }
+            if ($previousEnd != -1 && $range->overlaps($previousEnd, $from - 1)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
