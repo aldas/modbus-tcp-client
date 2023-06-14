@@ -33,6 +33,7 @@ class BinaryStreamConnectionTest extends TestCase
             ->setConnectTimeoutSec(1.3)
             ->setReadTimeoutSec(1.4)
             ->setWriteTimeoutSec(1.5)
+            ->setDelayRead(100)
             ->setProtocol('udp')
             ->setHost('localhost')
             ->setPort(5022)
@@ -52,6 +53,7 @@ class BinaryStreamConnectionTest extends TestCase
         $this->assertEquals(1.3, $connection->getConnectTimeoutSec());
         $this->assertEquals(1.4, $connection->getReadTimeoutSec());
         $this->assertEquals(1.5, $connection->getWriteTimeoutSec());
+        $this->assertEquals(100, $connection->getDelayRead());
         $this->assertEquals('udp', $connection->getProtocol());
         $this->assertEquals('localhost', $connection->getHost());
         $this->assertEquals(5022, $connection->getPort());

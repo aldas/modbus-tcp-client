@@ -25,6 +25,9 @@ try {
     $sttyModes = implode(' ', [
         'cs8', // enable character size 8 bits
         '9600', // enable baud rate 9600
+        '-cstopb', // 1 stop bit
+        '-parenb', // parity none
+
         '-icanon', // disable enable special characters: erase, kill, werase, rprnt
         'min 0', // with -icanon, set N characters minimum for a completed read
         'ignbrk', // enable ignore break characters
@@ -59,6 +62,8 @@ try {
 
     do {
         // give sensor (5ms) some time to respond. SHT20 modbus minimal response time seems to be 20ms and more
+        // this is crucial for some serial devices and delay needs to be even longer (100ms) or you will experience
+        // read errors or invalid CRCs
         usleep(5000);
         $binaryData = fread($fd, 255);
     } while ($binaryData === '');

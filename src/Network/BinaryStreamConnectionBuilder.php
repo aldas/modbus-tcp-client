@@ -103,6 +103,17 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
     }
 
     /**
+     * @param int $delayReadMicroSec delay before read in done (microseconds). This is useful for (USB) Serial
+     * devices that need time between writing request to the device and reading the response from device.
+     * @return static
+     */
+    public function setDelayRead(int $delayReadMicroSec): static
+    {
+        $this->delayRead = $delayReadMicroSec;
+        return $this;
+    }
+
+    /**
      * @param string $protocol
      * @return static
      */

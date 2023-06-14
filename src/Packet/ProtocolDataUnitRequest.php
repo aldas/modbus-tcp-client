@@ -14,6 +14,7 @@ namespace ModbusTcpClient\Packet;
  */
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
+use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
 
 abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
@@ -68,7 +69,7 @@ abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
             );
         }
 
-        $transactionId = Types::parseUInt16($binaryString[0] . $binaryString[1]);
+        $transactionId = Types::parseUInt16($binaryString[0] . $binaryString[1], Endian::BIG_ENDIAN);
         $unitId = Types::parseByte($binaryString[6]);
         if ($functionCode !== ord($binaryString[7])) {
             return new ErrorResponse(
@@ -77,7 +78,7 @@ abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
                 1 // Illegal function
             );
         }
-        $pduLength = Types::parseUInt16($binaryString[4] . $binaryString[5]);
+        $pduLength = Types::parseUInt16($binaryString[4] . $binaryString[5], Endian::BIG_ENDIAN);
         if (($pduLength + 6) !== strlen($binaryString)) {
             return new ErrorResponse(
                 new ModbusApplicationHeader(2, $unitId, $transactionId),
@@ -86,7 +87,7 @@ abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
             );
         }
 
-        $startAddress = Types::parseUInt16($binaryString[8] . $binaryString[9]);
+        $startAddress = Types::parseUInt16($binaryString[8] . $binaryString[9], Endian::BIG_ENDIAN);
         try {
             return $createFunctor($transactionId, $unitId, $startAddress);
         } catch (\Exception $exception) {

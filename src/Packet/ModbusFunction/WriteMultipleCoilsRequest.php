@@ -9,6 +9,7 @@ use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
+use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
 
 /**
@@ -100,7 +101,7 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest implements Modbu
             14,
             ModbusPacket::WRITE_MULTIPLE_COILS,
             function (int $transactionId, int $unitId, int $startAddress) use ($binaryString) {
-                $quantity = Types::parseUInt16($binaryString[10] . $binaryString[11]);
+                $quantity = Types::parseUInt16($binaryString[10] . $binaryString[11], Endian::BIG_ENDIAN);
                 $byteCount = Types::parseByte($binaryString[12]);
                 $coils = Types::binaryStringToBooleanArray(substr($binaryString, 13, $byteCount));
                 if ($quantity > count($coils)) {

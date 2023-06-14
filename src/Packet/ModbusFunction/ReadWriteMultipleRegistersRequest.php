@@ -10,6 +10,7 @@ use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
+use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Registers;
 use ModbusTcpClient\Utils\Types;
 
@@ -162,9 +163,9 @@ class ReadWriteMultipleRegistersRequest extends ProtocolDataUnitRequest implemen
             19,
             ModbusPacket::READ_WRITE_MULTIPLE_REGISTERS,
             function (int $transactionId, int $unitId, int $startAddress) use ($binaryString) {
-                $readQuantity = Types::parseUInt16($binaryString[10] . $binaryString[11]);
-                $writeStartAddress = Types::parseUInt16($binaryString[12] . $binaryString[13]);
-                $writeQuantity = Types::parseUInt16($binaryString[14] . $binaryString[15]);
+                $readQuantity = Types::parseUInt16($binaryString[10] . $binaryString[11], Endian::BIG_ENDIAN);
+                $writeStartAddress = Types::parseUInt16($binaryString[12] . $binaryString[13], Endian::BIG_ENDIAN);
+                $writeQuantity = Types::parseUInt16($binaryString[14] . $binaryString[15], Endian::BIG_ENDIAN);
                 $byteCount = Types::parseByte($binaryString[16]);
                 $writeRegisters = str_split(substr($binaryString, 17, $byteCount), 2);
                 if ($writeQuantity !== count($writeRegisters)) {

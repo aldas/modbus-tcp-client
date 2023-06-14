@@ -3,6 +3,7 @@
 namespace Tests\unit\Packet;
 
 
+use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Exception\ParseException;
 use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusApplicationHeader;
@@ -65,6 +66,25 @@ class RtuConverterTest extends TestCase
 
         $tcpPacket = new ReadHoldingRegistersResponse("\x02\xCD\x6B", 3, $packet->getHeader()->getTransactionId());
         $this->assertEquals($packet, $tcpPacket);
+    }
+
+    public function testPacketfromRtuOrThrow()
+    {
+        /** @var ReadHoldingRegistersRequest $packet */
+        $packet = RtuConverter::fromRtuOrThrow("\x03\x03\x02\xCD\x6B\xD4\xFB");
+
+        $this->assertInstanceOf(ReadHoldingRegistersResponse::class, $packet);
+
+        $tcpPacket = new ReadHoldingRegistersResponse("\x02\xCD\x6B", 3, $packet->getHeader()->getTransactionId());
+        $this->assertEquals($packet, $tcpPacket);
+    }
+
+    public function testExceptionPacketfromRtuOrThrow()
+    {
+        $this->expectExceptionMessage('Illegal data value');
+        $this->expectException(ModbusException::class);
+
+        RtuConverter::fromRtuOrThrow("\x00\x81\x03\x51\x91");
     }
 
 }

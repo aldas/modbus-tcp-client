@@ -9,6 +9,7 @@ use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Packet\Word;
+use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
 
 
@@ -96,7 +97,7 @@ class WriteSingleRegisterRequest extends ProtocolDataUnitRequest implements Modb
             12,
             ModbusPacket::WRITE_SINGLE_REGISTER,
             function (int $transactionId, int $unitId, int $startAddress) use ($binaryString) {
-                $value = Types::parseInt16($binaryString[10] . $binaryString[11]);
+                $value = Types::parseInt16($binaryString[10] . $binaryString[11], Endian::BIG_ENDIAN);
                 return new self($startAddress, $value, $unitId, $transactionId);
             }
         );

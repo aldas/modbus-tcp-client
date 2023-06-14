@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ModbusTcpClient\Packet;
 
 
+use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Exception\ParseException;
 use ModbusTcpClient\Utils\Types;
 
@@ -71,6 +72,24 @@ final class RtuConverter
             . $data;
 
         return ResponseFactory::parseResponse($packet);
+    }
+
+    /**
+     * fromRtuOrThrow tries to parse given binary data to modbus RTU packet or fails. In case data is modbus error exception is
+     * thrown with that modbus error information.
+     *
+     * @param string $binaryData rtu binary response
+     * @param array<string, bool> $options option to use during conversion
+     * @return ModbusResponse
+     * @throws \Exception
+     */
+    public static function fromRtuOrThrow(string $binaryData, array $options = []): ModbusResponse
+    {
+        $response = RtuConverter::fromRtu($binaryData, $options);
+        if ($response instanceof ErrorResponse) {
+            throw new ModbusException($response->getErrorMessage(), $response->getErrorCode());
+        }
+        return $response;
     }
 
     private static function crc16(string $string): string
