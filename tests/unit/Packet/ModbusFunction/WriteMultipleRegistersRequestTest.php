@@ -6,11 +6,22 @@ use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersRequest;
 use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
 use PHPUnit\Framework\TestCase;
 
 class WriteMultipleRegistersRequestTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        Endian::$defaultEndian = Endian::LITTLE_ENDIAN; // packets are big endian. setting to default to little should not change output
+    }
+
+    protected function tearDown(): void
+    {
+        Endian::$defaultEndian = Endian::BIG_ENDIAN_LOW_WORD_FIRST;
+    }
+
     public function testPacketToString()
     {
         // Field:                   Size in packet
@@ -27,7 +38,11 @@ class WriteMultipleRegistersRequestTest extends TestCase
         // registers: 00c8 0082 8701 (3 registers = 6 bytes)
         $this->assertEquals(
             "\x01\x38\x00\x00\x00\x0d\x11\x10\x04\x10\x00\x03\x06\x00\xC8\x00\x82\x87\x01",
-            (new WriteMultipleRegistersRequest(0x0410, [Types::toByte(200), Types::toInt16(130), Types::toUint16(34561)], 0x11, 0x0138))->__toString()
+            (new WriteMultipleRegistersRequest(0x0410, [
+                Types::toByte(200),
+                Types::toInt16(130, Endian::BIG_ENDIAN_LOW_WORD_FIRST),
+                Types::toUint16(34561, Endian::BIG_ENDIAN_LOW_WORD_FIRST)
+            ], 0x11, 0x0138))->__toString()
         );
     }
 
@@ -57,7 +72,11 @@ class WriteMultipleRegistersRequestTest extends TestCase
     public function testParse()
     {
         $packet = WriteMultipleRegistersRequest::parse("\x01\x38\x00\x00\x00\x0d\x11\x10\x04\x10\x00\x03\x06\x00\xC8\x00\x82\x87\x01");
-        $this->assertEquals($packet, (new WriteMultipleRegistersRequest(0x0410, [Types::toByte(200), Types::toInt16(130), Types::toUint16(34561)], 0x11, 0x0138))->__toString());
+        $this->assertEquals($packet, (new WriteMultipleRegistersRequest(0x0410, [
+            Types::toByte(200),
+            Types::toInt16(130, Endian::BIG_ENDIAN_LOW_WORD_FIRST),
+            Types::toUint16(34561, Endian::BIG_ENDIAN_LOW_WORD_FIRST)
+        ], 0x11, 0x0138))->__toString());
         $this->assertEquals(0x0410, $packet->getStartAddress());
         $this->assertEquals(["\x00\xC8", "\x00\x82", "\x87\x01"], $packet->getRegisters());
 

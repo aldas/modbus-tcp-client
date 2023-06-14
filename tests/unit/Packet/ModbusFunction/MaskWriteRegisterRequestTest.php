@@ -7,11 +7,22 @@ use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusFunction\MaskWriteRegisterRequest;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\Word;
+use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
 use PHPUnit\Framework\TestCase;
 
 class MaskWriteRegisterRequestTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        Endian::$defaultEndian = Endian::LITTLE_ENDIAN; // packets are big endian. setting to default to little should not change output
+    }
+
+    protected function tearDown(): void
+    {
+        Endian::$defaultEndian = Endian::BIG_ENDIAN_LOW_WORD_FIRST;
+    }
+
     public function testOnPacketToString()
     {
         // Field:                    Size in packet

@@ -6,6 +6,7 @@ namespace ModbusTcpClient\Packet;
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Exception\ModbusException;
+use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
 
 /**
@@ -100,8 +101,8 @@ class ModbusApplicationHeader
             throw new ModbusException('Data length too short to be valid header!');
         }
 
-        $transactionId = Types::parseUInt16($binaryString[0] . $binaryString[1]);
-        $length = Types::parseUInt16($binaryString[4] . $binaryString[5]);
+        $transactionId = Types::parseUInt16($binaryString[0] . $binaryString[1], Endian::BIG_ENDIAN);
+        $length = Types::parseUInt16($binaryString[4] . $binaryString[5], Endian::BIG_ENDIAN);
         $unitId = Types::parseByte($binaryString[6]);
 
         return new ModbusApplicationHeader(

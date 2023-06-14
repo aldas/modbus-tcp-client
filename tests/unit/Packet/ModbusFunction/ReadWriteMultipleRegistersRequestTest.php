@@ -6,11 +6,22 @@ use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadWriteMultipleRegistersRequest;
 use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
 use PHPUnit\Framework\TestCase;
 
 class ReadWriteMultipleRegistersRequestTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        Endian::$defaultEndian = Endian::LITTLE_ENDIAN; // packets are big endian. setting to default to little should not change output
+    }
+
+    protected function tearDown(): void
+    {
+        Endian::$defaultEndian = Endian::BIG_ENDIAN_LOW_WORD_FIRST;
+    }
+
     public function testOnPacketToString()
     {
         // Field:                    Size in packet
@@ -32,7 +43,7 @@ class ReadWriteMultipleRegistersRequestTest extends TestCase
                 0x0410,
                 1,
                 0x0112,
-                [Types::toByte(200), Types::toInt16(130)],
+                [Types::toByte(200), Types::toInt16(130, Endian::BIG_ENDIAN_LOW_WORD_FIRST)],
                 0x11,
                 0x0138
             ))->__toString()
@@ -176,7 +187,7 @@ class ReadWriteMultipleRegistersRequestTest extends TestCase
             0x0410,
             1,
             0x0112,
-            [Types::toByte(200), Types::toInt16(130)],
+            [Types::toByte(200), Types::toInt16(130, Endian::BIG_ENDIAN_LOW_WORD_FIRST)],
             0x11,
             0x0138
         ))->__toString());

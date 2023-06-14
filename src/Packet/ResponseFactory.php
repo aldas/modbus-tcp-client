@@ -16,6 +16,7 @@ use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleCoilResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleRegisterResponse;
+use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
 
 class ResponseFactory
@@ -40,7 +41,7 @@ class ResponseFactory
             return new ErrorResponse(ModbusApplicationHeader::parse($binaryString), $functionCode, $exceptionCode);
         }
 
-        $transactionId = Types::parseUInt16($binaryString[0] . $binaryString[1]);
+        $transactionId = Types::parseUInt16($binaryString[0] . $binaryString[1], Endian::BIG_ENDIAN);
         $unitId = Types::parseByte($binaryString[6]);
 
         $rawData = substr($binaryString, 8);

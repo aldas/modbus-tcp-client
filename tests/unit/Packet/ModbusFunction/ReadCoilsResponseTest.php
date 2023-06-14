@@ -7,10 +7,21 @@ use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Exception\ParseException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Utils\Endian;
 use PHPUnit\Framework\TestCase;
 
 class ReadCoilsResponseTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        Endian::$defaultEndian = Endian::LITTLE_ENDIAN; // packets are big endian. setting to default to little should not change output
+    }
+
+    protected function tearDown(): void
+    {
+        Endian::$defaultEndian = Endian::BIG_ENDIAN_LOW_WORD_FIRST;
+    }
+
     public function testPacketToString()
     {
         $this->assertEquals(
@@ -18,6 +29,7 @@ class ReadCoilsResponseTest extends TestCase
             (new ReadCoilsResponse("\x02\xCD\x6B", 3, 33152))->__toString()
         );
     }
+
     public function testToHex()
     {
         $this->assertEquals(

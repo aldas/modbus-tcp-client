@@ -5,10 +5,21 @@ namespace Tests\Packet\ModbusFunction;
 
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleRegisterResponse;
 use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Utils\Endian;
 use PHPUnit\Framework\TestCase;
 
 class WriteSingleRegisterResponseTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        Endian::$defaultEndian = Endian::LITTLE_ENDIAN; // packets are big endian. setting to default to little should not change output
+    }
+
+    protected function tearDown(): void
+    {
+        Endian::$defaultEndian = Endian::BIG_ENDIAN_LOW_WORD_FIRST;
+    }
+
     public function testPacketToString()
     {
         $this->assertEquals(
@@ -22,7 +33,7 @@ class WriteSingleRegisterResponseTest extends TestCase
         $packet = new WriteSingleRegisterResponse("\x00\x02\xFF\x00", 3, 33152);
         $this->assertEquals(ModbusPacket::WRITE_SINGLE_REGISTER, $packet->getFunctionCode());
 
-        $this->assertEquals(0xFF00, $packet->getWord()->getUInt16());
+        $this->assertEquals(0xFF00, $packet->getWord()->getUInt16(Endian::BIG_ENDIAN_LOW_WORD_FIRST));
 
         $header = $packet->getHeader();
         $this->assertEquals(33152, $header->getTransactionId());
