@@ -65,6 +65,89 @@ For non-global cases see API methods argument list if method support using custo
 
 See [Endian.php](src/Utils/Endian.php) for additional info and [Types.php](src/Utils/Types.php) for supported data types.
 
+
+## Data types
+
+Modbus is binary protocol which revolves about addresses of Registers/Word (16bit, 2 byte of data) and Coils (1 bit of data).
+Coils are booleans but Register/Word or multiple Registers can hold different data types. Following is ways to access different
+data types from Registers:
+
+Most of the for data types have optional arguments for providing Endian type. By default data is parsed as being Big Endian Low Word first endian.
+
+Exaple: getting uint32 value as Little Endian Low Word First
+```php
+$dword->getUInt32(Endian::LITTLE_ENDIAN | Endian::LOW_WORD_FIRST);
+```
+
+### 1bit - 16bit data types
+
+1-16bit data types are hold by `Word` class which hold 2 bytes of data.
+```php
+$address = 100;
+$word = $response->getWordAt($address);
+```
+
+Following methods exists to get different types out of single `Word` instance:
+* `boolean` - 1bit, true/false, `$word->isBitSet(11)`
+* `byte` - 8bit, 1 byte, range 0 to 255
+  * first byte of Word (0) `$word->getHighByteAsInt()`
+  * last byte of Word (1) `$word->getLowByteAsInt()`
+* `uint16` - 16bit, 2 byte, range 0 to 65535 `$word->getUInt16()`
+* `int16` - 16bit, 2 byte, range -32768 to 32767 `$word->getInt16()`
+
+and following additional methods:
+* `$word->getBytes()` return Words as array of 2 integers (0-255)
+
+
+### 32bit data types
+
+17-32bit data types are hold by `DoubleWord` class which hold 4 bytes of data.
+```php
+$address = 100;
+$dword = $response->getDoubleWordAt($address);
+```
+
+Following methods exists to get different types out of single `DoubleWord` instance:
+* `uint32` - 32bit, 4 bytes, range 0 to 4294967295, `$dword->getUInt32()`
+* `int32` - 64bit, 8 bytes, range -2147483648 to 2147483647, `$dword->getInt32()`
+* `float` - 64bit, 8 bytes, range -3.4e+38 to 3.4e+38, `$dword->getFloat()`
+
+and following additional methods:
+* `$dword->getBytes()` return DoubleWord as array of 4 integers (0-255)
+* `$dword->getHighBytesAsWord()` returns first 2 bytes as `Word`
+* `$dword->getLowBytesAsWord()` returns last 2 bytes as `Word` 
+
+
+### 64bit data types
+
+64bit data types are hold by `QuadWord` class which hold 8 bytes of data.
+NB: 64-bit PHP supports only up to 63-bit (signed) integers.
+```php
+$address = 100;
+$qword = $response->getQuadWordAt($address);
+```
+
+Following methods exists to get different types out of single `QuadWord` instance:
+* `uint32` - 64bit, 8 bytes, range 0 to 9223372036854775807, `$dword->getUInt64()`
+* `int32` - 64bit, 8 bytes, range -9223372036854775808 to 9223372036854775807, `$dword->getInt64()`
+* `double` - 64bit, 8 bytes, range 2.2250738585072e-308 to 1.7976931348623e+308, `$dword->getDouble()`
+
+and following additional methods:
+* `$qword->getBytes()` return `QuadWord` as array of 8 integers (0-255)
+* `$qword->getHighBytesAsDoubleWord()` returns first 4 bytes as `DoubleWord`
+* `$qword->getLowBytesAsDoubleWord()` returns last 4 bytes as `DoubleWord`
+
+
+### Strings
+
+ASCII (8bit character) can be extracted from response as utf-8 string
+```php
+$address = 20;
+$length = 10;
+$string = $response->getAsciiStringAt($address, $length);
+```
+
+
 ## Example of Modbus TCP (fc3 - read holding registers)
 
 Some of the Modbus function examples are in [examples/](examples) folder
