@@ -5,6 +5,7 @@ namespace ModbusTcpClient\Packet\ModbusFunction;
 
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\StartAddressResponse;
+use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
 
 /**
@@ -30,7 +31,7 @@ class WriteMultipleRegistersResponse extends StartAddressResponse
     public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {
         parent::__construct($rawData, $unitId, $transactionId);
-        $this->registersCount = Types::parseUInt16(substr($rawData, 2, 2));
+        $this->registersCount = Types::parseUInt16(substr($rawData, 2, 2), Endian::BIG_ENDIAN);
     }
 
     public function getFunctionCode(): int

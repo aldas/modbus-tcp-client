@@ -6,14 +6,29 @@ use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
 use ModbusTcpClient\Packet\ResponseFactory;
+use ModbusTcpClient\Packet\RtuConverter;
 use ModbusTcpClient\Utils\Endian;
+use ModbusTcpClient\Utils\Packet;
 
-$returnJson = filter_var($_GET['json'] ?? false, FILTER_VALIDATE_BOOLEAN);
+// To allow Nginx/Apache to read that device add following udev rule
+// echo 'KERNEL=="ttyUSB0", GROUP="www-data", MODE="0660"' | sudo tee /etc/udev/rules.d/60-ttyusb-acl.rules
+// sudo udevadm control --reload-rules && sudo udevadm trigger
+$deviceURI = '/dev/ttyUSB0'; // do not make this changeable from WEB. This could be serious security risk.
+$isSerialDevice = false; // change to true to enable reading serial devices. this will disable ip/port logic and uses RTU
+if (getenv('MODBUS_SERIAL_ENABLED')) { // can be set from Nginx/Apache fast-cgi conf
+    $isSerialDevice = filter_var(getenv('MODBUS_SERIAL_ENABLED'), FILTER_VALIDATE_BOOLEAN);
+    if ($isSerialDevice && getenv('MODBUS_SERIAL_DEVICE')) {
+        $deviceURI = getenv('MODBUS_SERIAL_DEVICE');
+    }
+}
+if ($isSerialDevice && stripos(PHP_OS, 'WIN') === 0) {
+    echo 'Serial usb example can not be run on Windows!' . PHP_EOL;
+    exit(0);
+}
 
 // if you want to let others specify their own ip/ports for querying data create file named '.allow-change' in this directory
 // NB: this is a potential security risk!!!
-$canChangeIpPort = file_exists('.allow-change');
-
+$canChangeIpPort = !$isSerialDevice && file_exists('.allow-change');
 $ip = '192.168.100.1';
 $port = 502;
 if ($canChangeIpPort) {
@@ -21,6 +36,8 @@ if ($canChangeIpPort) {
     $port = (int)($_GET['port'] ?? $port);
 }
 
+$returnJson = filter_var($_GET['json'] ?? false, FILTER_VALIDATE_BOOLEAN);
+$isRTU = $isSerialDevice || filter_var($_GET['rtu'] ?? false, FILTER_VALIDATE_BOOLEAN);
 $fc = (int)($_GET['fc'] ?? 3);
 $unitId = (int)($_GET['unitid'] ?? 0);
 $startAddress = (int)($_GET['address'] ?? 256);
@@ -29,16 +46,33 @@ $endianess = (int)($_GET['endianess'] ?? Endian::BIG_ENDIAN_LOW_WORD_FIRST);
 Endian::$defaultEndian = $endianess;
 
 $log = [];
-$log[] = "Using: function code: {$fc}, ip: {$ip}, port: {$port}, address: {$startAddress}, quantity: {$quantity}, endianess: {$endianess}";
 
-$connection = BinaryStreamConnection::getBuilder()
-    ->setPort($port)
-    ->setHost($ip)
+$builder = BinaryStreamConnection::getBuilder()
     ->setConnectTimeoutSec(1.5) // timeout when establishing connection to the server
-    ->setWriteTimeoutSec(0.5) // timeout when writing/sending packet to the server
-    ->setReadTimeoutSec(1.0) // timeout when waiting response from server
-    ->build();
+    ->setWriteTimeoutSec(1.0) // timeout when writing/sending packet to the server
+    ->setReadTimeoutSec(1.0); // timeout when waiting response from server
 
+$protocolType = "Modbus TCP";
+if ($isRTU) {
+    $protocolType = "Modbus RTU";
+    $builder->setIsCompleteCallback(static function ($binaryData, $streamIndex): bool {
+        return Packet::isCompleteLengthRTU($binaryData);
+    });
+}
+
+if ($isSerialDevice) {
+    $log[] = "Using: {$protocolType} function code: {$fc}, device: {$deviceURI}, address: {$startAddress}, quantity: {$quantity}, endianess: {$endianess}";
+    $builder->setUri($deviceURI)
+        ->setProtocol('serial')
+        // delay this is crucial for some serial devices and delay needs to be long as 100ms (depending on the quantity)
+        // or you will experience read errors ("stream_select interrupted") or invalid CRCs
+        ->setDelayRead(100_000); // 100 milliseconds
+} else {
+    $log[] = "Using: {$protocolType} function code: {$fc}, ip: {$ip}, port: {$port}, address: {$startAddress}, quantity: {$quantity}, endianess: {$endianess}";
+    $builder->setPort($port)->setHost($ip);
+}
+
+$connection = $builder->build();
 
 if ($fc === 4) {
     $packet = new ReadInputRegistersRequest($startAddress, $quantity, $unitId);
@@ -46,7 +80,12 @@ if ($fc === 4) {
     $fc = 3;
     $packet = new ReadHoldingRegistersRequest($startAddress, $quantity, $unitId);
 }
-$log[] = 'Packet to be sent (in hex): ' . $packet->toHex();
+if ($isRTU) {
+    $packet = RtuConverter::toRtu($packet);
+    $log[] = 'Modbus RTU Packet to be sent (in hex): ' . unpack('H*', $packet)[1];
+} else {
+    $log[] = 'Modbus TCP Packet to be sent (in hex): ' . $packet->toHex();
+}
 
 $startTime = round(microtime(true) * 1000, 3);
 $result = [];
@@ -56,7 +95,12 @@ try {
     $log[] = 'Binary received (in hex):   ' . unpack('H*', $binaryData)[1];
 
     /** @var $response ReadHoldingRegistersResponse */
-    $response = ResponseFactory::parseResponseOrThrow($binaryData)->withStartAddress($startAddress);
+    if ($isRTU) {
+        $response = RtuConverter::fromRtuOrThrow($binaryData);
+    } else {
+        $response = ResponseFactory::parseResponseOrThrow($binaryData);
+    }
+    $response = $response->withStartAddress($startAddress);
 
     foreach ($response as $address => $word) {
         $doubleWord = isset($response[$address + 1]) ? $response->getDoubleWordAt($address) : null;
@@ -127,22 +171,62 @@ if ($returnJson) {
 
 ?>
 
-<h2>Example Modbus TCP FC3/FC4 request</h2>
+<h2>Example Modbus TCP/RTU FC3/FC4 request</h2>
 <form>
-    Function code: <select name="fc">
-        <option value="3" <?php if ($fc === 3) { echo 'selected'; } ?>>Read Holding Registers (FC=03)</option>
-        <option value="4" <?php if ($fc === 4) { echo 'selected'; } ?>>Read Input Registers (FC=04)</option>
+    Modbus TCP or RTU: <select name="rtu"<?php if ($isSerialDevice) {
+        echo ' disabled';
+    } ?>>
+        <option value="0" <?php if (!$isRTU) {
+            echo 'selected';
+        } ?>>Modbus TCP
+        </option>
+        <option value="1" <?php if ($isRTU) {
+            echo 'selected';
+        } ?>>Modbus RTU
+        </option>
     </select><br>
-    IP: <input type="text" name="ip" value="<?php echo $ip; ?>" <?php if (!$canChangeIpPort) { echo 'disabled'; } ?>><br>
-    Port: <input type="number" name="port" value="<?php echo $port; ?>"><br>
-    UnitID (SlaveID): <input type="number" name="unitid" value="<?php echo $unitId; ?>"><br>
-    Address: <input type="number" name="address" value="<?php echo $startAddress; ?>"> (NB: does your modbus server use `0` based addressing or `1` based?)<br>
-    Quantity: <input type="number" name="quantity" value="<?php echo $quantity; ?>"><br>
+    Function code: <select name="fc">
+        <option value="3" <?php if ($fc === 3) {
+            echo 'selected';
+        } ?>>Read Holding Registers (FC=03)
+        </option>
+        <option value="4" <?php if ($fc === 4) {
+            echo 'selected';
+        } ?>>Read Input Registers (FC=04)
+        </option>
+    </select><br>
+    <?php if ($isSerialDevice) {
+        echo "Device: {$deviceURI}<br>";
+    } else {
+        echo "IP: <input type=\"text\" name=\"ip\" value=\"{$ip}\"";
+        if (!$canChangeIpPort) {
+            echo ' disabled';
+        }
+        echo "><br>";
+        echo "Port: <input type=\"number\" name=\"port\" value=\"{$port}\"><br>";
+    } ?>
+    UnitID (SlaveID): <input type="number" min="0" max="247" name="unitid" value="<?php echo $unitId; ?>"><br>
+    Address: <input type="number" name="address" value="<?php echo $startAddress; ?>"> (NB: does your modbus server
+    documentation uses
+    `0` based addressing or `1` based?)<br>
+    Quantity: <input type="number" min="1" max="124" name="quantity" value="<?php echo $quantity; ?>"><br>
     Endianess: <select name="endianess">
-        <option value="1" <?php if ($endianess === 1) { echo 'selected'; } ?>>BIG_ENDIAN</option>
-        <option value="5" <?php if ($endianess === 5) { echo 'selected'; } ?>>BIG_ENDIAN_LOW_WORD_FIRST</option>
-        <option value="2" <?php if ($endianess === 2) { echo 'selected'; } ?>>LITTLE_ENDIAN</option>
-        <option value="6" <?php if ($endianess === 6) { echo 'selected'; } ?>>LITTLE_ENDIAN_LOW_WORD_FIRST</option>
+        <option value="1" <?php if ($endianess === 1) {
+            echo 'selected';
+        } ?>>BIG_ENDIAN
+        </option>
+        <option value="5" <?php if ($endianess === 5) {
+            echo 'selected';
+        } ?>>BIG_ENDIAN_LOW_WORD_FIRST
+        </option>
+        <option value="2" <?php if ($endianess === 2) {
+            echo 'selected';
+        } ?>>LITTLE_ENDIAN
+        </option>
+        <option value="6" <?php if ($endianess === 6) {
+            echo 'selected';
+        } ?>>LITTLE_ENDIAN_LOW_WORD_FIRST
+        </option>
     </select><br>
     <button type="submit">Send</button>
 </form>

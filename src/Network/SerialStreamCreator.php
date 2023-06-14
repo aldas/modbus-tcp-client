@@ -14,6 +14,9 @@ class SerialStreamCreator implements StreamCreator
     const DEFAULT_STTY_MODES = [
         'cs8', // set character size 8 bits
         '9600', // set baud rate 9600
+        '-cstopb', // 1 stop bit
+        '-parenb', // parity none
+
         '-icanon', // disable enable special characters: erase, kill, werase, rprnt
         'min 0', // with -icanon, set N characters minimum for a completed read
         'ignbrk', // enable ignore break characters

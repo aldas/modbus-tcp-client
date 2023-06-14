@@ -38,6 +38,12 @@ abstract class BinaryStreamConnectionProperties
     protected float $writeTimeoutSec = 1;
 
     /**
+     * @var int delay before read in done (microseconds). This is useful for (USB) Serial devices that need time between
+     * writing the request to the device and reading the response from device.
+     */
+    protected int $delayRead = 0;
+
+    /**
      * @var string|null uri to connect to. Has higher priority than $protocol/$host/$port. Example: 'tcp://192.168.0.1:502'
      */
     protected ?string $uri = null;
@@ -163,6 +169,14 @@ abstract class BinaryStreamConnectionProperties
     public function getCreateStreamCallback(): callable
     {
         return $this->createStreamCallback;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDelayRead(): int
+    {
+        return $this->delayRead;
     }
 
     /**

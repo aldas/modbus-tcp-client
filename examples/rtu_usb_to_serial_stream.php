@@ -15,6 +15,9 @@ $connection = BinaryStreamConnection::getBuilder()
     ->setIsCompleteCallback(static function ($binaryData, $streamIndex): bool {
         return Packet::isCompleteLengthRTU($binaryData);
     })
+    // delay this is crucial for some serial devices and delay needs to be long as 100ms (depending on the quantity)
+    // or you will experience read errors ("stream_select interrupted") or invalid CRCs
+    ->setDelayRead(100_000) // 100 milliseconds, serial devices may need delay between sending and received
     ->setLogger(new EchoLogger())
     ->build();
 

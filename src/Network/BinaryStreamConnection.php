@@ -25,6 +25,7 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
         $this->connectTimeoutSec = $builder->getConnectTimeoutSec();
         $this->readTimeoutSec = $builder->getReadTimeoutSec();
         $this->writeTimeoutSec = $builder->getWriteTimeoutSec();
+        $this->delayRead = $builder->getDelayRead();
         $this->protocol = $builder->getProtocol();
         $this->logger = $builder->getLogger();
         $this->createStreamCallback = $builder->getCreateStreamCallback();
@@ -57,6 +58,12 @@ class BinaryStreamConnection extends BinaryStreamConnectionProperties
 
     public function receive(): string
     {
+        $delay = $this->getDelayRead();
+        if ($delay > 0) {
+            // this is useful slow serial devices that need delay between writing request to the serial device
+            // and receiving response from device.
+            usleep($delay);
+        }
         $result = $this->receiveFrom([$this->stream], $this->getReadTimeoutSec(), $this->getLogger());
         return reset($result);
     }

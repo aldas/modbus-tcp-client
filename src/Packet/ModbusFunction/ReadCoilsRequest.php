@@ -9,6 +9,7 @@ use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
+use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
 
 /**
@@ -87,7 +88,7 @@ class ReadCoilsRequest extends ProtocolDataUnitRequest implements ModbusRequest
             12,
             ModbusPacket::READ_COILS,
             function (int $transactionId, int $unitId, int $startAddress) use ($binaryString) {
-                $quantity = Types::parseUInt16($binaryString[10] . $binaryString[11]);
+                $quantity = Types::parseUInt16($binaryString[10] . $binaryString[11], Endian::BIG_ENDIAN);
                 return new self($startAddress, $quantity, $unitId, $transactionId);
             }
         );

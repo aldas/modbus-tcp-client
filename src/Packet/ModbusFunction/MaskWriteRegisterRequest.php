@@ -10,6 +10,7 @@ use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusRequest;
 use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Packet\Word;
+use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
 
 /**
@@ -121,8 +122,8 @@ class MaskWriteRegisterRequest extends ProtocolDataUnitRequest implements Modbus
             14,
             ModbusPacket::MASK_WRITE_REGISTER,
             function (int $transactionId, int $unitId, int $startAddress) use ($binaryString) {
-                $andMask = Types::parseInt16($binaryString[10] . $binaryString[11]);
-                $orMask = Types::parseInt16($binaryString[12] . $binaryString[13]);
+                $andMask = Types::parseInt16($binaryString[10] . $binaryString[11], Endian::BIG_ENDIAN);
+                $orMask = Types::parseInt16($binaryString[12] . $binaryString[13], Endian::BIG_ENDIAN);
                 return new self($startAddress, $andMask, $orMask, $unitId, $transactionId);
             }
         );
