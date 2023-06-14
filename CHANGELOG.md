@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [3.4.0] - 2023-06-14
+
+* Endian fixes when `Endian::$defaultEndian` is set before request/response is created  [#145](https://github.com/aldas/modbus-tcp-client/pull/145)
+* Add ability to delay receiving response after request is sent (useful for Serial devices)  [#144](https://github.com/aldas/modbus-tcp-client/pull/144)
+* Improved `exmaples/index.php` with ability to read serial devices  [#144](https://github.com/aldas/modbus-tcp-client/pull/144)
+
 # [3.3.0] - 2023-06-11
 
 * AddressSplitter can avoid unaddressable ranges when splitting read requests [#141](https://github.com/aldas/modbus-tcp-client/pull/141)
