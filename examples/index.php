@@ -15,7 +15,11 @@ use ModbusTcpClient\Utils\Packet;
 // sudo udevadm control --reload-rules && sudo udevadm trigger
 $deviceURI = '/dev/ttyUSB0'; // do not make this changeable from WEB. This could be serious security risk.
 $isSerialDevice = false; // change to true to enable reading serial devices. this will disable ip/port logic and uses RTU
-if (getenv('MODBUS_SERIAL_ENABLED')) { // can be set from Nginx/Apache fast-cgi conf
+if (getenv('MODBUS_SERIAL_ENABLED')) {
+    // can be set from Nginx/Apache fast-cgi conf
+    // for Nginx add these lines where you PHP is configured:
+    //     fastcgi_param MODBUS_SERIAL_ENABLED true;
+    //     fastcgi_param MODBUS_SERIAL_DEVICE /dev/ttyUSB0;
     $isSerialDevice = filter_var(getenv('MODBUS_SERIAL_ENABLED'), FILTER_VALIDATE_BOOLEAN);
     if ($isSerialDevice && getenv('MODBUS_SERIAL_DEVICE')) {
         $deviceURI = getenv('MODBUS_SERIAL_DEVICE');

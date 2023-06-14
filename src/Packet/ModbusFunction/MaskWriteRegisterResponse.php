@@ -80,7 +80,7 @@ class MaskWriteRegisterResponse extends StartAddressResponse
      */
     public function getANDMaskAsWord(): Word
     {
-        return new Word(Types::toInt16($this->andMask));
+        return new Word(Types::toInt16($this->andMask, Endian::BIG_ENDIAN));
     }
 
     /**
@@ -88,6 +88,6 @@ class MaskWriteRegisterResponse extends StartAddressResponse
      */
     public function getORMaskAsWord(): Word
     {
-        return new Word(Types::toInt16($this->orMask));
+        return new Word(Types::toInt16($this->orMask, Endian::BIG_ENDIAN));
     }
 }

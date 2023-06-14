@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ModbusTcpClient\Packet;
 
 
+use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
 
 abstract class StartAddressResponse extends ProtocolDataUnit implements ModbusResponse
@@ -16,7 +17,7 @@ abstract class StartAddressResponse extends ProtocolDataUnit implements ModbusRe
     public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
     {
         parent::__construct($unitId, $transactionId);
-        $this->startAddress = Types::parseUInt16(substr($rawData, 0, 2));
+        $this->startAddress = Types::parseUInt16(substr($rawData, 0, 2), Endian::BIG_ENDIAN);
     }
 
     public function __toString(): string

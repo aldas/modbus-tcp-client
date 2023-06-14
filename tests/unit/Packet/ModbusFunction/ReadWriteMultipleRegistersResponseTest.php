@@ -7,10 +7,21 @@ use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Exception\ParseException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadWriteMultipleRegistersResponse;
 use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Utils\Endian;
 use PHPUnit\Framework\TestCase;
 
 class ReadWriteMultipleRegistersResponseTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        Endian::$defaultEndian = Endian::LITTLE_ENDIAN; // packets are big endian. setting to default to little should not change output
+    }
+
+    protected function tearDown(): void
+    {
+        Endian::$defaultEndian = Endian::BIG_ENDIAN_LOW_WORD_FIRST;
+    }
+
     public function testPacketToString()
     {
         $this->assertEquals(
@@ -341,7 +352,7 @@ class ReadWriteMultipleRegistersResponseTest extends TestCase
         $packet = (new ReadWriteMultipleRegistersResponse("\x08\x01\x00\xF8\x53\x65\x72\x00\x6E", 3, 33152))->withStartAddress(50);
         $this->assertCount(4, $packet->getWords());
 
-        $this->assertEquals('Søren', $packet->getAsciiStringAt(51, 5));
+        $this->assertEquals('Søren', $packet->getAsciiStringAt(51, 5, Endian::BIG_ENDIAN_LOW_WORD_FIRST));
     }
 
     public function testGetAsciiStringInvalidAddressLow()

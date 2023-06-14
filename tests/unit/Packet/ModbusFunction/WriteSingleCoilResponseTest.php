@@ -1,13 +1,25 @@
 <?php
+
 namespace Tests\Packet\ModbusFunction;
 
 
-use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleCoilResponse;
+use ModbusTcpClient\Packet\ModbusPacket;
+use ModbusTcpClient\Utils\Endian;
 use PHPUnit\Framework\TestCase;
 
 class WriteSingleCoilResponseTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        Endian::$defaultEndian = Endian::LITTLE_ENDIAN; // packets are big endian. setting to default to little should not change output
+    }
+
+    protected function tearDown(): void
+    {
+        Endian::$defaultEndian = Endian::BIG_ENDIAN_LOW_WORD_FIRST;
+    }
+
     public function testPacketToString()
     {
         $this->assertEquals(
