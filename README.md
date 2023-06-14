@@ -140,7 +140,7 @@ and following additional methods:
 
 ### Strings
 
-ASCII (8bit character) can be extracted from response as utf-8 string
+ASCII (8bit character) string can be extracted from response as utf-8 string
 ```php
 $address = 20;
 $length = 10;
