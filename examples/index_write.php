@@ -147,11 +147,9 @@ switch ($dataType) {
         $error = "invalid data type";
 }
 
+$log = [];
 $startTime = round(microtime(true) * 1000, 3);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $v !== null) {
-
-    $log = [];
-
     $builder = BinaryStreamConnection::getBuilder()
         ->setConnectTimeoutSec(1.5) // timeout when establishing connection to the server
         ->setWriteTimeoutSec(1.0) // timeout when writing/sending packet to the server
