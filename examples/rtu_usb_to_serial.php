@@ -47,7 +47,7 @@ try {
         '-ixon', // disable XON/XOFF flow control
         '-crtscts', // disable RTS/CTS handshaking
     ]);
-    $sttyResult = exec("stty -F ${device} ${sttyModes}");
+    $sttyResult = exec("stty -F {$device} {$sttyModes}");
     if ($sttyResult === false) {
         echo 'stty command failed' . PHP_EOL;
         exit(1);

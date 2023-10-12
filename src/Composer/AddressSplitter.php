@@ -159,7 +159,7 @@ abstract class AddressSplitter
             if ($range->overlaps($from, $to)) {
                 // when currentAddress directly overlaps unaddressable range we have to error out as there is no way to request from that range
                 $size = $currentAddress->getSize();
-                throw new InvalidArgumentException("address at ${from} with size ${size} overlaps unaddressable range");
+                throw new InvalidArgumentException("address at {$from} with size {$size} overlaps unaddressable range");
             }
             if ($previousEnd != -1 && $range->overlaps($previousEnd, $from - 1)) {
                 return true;
