@@ -27,7 +27,7 @@ $port = getenv('MODBUS_SERVER_PORT') ?: '5020';
 $logger = new EchoLogger();
 
 $loop = React\EventLoop\Loop::get();
-$socket = new SocketServer("${address}:{$port}", [], $loop);
+$socket = new SocketServer("{$address}:{$port}", [], $loop);
 
 $socket->on('connection', function (React\Socket\ConnectionInterface $conn) use ($logger) {
     $logger->debug($conn->getRemoteAddress() . ": connected: ");
