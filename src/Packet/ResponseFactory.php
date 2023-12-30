@@ -6,6 +6,7 @@ namespace ModbusTcpClient\Packet;
 
 use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Exception\ParseException;
+use ModbusTcpClient\Packet\ModbusFunction\GetCommEventCounterResponse;
 use ModbusTcpClient\Packet\ModbusFunction\MaskWriteRegisterResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
@@ -47,25 +48,27 @@ class ResponseFactory
         $rawData = substr($binaryString, 8);
 
         switch ($functionCode) {
-            case ModbusPacket::READ_HOLDING_REGISTERS:
+            case ModbusPacket::READ_HOLDING_REGISTERS: // 3 (0x03)
                 return new ReadHoldingRegistersResponse($rawData, $unitId, $transactionId);
-            case ModbusPacket::READ_INPUT_REGISTERS:
+            case ModbusPacket::READ_INPUT_REGISTERS: // 4 (0x04)
                 return new ReadInputRegistersResponse($rawData, $unitId, $transactionId);
-            case ModbusPacket::READ_COILS:
+            case ModbusPacket::READ_COILS: // 1 (0x01)
                 return new ReadCoilsResponse($rawData, $unitId, $transactionId);
-            case ModbusPacket::READ_INPUT_DISCRETES:
+            case ModbusPacket::READ_INPUT_DISCRETES: // 2 (0x02)
                 return new ReadInputDiscretesResponse($rawData, $unitId, $transactionId);
-            case ModbusPacket::WRITE_SINGLE_COIL:
+            case ModbusPacket::WRITE_SINGLE_COIL: // 5 (0x05)
                 return new WriteSingleCoilResponse($rawData, $unitId, $transactionId);
-            case ModbusPacket::WRITE_SINGLE_REGISTER:
+            case ModbusPacket::WRITE_SINGLE_REGISTER: // 6 (0x06)
                 return new WriteSingleRegisterResponse($rawData, $unitId, $transactionId);
-            case ModbusPacket::WRITE_MULTIPLE_COILS:
+            case ModbusPacket::GET_COMM_EVENT_COUNTER: // 11 (0x0B)
+                return new GetCommEventCounterResponse($rawData, $unitId, $transactionId);
+            case ModbusPacket::WRITE_MULTIPLE_COILS: // 15 (0x0F)
                 return new WriteMultipleCoilsResponse($rawData, $unitId, $transactionId);
-            case ModbusPacket::WRITE_MULTIPLE_REGISTERS:
+            case ModbusPacket::WRITE_MULTIPLE_REGISTERS: // 16 (0x10)
                 return new WriteMultipleRegistersResponse($rawData, $unitId, $transactionId);
-            case ModbusPacket::MASK_WRITE_REGISTER:
+            case ModbusPacket::MASK_WRITE_REGISTER: // 22 (0x16)
                 return new MaskWriteRegisterResponse($rawData, $unitId, $transactionId);
-            case ModbusPacket::READ_WRITE_MULTIPLE_REGISTERS:
+            case ModbusPacket::READ_WRITE_MULTIPLE_REGISTERS: // 23 (0x17)
                 return new ReadWriteMultipleRegistersResponse($rawData, $unitId, $transactionId);
             default:
                 throw new ParseException("Unknown function code '{$functionCode}' read from response packet");

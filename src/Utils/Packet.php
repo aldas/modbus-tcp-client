@@ -17,16 +17,16 @@ final class Packet
 
     /**
      * isCompleteLength checks if binary string is complete modbus TCP packet
-     * NB: this function works only for MODBUS TCP packets
+     * NB: this function works only for MODBUS TCP packets (request/response)
      *
      * @param string|null $binaryData binary string to be checked
      * @return bool true if data is actual modbus TCP packet
      */
     public static function isCompleteLength(string|null $binaryData): bool
     {
-        // minimal amount is 9 bytes (header + function code + 1 byte of something ala error code)
+        // minimal amount is 8 bytes (header + function code)
         $length = strlen($binaryData);
-        if ($length < 9) {
+        if ($length < 8) {
             return false;
         }
         // modbus header 6 bytes are = transaction id + protocol id + length of PDU part.
@@ -34,7 +34,7 @@ final class Packet
         $expectedLength = 6 + unpack('n', ($binaryData[4] . $binaryData[5]))[1];
 
         if ($length > $expectedLength) {
-            throw new IOException('packet length more bytes than expected');
+            return false;
         }
         return $length === $expectedLength;
     }
@@ -77,6 +77,9 @@ final class Packet
                 break;
             case ModbusPacket::MASK_WRITE_REGISTER:
                 $responseBytesLen = 8; // unit id (1) + function code (1) + start address (2) + AND mask (2) + OR mask (2)
+                break;
+            case ModbusPacket::GET_COMM_EVENT_COUNTER: // unit id (1) + function code (1) + status (2) + count (2)
+                $responseBytesLen = 6;
                 break;
             default:
                 throw new IOException('can not determine complete length for unsupported modbus function code');

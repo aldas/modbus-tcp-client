@@ -5,6 +5,8 @@ namespace ModbusTcpClient\Packet;
 
 
 use ModbusTcpClient\Exception\ModbusException;
+use ModbusTcpClient\Packet\ModbusFunction\GetCommEventCounterRequest;
+use ModbusTcpClient\Packet\ModbusFunction\MaskWriteRegisterRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesRequest;
@@ -24,7 +26,7 @@ class RequestFactory
      */
     public static function parseRequest(string|null $binaryString): ModbusRequest|ErrorResponse
     {
-        if ($binaryString === null || strlen($binaryString) < 9) { // 7 bytes for MBAP header and at least 2 bytes for PDU
+        if ($binaryString === null || strlen($binaryString) < 8) { // 7 bytes for MBAP header and at least 1 bytes for PDU
             throw new ModbusException('Request null or data length too short to be valid packet!');
         }
 
@@ -35,23 +37,27 @@ class RequestFactory
         }
 
         switch ($functionCode) {
-            case ModbusPacket::READ_HOLDING_REGISTERS:
+            case ModbusPacket::READ_HOLDING_REGISTERS: // 3 (0x03)
                 return ReadHoldingRegistersRequest::parse($binaryString);
-            case ModbusPacket::READ_INPUT_REGISTERS:
+            case ModbusPacket::READ_INPUT_REGISTERS: // 4 (0x04)
                 return ReadInputRegistersRequest::parse($binaryString);
-            case ModbusPacket::READ_COILS:
+            case ModbusPacket::READ_COILS: // 1 (0x01)
                 return ReadCoilsRequest::parse($binaryString);
-            case ModbusPacket::READ_INPUT_DISCRETES:
+            case ModbusPacket::READ_INPUT_DISCRETES: // 2 (0x02)
                 return ReadInputDiscretesRequest::parse($binaryString);
-            case ModbusPacket::WRITE_SINGLE_COIL:
+            case ModbusPacket::WRITE_SINGLE_COIL: // 5 (0x05)
                 return WriteSingleCoilRequest::parse($binaryString);
-            case ModbusPacket::WRITE_SINGLE_REGISTER:
+            case ModbusPacket::WRITE_SINGLE_REGISTER: // 6 (0x06)
                 return WriteSingleRegisterRequest::parse($binaryString);
-            case ModbusPacket::WRITE_MULTIPLE_COILS:
+            case ModbusPacket::GET_COMM_EVENT_COUNTER: // 11 (0x0B)
+                return GetCommEventCounterRequest::parse($binaryString);
+            case ModbusPacket::WRITE_MULTIPLE_COILS: // 15 (0x0F)
                 return WriteMultipleCoilsRequest::parse($binaryString);
-            case ModbusPacket::WRITE_MULTIPLE_REGISTERS:
+            case ModbusPacket::WRITE_MULTIPLE_REGISTERS: // 16 (0x10)
                 return WriteMultipleRegistersRequest::parse($binaryString);
-            case ModbusPacket::READ_WRITE_MULTIPLE_REGISTERS:
+            case ModbusPacket::MASK_WRITE_REGISTER: // 22 (0x16)
+                return MaskWriteRegisterRequest::parse($binaryString);
+            case ModbusPacket::READ_WRITE_MULTIPLE_REGISTERS: // 23 (0x17)
                 return ReadWriteMultipleRegistersRequest::parse($binaryString);
             default:
                 return new ErrorResponse(ModbusApplicationHeader::parse($binaryString), $functionCode, 1);

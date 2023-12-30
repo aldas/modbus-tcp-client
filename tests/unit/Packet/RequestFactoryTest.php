@@ -6,6 +6,8 @@ namespace Tests\Packet;
 
 use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Packet\ErrorResponse;
+use ModbusTcpClient\Packet\ModbusFunction\GetCommEventCounterRequest;
+use ModbusTcpClient\Packet\ModbusFunction\MaskWriteRegisterRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesRequest;
@@ -33,6 +35,8 @@ class RequestFactoryTest extends TestCase
             "ok, parse WriteMultipleRegistersRequest" => ["\x01\x38\x00\x00\x00\x0d\x11\x10\x04\x10\x00\x03\x06\x00\xC8\x00\x82\x87\x01", WriteMultipleRegistersRequest::class],
             "ok, parse WriteSingleCoilRequest" => ["\x00\x01\x00\x00\x00\x06\x11\x05\x00\x6B\xFF\x00", WriteSingleCoilRequest::class],
             "ok, parse WriteSingleRegisterRequest" => ["\x00\x01\x00\x00\x00\x06\x11\x06\x00\x6B\x01\x01", WriteSingleRegisterRequest::class],
+            "ok, parse GetCommEventCounterRequest" => ["\x01\x38\x00\x00\x00\x02\x11\x0b", GetCommEventCounterRequest::class],
+            "ok, parse MaskWriteRegisterRequest" => ["\x01\x38\x00\x00\x00\x08\x11\x16\x04\x10\x00\x01\x00\x02", MaskWriteRegisterRequest::class],
         ];
     }
 
@@ -50,7 +54,7 @@ class RequestFactoryTest extends TestCase
         $this->expectExceptionMessage("Request null or data length too short to be valid packet!");
         $this->expectException(ModbusException::class);
 
-        RequestFactory::parseRequest("\x00\x01\x00\x00\x00\x06\x11\x06");
+        RequestFactory::parseRequest("\x00\x01\x00\x00\x00\x06\x11");
     }
 
     public function testShouldThrowExceptionOnNullData()
