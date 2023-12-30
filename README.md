@@ -22,6 +22,7 @@ composer require aldas/modbus-tcp-client
 * FC4 - Read Input Registers ([ReadInputRegistersRequest](src/Packet/ModbusFunction/ReadInputRegistersRequest.php) / [ReadInputRegistersResponse](src/Packet/ModbusFunction/ReadInputRegistersResponse.php))
 * FC5 - Write Single Coil ([WriteSingleCoilRequest](src/Packet/ModbusFunction/WriteSingleCoilRequest.php) / [WriteSingleCoilResponse](src/Packet/ModbusFunction/WriteSingleCoilResponse.php))
 * FC6 - Write Single Register ([WriteSingleRegisterRequest](src/Packet/ModbusFunction/WriteSingleRegisterRequest.php) / [WriteSingleRegisterResponse](src/Packet/ModbusFunction/WriteSingleRegisterResponse.php))
+* FC11 - Get Communication Event Counter ([WriteMultipleCoilsRequest](src/Packet/ModbusFunction/GetCommEventCounterRequest.php) / [GetCommEventCounterResponse](src/Packet/ModbusFunction/GetCommEventCounterResponse.php))
 * FC15 - Write Multiple Coils ([WriteMultipleCoilsRequest](src/Packet/ModbusFunction/WriteMultipleCoilsRequest.php) / [WriteMultipleCoilsResponse](src/Packet/ModbusFunction/WriteMultipleCoilsResponse.php))
 * FC16 - Write Multiple Registers ([WriteMultipleRegistersRequest](src/Packet/ModbusFunction/WriteMultipleRegistersRequest.php) / [WriteMultipleRegistersResponse](src/Packet/ModbusFunction/WriteMultipleRegistersResponse.php))
 * FC22 - Mask Write Register ([MaskWriteRegisterRequest](src/Packet/ModbusFunction/MaskWriteRegisterRequest.php) / [MaskWriteRegisterResponse](src/Packet/ModbusFunction/MaskWriteRegisterResponse.php))
@@ -29,8 +30,8 @@ composer require aldas/modbus-tcp-client
 
 ### Utility functions
 
-* [Packet::isCompleteLength](src/Utils/Packet.php) - checks if data is complete Modbus TCP packet
-* [Packet::isCompleteLengthRTU()](src/Utils/Packet.php) - checks if data is complete Modbus RTU packet
+* [Packet::isCompleteLength](src/Utils/Packet.php) - checks if data is complete Modbus TCP request or response packet
+* [Packet::isCompleteLengthRTU()](src/Utils/Packet.php) - checks if data is complete Modbus RTU response packet
 * [ErrorResponse::is](src/Packet/ErrorResponse.php) - checks if data is Modbus TCP error packet
 
 ## Requirements
