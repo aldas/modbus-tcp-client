@@ -55,7 +55,7 @@ class GetCommEventCounterRequest extends ProtocolDataUnit implements ModbusReque
             $binaryString,
             8,
             ModbusPacket::GET_COMM_EVENT_COUNTER,
-            function (int $transactionId, int $unitId) use ($binaryString) {
+            function (int $transactionId, int $unitId) {
                 return new self($unitId, $transactionId);
             }
         );
