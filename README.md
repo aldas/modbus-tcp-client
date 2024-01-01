@@ -22,7 +22,7 @@ composer require aldas/modbus-tcp-client
 * FC4 - Read Input Registers ([ReadInputRegistersRequest](src/Packet/ModbusFunction/ReadInputRegistersRequest.php) / [ReadInputRegistersResponse](src/Packet/ModbusFunction/ReadInputRegistersResponse.php))
 * FC5 - Write Single Coil ([WriteSingleCoilRequest](src/Packet/ModbusFunction/WriteSingleCoilRequest.php) / [WriteSingleCoilResponse](src/Packet/ModbusFunction/WriteSingleCoilResponse.php))
 * FC6 - Write Single Register ([WriteSingleRegisterRequest](src/Packet/ModbusFunction/WriteSingleRegisterRequest.php) / [WriteSingleRegisterResponse](src/Packet/ModbusFunction/WriteSingleRegisterResponse.php))
-* FC11 - Get Communication Event Counter ([WriteMultipleCoilsRequest](src/Packet/ModbusFunction/GetCommEventCounterRequest.php) / [GetCommEventCounterResponse](src/Packet/ModbusFunction/GetCommEventCounterResponse.php))
+* FC11 - Get Communication Event Counter ([GetCommEventCounterRequest](src/Packet/ModbusFunction/GetCommEventCounterRequest.php) / [GetCommEventCounterResponse](src/Packet/ModbusFunction/GetCommEventCounterResponse.php))
 * FC15 - Write Multiple Coils ([WriteMultipleCoilsRequest](src/Packet/ModbusFunction/WriteMultipleCoilsRequest.php) / [WriteMultipleCoilsResponse](src/Packet/ModbusFunction/WriteMultipleCoilsResponse.php))
 * FC16 - Write Multiple Registers ([WriteMultipleRegistersRequest](src/Packet/ModbusFunction/WriteMultipleRegistersRequest.php) / [WriteMultipleRegistersResponse](src/Packet/ModbusFunction/WriteMultipleRegistersResponse.php))
 * FC17 - Report Server ID ([ReportServerIDRequest](src/Packet/ModbusFunction/ReportServerIDRequest.php) / [ReportServerIDResponse](src/Packet/ModbusFunction/ReportServerIDResponse.php))
