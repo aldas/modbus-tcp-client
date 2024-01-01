@@ -15,6 +15,7 @@ interface ModbusPacket
     const GET_COMM_EVENT_COUNTER = 11; // 0x0B
     const WRITE_MULTIPLE_COILS = 15; // 0x0F
     const WRITE_MULTIPLE_REGISTERS = 16; // 0x10
+    const REPORT_SERVER_ID = 17; // 0x11
     const MASK_WRITE_REGISTER = 22; // 0x16
     const READ_WRITE_MULTIPLE_REGISTERS = 23; // 0x17
 

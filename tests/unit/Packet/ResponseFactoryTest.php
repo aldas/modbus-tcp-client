@@ -291,14 +291,45 @@ class ResponseFactoryTest extends TestCase
         $this->assertEquals(0x11, $header->getUnitId());
     }
 
+    public function testOnPacketProperties()
+    {
+        $data = "\x01\x38" . // transaction id: 0138 (2 bytes)
+            "\x00\x00" . // protocol id: 0000           (2 bytes)
+            "\x00\x08" .  // length: 0008               (2 bytes) (8 bytes after this field)
+            "\x11" . // unit id: 11                     (1 byte)
+            "\x11" . // function code: 0b               (1 byte)
+            "\x02" . // server id byte count            (1 bytes)
+            "\x01\x02" . // server id (0x0102)          (N bytes)
+            "\xFF" . // status: FF                      (1 bytes)
+            "\x03\x04" . // additional data (           (optionally N bytes)
+            '';
+
+        $packet = ResponseFactory::parseResponse($data);
+        $this->assertEquals(ModbusPacket::REPORT_SERVER_ID, $packet->getFunctionCode());
+
+        $this->assertEquals("\x01\x02", $packet->getServerID());
+        $this->assertEquals([0x01, 0x02], $packet->getServerIDBytes());
+
+        $this->assertEquals(0xFF, $packet->getStatus());
+
+        $this->assertEquals("\x03\x04", $packet->getAdditionalData());
+        $this->assertEquals([0x03, 0x04], $packet->getAdditionalDataBytes());
+
+        $header = $packet->getHeader();
+        $this->assertEquals(0x0138, $header->getTransactionId());
+        $this->assertEquals(0, $header->getProtocolId());
+        $this->assertEquals(8, $header->getLength());
+        $this->assertEquals(0x11, $header->getUnitId());
+    }
+
     public function testInvalidFunctionCodeParse()
     {
-        $this->expectExceptionMessage("Unknown function code '17' read from response packet");
+        $this->expectExceptionMessage("Unknown function code '32' read from response packet");
         $this->expectException(ParseException::class);
 
         //trans + proto + len   + uid + fc + addr + number of coils
-        //81 80 + 00 00 + 00 05 + 03  + 11 + 00 01 + 00 0A
-        $data = "\x81\x80\x00\x00\x00\x06\x03\x11\x00\x01\x00\x0A";
+        //81 80 + 00 00 + 00 05 + 03  + 20 + 00 01 + 00 0A
+        $data = "\x81\x80\x00\x00\x00\x06\x03\x20\x00\x01\x00\x0A";
 
         ResponseFactory::parseResponse($data);
     }
