@@ -25,6 +25,7 @@ composer require aldas/modbus-tcp-client
 * FC11 - Get Communication Event Counter ([WriteMultipleCoilsRequest](src/Packet/ModbusFunction/GetCommEventCounterRequest.php) / [GetCommEventCounterResponse](src/Packet/ModbusFunction/GetCommEventCounterResponse.php))
 * FC15 - Write Multiple Coils ([WriteMultipleCoilsRequest](src/Packet/ModbusFunction/WriteMultipleCoilsRequest.php) / [WriteMultipleCoilsResponse](src/Packet/ModbusFunction/WriteMultipleCoilsResponse.php))
 * FC16 - Write Multiple Registers ([WriteMultipleRegistersRequest](src/Packet/ModbusFunction/WriteMultipleRegistersRequest.php) / [WriteMultipleRegistersResponse](src/Packet/ModbusFunction/WriteMultipleRegistersResponse.php))
+* FC17 - Report Server ID ([ReportServerIDRequest](src/Packet/ModbusFunction/ReportServerIDRequest.php) / [ReportServerIDResponse](src/Packet/ModbusFunction/ReportServerIDResponse.php))
 * FC22 - Mask Write Register ([MaskWriteRegisterRequest](src/Packet/ModbusFunction/MaskWriteRegisterRequest.php) / [MaskWriteRegisterResponse](src/Packet/ModbusFunction/MaskWriteRegisterResponse.php))
 * FC23 - Read / Write Multiple Registers ([ReadWriteMultipleRegistersRequest](src/Packet/ModbusFunction/ReadWriteMultipleRegistersRequest.php) / [ReadWriteMultipleRegistersResponse](src/Packet/ModbusFunction/ReadWriteMultipleRegistersResponse.php))
 

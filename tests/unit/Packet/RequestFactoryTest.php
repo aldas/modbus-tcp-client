@@ -13,6 +13,7 @@ use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadWriteMultipleRegistersRequest;
+use ModbusTcpClient\Packet\ModbusFunction\ReportServerIDRequest;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsRequest;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleCoilRequest;
@@ -37,6 +38,7 @@ class RequestFactoryTest extends TestCase
             "ok, parse WriteSingleRegisterRequest" => ["\x00\x01\x00\x00\x00\x06\x11\x06\x00\x6B\x01\x01", WriteSingleRegisterRequest::class],
             "ok, parse GetCommEventCounterRequest" => ["\x01\x38\x00\x00\x00\x02\x11\x0b", GetCommEventCounterRequest::class],
             "ok, parse MaskWriteRegisterRequest" => ["\x01\x38\x00\x00\x00\x08\x11\x16\x04\x10\x00\x01\x00\x02", MaskWriteRegisterRequest::class],
+            "ok, parse ReportServerIDRequest" => ["\x01\x38\x00\x00\x00\x02\x11\x11", ReportServerIDRequest::class],
         ];
     }
 
@@ -87,8 +89,8 @@ class RequestFactoryTest extends TestCase
     public function testInvalidFunctionCodeParse()
     {
         //trans + proto + len   + uid + fc + addr + number of coils
-        //81 80 + 00 00 + 00 05 + 03  + 11 + 00 01 + 00 0A
-        $data = "\x81\x80\x00\x00\x00\x06\x03\x11\x00\x01\x00\x0A";
+        //81 80 + 00 00 + 00 05 + 03  + 20 + 00 01 + 00 0A
+        $data = "\x81\x80\x00\x00\x00\x06\x03\x20\x00\x01\x00\x0A";
 
         /** @var ErrorResponse $response */
         $response = RequestFactory::parseRequest($data);
@@ -114,8 +116,8 @@ class RequestFactoryTest extends TestCase
         $this->expectException(ModbusException::class);
 
         //trans + proto + len   + uid + fc + addr + number of coils
-        //81 80 + 00 00 + 00 05 + 03  + 11 + 00 01 + 00 0A
-        $data = "\x81\x80\x00\x00\x00\x06\x03\x11\x00\x01\x00\x0A";
+        //81 80 + 00 00 + 00 05 + 03  + 20 + 00 01 + 00 0A
+        $data = "\x81\x80\x00\x00\x00\x06\x03\x20\x00\x01\x00\x0A";
 
         RequestFactory::parseRequestOrThrow($data);
     }

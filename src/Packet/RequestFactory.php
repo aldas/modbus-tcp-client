@@ -12,6 +12,7 @@ use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadWriteMultipleRegistersRequest;
+use ModbusTcpClient\Packet\ModbusFunction\ReportServerIDRequest;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsRequest;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleCoilRequest;
@@ -55,6 +56,8 @@ class RequestFactory
                 return WriteMultipleCoilsRequest::parse($binaryString);
             case ModbusPacket::WRITE_MULTIPLE_REGISTERS: // 16 (0x10)
                 return WriteMultipleRegistersRequest::parse($binaryString);
+            case ModbusPacket::REPORT_SERVER_ID: // 17 (0x11)
+                return ReportServerIDRequest::parse($binaryString);
             case ModbusPacket::MASK_WRITE_REGISTER: // 22 (0x16)
                 return MaskWriteRegisterRequest::parse($binaryString);
             case ModbusPacket::READ_WRITE_MULTIPLE_REGISTERS: // 23 (0x17)

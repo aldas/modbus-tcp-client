@@ -13,6 +13,7 @@ use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\ReadWriteMultipleRegistersResponse;
+use ModbusTcpClient\Packet\ModbusFunction\ReportServerIDResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleCoilsResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleCoilResponse;
@@ -66,6 +67,8 @@ class ResponseFactory
                 return new WriteMultipleCoilsResponse($rawData, $unitId, $transactionId);
             case ModbusPacket::WRITE_MULTIPLE_REGISTERS: // 16 (0x10)
                 return new WriteMultipleRegistersResponse($rawData, $unitId, $transactionId);
+            case ModbusPacket::REPORT_SERVER_ID: // 17 (0x11)
+                return new ReportServerIDResponse($rawData, $unitId, $transactionId);
             case ModbusPacket::MASK_WRITE_REGISTER: // 22 (0x16)
                 return new MaskWriteRegisterResponse($rawData, $unitId, $transactionId);
             case ModbusPacket::READ_WRITE_MULTIPLE_REGISTERS: // 23 (0x17)
