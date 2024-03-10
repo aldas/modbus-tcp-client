@@ -340,7 +340,7 @@ class TypesTest extends TestCase
 
     public function testShouldExceptionWhenBitToHighNumber()
     {
-        $this->expectErrorMessageMatches("/On .*bit PHP bit shifting more than .* bit is not possible as int size is .* bytes/");
+        $this->expectExceptionMessageMatches("/On .*bit PHP bit shifting more than .* bit is not possible as int size is .* bytes/");
         $this->expectException(InvalidArgumentException::class);
 
         if (PHP_INT_SIZE === 4) {

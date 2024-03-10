@@ -23,7 +23,7 @@ $writeRegisters = [
     Types::toInt16(10), //000a as word
     Types::toInt16(-1000), //hex: FC18 as word
 ];
-$unitID = 0;
+$unitID = 1;
 $packet = new ReadWriteMultipleRegistersRequest(
     $readStartAddress,
     $readQuantity,

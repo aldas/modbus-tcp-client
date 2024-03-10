@@ -23,7 +23,7 @@ $ANDMask |= (1 << $bitPosition); // set the bit, set third bit to 1. $ANDMask = 
 $ORMask = 0x0007; // 2 bytes, bin = 0b00000111
 $ORMask &= ~(1 << $bitPosition); // clear the bit, set third bit to 0. $ORMask = 0x0003, 0b00000011
 
-$unitID = 0;
+$unitID = 1;
 $packet = new MaskWriteRegisterRequest(
     $readStartAddress,
     $ANDMask,

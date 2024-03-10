@@ -22,7 +22,7 @@ $registers = [
     Types::toInt16(-1000), //hex: FC18 as word
     Types::toInt32(2000), //dec: 2000 -> hex: 7d00 is as 2 word 7D00 0000
 ];
-$unitID = 0;
+$unitID = 1;
 $packet = new WriteMultipleRegistersRequest($startAddress, $registers, $unitID); // NB: This is Modbus TCP packet not Modbus RTU over TCP!
 echo 'Packet to be sent (in hex): ' . $packet->toHex() . PHP_EOL;
 

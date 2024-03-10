@@ -22,7 +22,7 @@ class ProtocolDataUnitTest extends TestCase
 
     public function testFailWithNegativeUnitID()
     {
-        $this->expectExceptionMessage("unitId is out of range (0-247): -1");
+        $this->expectExceptionMessage("unitId is out of range (0-255): -1");
         $this->expectException(InvalidArgumentException::class);
 
         new ProtocolDataUnitImpl(-1);

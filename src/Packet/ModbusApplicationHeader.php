@@ -117,8 +117,12 @@ class ModbusApplicationHeader
         if (!$length || !($length > 0 && $length <= Types::MAX_VALUE_UINT16)) {
             throw new InvalidArgumentException("length is not set or out of range (uint16): {$length}");
         }
-        if (!($unitId >= 0 && $unitId <= 247)) {
-            throw new InvalidArgumentException("unitId is out of range (0-247): {$unitId}");
+        if (!($unitId >= 0 && $unitId <= 255)) {
+            // Older MODBUS specification limited unit ID (slave id) in range of 0-247)
+            // See "Modicon Modbus Protocol Reference Guide PI–MBUS–300 Rev. J" page 19
+            //
+            // but newer spec has that limitation removed.
+            throw new InvalidArgumentException("unitId is out of range (0-255): {$unitId}");
         }
         if ((null !== $transactionId) && !($transactionId >= 0 && $transactionId <= Types::MAX_VALUE_UINT16)) {
             throw new InvalidArgumentException("transactionId is out of range (uint16): {$transactionId}");

@@ -16,7 +16,7 @@ $connection = BinaryStreamConnection::getBuilder()
 
 $startAddress = 12288;
 $value = 55;
-$unitID = 0;
+$unitID = 1;
 $packet = new WriteSingleRegisterRequest($startAddress, $value, $unitID); // NB: This is Modbus TCP packet not Modbus RTU over TCP!
 echo 'Packet to be sent (in hex): ' . $packet->toHex() . PHP_EOL;
 
