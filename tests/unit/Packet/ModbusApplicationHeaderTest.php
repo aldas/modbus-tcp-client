@@ -82,15 +82,15 @@ class ModbusApplicationHeaderTest extends TestCase
 
     public function testUnitIdOverFlow()
     {
-        $this->expectExceptionMessage("unitId is out of range (0-247): 248");
+        $this->expectExceptionMessage("unitId is out of range (0-255): 256");
         $this->expectException(InvalidArgumentException::class);
 
-        new ModbusApplicationHeader(1, 248, 1);
+        new ModbusApplicationHeader(1, 256, 1);
     }
 
     public function testUnitIdUnderFlow()
     {
-        $this->expectExceptionMessage("unitId is out of range (0-247): -1");
+        $this->expectExceptionMessage("unitId is out of range (0-255): -1");
         $this->expectException(InvalidArgumentException::class);
 
         new ModbusApplicationHeader(1, -1, 1);

@@ -20,7 +20,7 @@ $coils = [
     0, 0, 0, 0, 0, 0, 0, 0, // dec: 0, hex x0
     1, 0, 0, 1 // dec: 9, hex: x9
 ];
-$unitID = 0;
+$unitID = 1;
 $packet = new WriteMultipleCoilsRequest($startAddress, $coils, $unitID); // NB: This is Modbus TCP packet not Modbus RTU over TCP!
 echo 'Packet to be sent (in hex): ' . $packet->toHex() . PHP_EOL;
 
