@@ -45,17 +45,13 @@ trait StreamHandler
              * is returned and a warning raised (this can happen if the system call is
              * interrupted by an incoming signal).
              */
-            $modifiedStreams = stream_select(
+            stream_select(
                 $read,
                 $write,
                 $except,
                 (int)$timeout,
                 $timeoutUsec
             );
-            if (false == $modifiedStreams) {
-                throw new IOException('stream_select interrupted by an incoming signal');
-            }
-
             $logger?->debug('Polling data');
 
             $dataReceived = false;

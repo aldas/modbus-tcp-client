@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace ModbusTcpClient\Utils;
 
+use ModbusTcpClient\Exception\ParseException;
+
 /**
  * Data types with Double Word (4 bytes) length can have different byte order when sent over wire depending of PLC vendor
  * For some data is sent in true big endian format, Big-Endian with Low Word first. This class is to provide flags
@@ -49,5 +51,47 @@ class Endian
     public static function getCurrentEndianness(int $endianness = null): int
     {
         return $endianness === null ? static::$defaultEndian : $endianness;
+    }
+
+    public static function applyEndianness(string $binaryData, int $fromEndian = null): string
+    {
+        $data = $binaryData;
+        $fromEndian = Endian::getCurrentEndianness($fromEndian);
+
+        $len = strlen($data);
+        if (($fromEndian & Endian::LOW_WORD_FIRST && $len >= 4)) {
+            if ($len % 2 !== 0) {
+                throw new ParseException('word order can only be changed for data with even number of bytes');
+            }
+            for ($idxL = 0, $idxH = $len - 1; $idxL < ($len / 2); $idxL += 2, $idxH -= 2) {
+                $low1 = $data[$idxL];
+                $low2 = $data[$idxL + 1];
+                $high1 = $data[$idxH - 1];
+                $high2 = $data[$idxH];
+
+                $data[$idxL] = $high1;
+                $data[$idxL + 1] = $high2;
+                $data[$idxH - 1] = $low1;
+                $data[$idxH] = $low2;
+            }
+        }
+
+        // big endian needs bytes in word reversed
+        if (($fromEndian & Endian::BIG_ENDIAN)) {
+            $end = $len - 1;
+            if ($len % 2 === 0) {
+                $end -= 1;
+            }
+            for ($i = 0; $i < $end; $i += 2) {
+                $lb = $data[$i + 1];
+                $hb = $data[$i];
+
+                // low byte + high byte
+                $data[$i] = $lb;
+                $data[$i + 1] = $hb;
+            }
+        }
+
+        return $data;
     }
 }

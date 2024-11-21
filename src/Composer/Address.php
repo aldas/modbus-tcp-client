@@ -17,6 +17,7 @@ interface Address
     const TYPE_FLOAT = 'float';
     const TYPE_DOUBLE = 'double';
     const TYPE_STRING = 'string';
+    const TYPE_RAW_BYTES = 'raw_bytes';
 
     const TYPES = [
         Address::TYPE_BIT,
@@ -30,6 +31,7 @@ interface Address
         Address::TYPE_FLOAT,
         Address::TYPE_DOUBLE,
         Address::TYPE_STRING,
+        Address::TYPE_RAW_BYTES,
     ];
 
     public function getSize(): int;

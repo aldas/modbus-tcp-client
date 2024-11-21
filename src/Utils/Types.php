@@ -288,7 +288,7 @@ final class Types
     {
         $fromEndian = Endian::getCurrentEndianness($fromEndian);
         if ($fromEndian & Endian::LOW_WORD_FIRST) {
-            $binaryData = substr($binaryData, 2, 2) . substr($binaryData, 0, 2);
+            $binaryData = $binaryData[2] . $binaryData[3] . $binaryData[0] . $binaryData[1];
         }
 
         if ($fromEndian & Endian::BIG_ENDIAN) {
@@ -435,21 +435,7 @@ final class Types
      */
     public static function parseStringFromRegister(string $binaryData, int $length, string $fromEncoding = null, int $fromEndian = null): string
     {
-        $data = $binaryData;
-
-        $fromEndian = Endian::getCurrentEndianness($fromEndian);
-        if ($fromEndian & Endian::BIG_ENDIAN) {
-
-            $data = '';
-            // big endian needs bytes in word reversed
-            foreach (str_split($binaryData, 2) as $word) {
-                if (isset($word[1])) {
-                    $data .= $word[1] . $word[0]; // low byte + high byte
-                } else {
-                    $data .= $word[0]; // assume that last single byte is in correct place
-                }
-            }
-        }
+        $data = Endian::applyEndianness($binaryData, $fromEndian);
 
         $rawLen = strlen($data);
         if (!$length || $length > $rawLen) {

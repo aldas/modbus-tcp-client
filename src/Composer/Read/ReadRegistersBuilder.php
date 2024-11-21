@@ -9,6 +9,7 @@ use ModbusTcpClient\Composer\AddressSplitter;
 use ModbusTcpClient\Composer\Range;
 use ModbusTcpClient\Composer\Read\Register\BitReadRegisterAddress;
 use ModbusTcpClient\Composer\Read\Register\ByteReadRegisterAddress;
+use ModbusTcpClient\Composer\Read\Register\RawBytesReadRegisterAddress;
 use ModbusTcpClient\Composer\Read\Register\ReadRegisterAddress;
 use ModbusTcpClient\Composer\Read\Register\ReadRegisterAddressSplitter;
 use ModbusTcpClient\Composer\Read\Register\StringReadRegisterAddress;
@@ -384,6 +385,21 @@ class ReadRegistersBuilder
             throw new InvalidArgumentException("Out of range string length for given! length: '{$byteLength}', address: {$address}");
         }
         return $this->addAddress(new StringReadRegisterAddress($address, $byteLength, $name, $callback, $errorCallback, $endian));
+    }
+
+    public function rawBytes(
+        int      $address,
+        int      $byteLength,
+        string   $name = null,
+        callable $callback = null,
+        callable $errorCallback = null,
+        int      $endian = null
+    ): ReadRegistersBuilder
+    {
+        if ($byteLength < 1 || $byteLength > 228) {
+            throw new InvalidArgumentException("Out of range raw bytes length for given! length: '{$byteLength}', address: {$address}");
+        }
+        return $this->addAddress(new RawBytesReadRegisterAddress($address, $byteLength, $name, $callback, $errorCallback, $endian));
     }
 
     /**
