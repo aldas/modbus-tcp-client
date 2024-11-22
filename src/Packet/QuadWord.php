@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
@@ -20,7 +21,7 @@ class QuadWord extends AbstractWord
      * @param int|null $endianness byte and word order for modbus binary data
      * @return int
      */
-    public function getUInt64(int $endianness = null): int
+    public function getUInt64(?int $endianness = null): int
     {
         return Types::parseUInt64($this->getData(), $endianness);
     }
@@ -29,7 +30,7 @@ class QuadWord extends AbstractWord
      * @param int|null $endianness byte and word order for modbus binary data
      * @return int
      */
-    public function getInt64(int $endianness = null): int
+    public function getInt64(?int $endianness = null): int
     {
         return Types::parseInt64($this->getData(), $endianness);
     }
@@ -38,7 +39,7 @@ class QuadWord extends AbstractWord
      * @param int|null $endianness byte and word order for modbus binary data
      * @return float
      */
-    public function getDouble(int $endianness = null): float
+    public function getDouble(?int $endianness = null): float
     {
         return Types::parseDouble($this->getData(), $endianness);
     }

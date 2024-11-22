@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Utils;
-
 
 class Charset
 {
@@ -12,15 +12,15 @@ class Charset
 
     // 'ASCII' is 7-bit charset and 'ISO-8859-1' is 8-bit charset which supports some additional characters.
     // See: https://en.wikipedia.org/wiki/ASCII#Character_set
-    const ASCII = "ASCII";
+    public const ASCII = "ASCII";
     // ISO-8859-1 is a common european encoding, able to encode 'äöåéü' and other characters (for example
     // 'ø' decimal 248), the first 127 characters being the same as in ASCII.
     // See: https://en.wikipedia.org/wiki/ISO/IEC_8859-1#Code_page_layout
-    const ISO_8859_1 = "ISO-8859-1";
+    public const ISO_8859_1 = "ISO-8859-1";
 
     public static string $defaultCharset = self::ISO_8859_1;
 
-    public static function getCurrentEndianness(string $charset = null): string
+    public static function getCurrentEndianness(?string $charset = null): string
     {
         return $charset === null ? static::$defaultCharset : $charset;
     }

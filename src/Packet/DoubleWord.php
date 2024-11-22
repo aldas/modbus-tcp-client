@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
@@ -23,7 +24,7 @@ class DoubleWord extends AbstractWord
      *
      * @return int|float
      */
-    public function getUInt32(int $endianness = null): int|float
+    public function getUInt32(?int $endianness = null): int|float
     {
         return Types::parseUInt32($this->getData(), $endianness);
     }
@@ -32,7 +33,7 @@ class DoubleWord extends AbstractWord
      * @param int|null $endianness byte and word order for modbus binary data
      * @return int
      */
-    public function getInt32(int $endianness = null): int
+    public function getInt32(?int $endianness = null): int
     {
         return Types::parseInt32($this->getData(), $endianness);
     }
@@ -41,7 +42,7 @@ class DoubleWord extends AbstractWord
      * @param int|null $endianness byte and word order for modbus binary data
      * @return float
      */
-    public function getFloat(int $endianness = null): float
+    public function getFloat(?int $endianness = null): float
     {
         return Types::parseFloat($this->getData(), $endianness);
     }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
@@ -39,7 +40,7 @@ abstract class AbstractWord
      *
      * @return int
      */
-    protected abstract function getByteLength(): int;
+    abstract protected function getByteLength(): int;
 
     /**
      * @return string

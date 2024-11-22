@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read\Register;
@@ -12,7 +13,7 @@ class BitReadRegisterAddress extends ReadRegisterAddress
     /** @var int */
     private int $bit;
 
-    public function __construct(int $address, int $bit, string $name = null, callable $callback = null, callable $errorCallback = null)
+    public function __construct(int $address, int $bit, ?string $name = null, ?callable $callback = null, ?callable $errorCallback = null)
     {
         $type = Address::TYPE_BIT;
         parent::__construct($address, $type, $name ?: "{$type}_{$address}_{$bit}", $callback, $errorCallback);

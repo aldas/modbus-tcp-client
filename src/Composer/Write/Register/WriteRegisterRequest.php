@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Write\Register;
-
 
 use ModbusTcpClient\Composer\Request;
 use ModbusTcpClient\Exception\InvalidArgumentException;

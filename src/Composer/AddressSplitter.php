@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer;
@@ -13,10 +14,10 @@ abstract class AddressSplitter
      */
     private array $currentUnaddressableRanges = [];
 
-    const UNIT_ID_PREFIX = '||unitId=';
+    public const UNIT_ID_PREFIX = '||unitId=';
 
-    const MAX_REGISTERS_PER_MODBUS_REQUEST = 124;
-    const MAX_COILS_PER_MODBUS_REQUEST = 2048; // response has 1 byte field for count - so 256 * 8 is max
+    public const MAX_REGISTERS_PER_MODBUS_REQUEST = 124;
+    public const MAX_COILS_PER_MODBUS_REQUEST = 2048; // response has 1 byte field for count - so 256 * 8 is max
 
     protected function getMaxAddressesPerModbusRequest(): int
     {
@@ -115,7 +116,7 @@ abstract class AddressSplitter
                 // as those addresses overlap
                 if ($maxAvailableRegister === null || $nextAvailableRegister > $maxAvailableRegister) {
                     $maxAvailableRegister = $nextAvailableRegister;
-                } else if ($nextAvailableRegister < $maxAvailableRegister) {
+                } elseif ($nextAvailableRegister < $maxAvailableRegister) {
                     $nextAvailableRegister = $maxAvailableRegister;
                 }
                 $previousQuantity = $quantity;
@@ -139,7 +140,7 @@ abstract class AddressSplitter
         return $result;
     }
 
-    protected function shouldSplit(Address $currentAddress, int $currentQuantity, Address $previousAddress = null, int $previousQuantity = null): bool
+    protected function shouldSplit(Address $currentAddress, int $currentQuantity, ?Address $previousAddress = null, ?int $previousQuantity = null): bool
     {
         if ($currentQuantity >= $this->getMaxAddressesPerModbusRequest()) {
             return true;

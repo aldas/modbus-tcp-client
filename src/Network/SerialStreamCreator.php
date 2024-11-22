@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Network;
-
 
 class SerialStreamCreator implements StreamCreator
 {
@@ -11,7 +11,7 @@ class SerialStreamCreator implements StreamCreator
      *
      * Dear reader - if you know that some option are not needed here then add a comment/issue in github
      */
-    const DEFAULT_STTY_MODES = [
+    public const DEFAULT_STTY_MODES = [
         'cs8', // set character size 8 bits
         '9600', // set baud rate 9600
         '-cstopb', // 1 stop bit

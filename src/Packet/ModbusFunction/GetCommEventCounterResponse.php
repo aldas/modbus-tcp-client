@@ -33,7 +33,7 @@ class GetCommEventCounterResponse extends ProtocolDataUnit implements ModbusResp
      */
     private int $eventCount;
 
-    public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
+    public function __construct(string $rawData, int $unitId = 0, ?int $transactionId = null)
     {
         parent::__construct($unitId, $transactionId);
         $this->status = Types::parseUInt16(substr($rawData, 0, 2), Endian::BIG_ENDIAN);

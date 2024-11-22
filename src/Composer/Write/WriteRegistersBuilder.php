@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Write;
-
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\AddressSplitter;
@@ -27,7 +27,7 @@ class WriteRegistersBuilder
     /** @var int */
     private int $unitId;
 
-    public function __construct(string $requestClass, string $uri = null, int $unitId = 0)
+    public function __construct(string $requestClass, ?string $uri = null, int $unitId = 0)
     {
         $this->addressSplitter = new WriteRegisterAddressSplitter($requestClass);
 
@@ -37,7 +37,7 @@ class WriteRegistersBuilder
         $this->unitId = $unitId;
     }
 
-    public static function newWriteMultipleRegisters(string $uri = null, int $unitId = 0): WriteRegistersBuilder
+    public static function newWriteMultipleRegisters(?string $uri = null, int $unitId = 0): WriteRegistersBuilder
     {
         return new WriteRegistersBuilder(WriteMultipleRegistersRequest::class, $uri, $unitId);
     }
@@ -187,7 +187,7 @@ class WriteRegistersBuilder
         return $this->addAddress(new WriteRegisterAddress($address, Address::TYPE_DOUBLE, $value));
     }
 
-    public function string(int $address, string $string, int $byteLength = null): WriteRegistersBuilder
+    public function string(int $address, string $string, ?int $byteLength = null): WriteRegistersBuilder
     {
         return $this->addAddress(new StringWriteRegisterAddress($address, $string, $byteLength));
     }

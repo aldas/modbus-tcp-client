@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet\ModbusFunction;
@@ -36,7 +37,7 @@ class ReadCoilsResponse extends ByteCountResponse implements \ArrayAccess, \Iter
      */
     private int $coilsBytesLength;
 
-    public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
+    public function __construct(string $rawData, int $unitId = 0, ?int $transactionId = null)
     {
         $data = substr($rawData, 1);
         $this->coilsBytesLength = strlen($data);

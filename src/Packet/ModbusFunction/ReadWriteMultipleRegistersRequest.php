@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet\ModbusFunction;
-
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ErrorResponse;
@@ -59,9 +59,8 @@ class ReadWriteMultipleRegistersRequest extends ProtocolDataUnitRequest implemen
         int   $writeStartAddress,
         array $writeRegisters,
         int   $unitId = 0,
-        int   $transactionId = null
-    )
-    {
+        ?int   $transactionId = null
+    ) {
         $this->readQuantity = $readQuantity;
         $this->writeStartAddress = $writeStartAddress;
         $this->writeRegisters = $writeRegisters;

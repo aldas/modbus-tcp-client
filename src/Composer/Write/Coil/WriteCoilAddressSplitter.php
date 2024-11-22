@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Write\Coil;
-
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\AddressSplitter;
@@ -41,7 +41,7 @@ class WriteCoilAddressSplitter extends AddressSplitter
         return static::MAX_COILS_PER_MODBUS_REQUEST;
     }
 
-    protected function shouldSplit(Address $currentAddress, int $currentQuantity, Address $previousAddress = null, int $previousQuantity = null): bool
+    protected function shouldSplit(Address $currentAddress, int $currentQuantity, ?Address $previousAddress = null, ?int $previousQuantity = null): bool
     {
         $isOverAddressLimit = $currentQuantity >= $this->getMaxAddressesPerModbusRequest();
         if ($isOverAddressLimit) {

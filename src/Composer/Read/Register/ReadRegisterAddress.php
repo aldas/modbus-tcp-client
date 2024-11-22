@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read\Register;
-
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\RegisterAddress;
@@ -28,12 +28,11 @@ class ReadRegisterAddress extends RegisterAddress
     public function __construct(
         int      $address,
         string   $type,
-        string   $name = null,
-        callable $callback = null,
-        callable $errorCallback = null,
-        int      $endian = null
-    )
-    {
+        ?string   $name = null,
+        ?callable $callback = null,
+        ?callable $errorCallback = null,
+        ?int      $endian = null
+    ) {
         parent::__construct($address, $type);
 
         $this->endian = $endian === null ? Endian::$defaultEndian : $endian;

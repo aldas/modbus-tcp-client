@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Write;
-
 
 use ModbusTcpClient\Composer\AddressSplitter;
 use ModbusTcpClient\Composer\Request;
@@ -25,7 +25,7 @@ class WriteCoilsBuilder
     /** @var int */
     private int $unitId;
 
-    public function __construct(string $requestClass, string $uri = null, int $unitId = 0)
+    public function __construct(string $requestClass, ?string $uri = null, int $unitId = 0)
     {
         $this->addressSplitter = new WriteCoilAddressSplitter($requestClass);
 
@@ -35,7 +35,7 @@ class WriteCoilsBuilder
         $this->unitId = $unitId;
     }
 
-    public static function newWriteMultipleCoils(string $uri = null, int $unitId = 0): WriteCoilsBuilder
+    public static function newWriteMultipleCoils(?string $uri = null, int $unitId = 0): WriteCoilsBuilder
     {
         return new WriteCoilsBuilder(WriteMultipleCoilsRequest::class, $uri, $unitId);
     }

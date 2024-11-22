@@ -29,7 +29,7 @@ class Range
         $count = count($range);
         if ($count == 1) {
             return new Range($range[0], $range[0]);
-        } else if ($count == 2) {
+        } elseif ($count == 2) {
             return new Range($range[0], $range[1]);
         }
         throw new InvalidArgumentException('Range can only be created from array with 1 or 2 elements');

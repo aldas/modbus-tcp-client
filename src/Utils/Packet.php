@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Utils;
-
 
 use ModbusTcpClient\Network\IOException;
 use ModbusTcpClient\Packet\ErrorResponse;

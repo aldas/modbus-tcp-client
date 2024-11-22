@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet\ModbusFunction;
-
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ErrorResponse;
@@ -44,7 +44,7 @@ class WriteMultipleRegistersRequest extends ProtocolDataUnitRequest implements M
      * @param int $unitId
      * @param int|null $transactionId
      */
-    public function __construct(int $startAddress, array $registers, int $unitId = 0, int $transactionId = null)
+    public function __construct(int $startAddress, array $registers, int $unitId = 0, ?int $transactionId = null)
     {
         $this->registers = $registers;
         $this->registersBytesSize = Registers::getRegisterArrayByteSize($this->registers);

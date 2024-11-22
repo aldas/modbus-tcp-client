@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet\ModbusFunction;
@@ -31,7 +32,7 @@ class ReadHoldingRegistersRequest extends ProtocolDataUnitRequest implements Mod
      */
     private int $quantity;
 
-    public function __construct(int $startAddress, int $quantity, int $unitId = 0, int $transactionId = null)
+    public function __construct(int $startAddress, int $quantity, int $unitId = 0, ?int $transactionId = null)
     {
         parent::__construct($startAddress, $unitId, $transactionId);
 

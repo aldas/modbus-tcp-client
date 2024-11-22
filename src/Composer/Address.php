@@ -1,24 +1,24 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer;
 
-
 interface Address
 {
-    const TYPE_BIT = 'bit';
-    const TYPE_BYTE = 'byte';
-    const TYPE_INT16 = 'int16';
-    const TYPE_UINT16 = 'uint16';
-    const TYPE_INT32 = 'int32';
-    const TYPE_UINT32 = 'uint32';
-    const TYPE_INT64 = 'int64';
-    const TYPE_UINT64 = 'uint64';
-    const TYPE_FLOAT = 'float';
-    const TYPE_DOUBLE = 'double';
-    const TYPE_STRING = 'string';
+    public const TYPE_BIT = 'bit';
+    public const TYPE_BYTE = 'byte';
+    public const TYPE_INT16 = 'int16';
+    public const TYPE_UINT16 = 'uint16';
+    public const TYPE_INT32 = 'int32';
+    public const TYPE_UINT32 = 'uint32';
+    public const TYPE_INT64 = 'int64';
+    public const TYPE_UINT64 = 'uint64';
+    public const TYPE_FLOAT = 'float';
+    public const TYPE_DOUBLE = 'double';
+    public const TYPE_STRING = 'string';
 
-    const TYPES = [
+    public const TYPES = [
         Address::TYPE_BIT,
         Address::TYPE_BYTE,
         Address::TYPE_INT16,

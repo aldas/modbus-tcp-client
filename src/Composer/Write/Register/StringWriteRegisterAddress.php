@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Write\Register;
-
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Exception\InvalidArgumentException;
@@ -20,7 +20,7 @@ class StringWriteRegisterAddress extends WriteRegisterAddress
      */
     private ?string $toEncoding;
 
-    public function __construct(int $address, string $value, int $byteLength, string $toEncoding = null)
+    public function __construct(int $address, string $value, int $byteLength, ?string $toEncoding = null)
     {
         parent::__construct($address, Address::TYPE_STRING, $value);
 

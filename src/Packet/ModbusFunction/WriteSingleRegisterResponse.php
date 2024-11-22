@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet\ModbusFunction;
@@ -27,7 +28,7 @@ class WriteSingleRegisterResponse extends StartAddressResponse
      */
     private Word $word;
 
-    public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
+    public function __construct(string $rawData, int $unitId = 0, ?int $transactionId = null)
     {
         parent::__construct($rawData, $unitId, $transactionId);
         $this->word = new Word(substr($rawData, 2, 2));

@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet\ModbusFunction;
-
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ErrorResponse;
@@ -39,7 +39,7 @@ class MaskWriteRegisterRequest extends ProtocolDataUnitRequest implements Modbus
      */
     private int $orMask;
 
-    public function __construct(int $startAddress, int $andMask, int $orMask, int $unitId = 0, int $transactionId = null)
+    public function __construct(int $startAddress, int $andMask, int $orMask, int $unitId = 0, ?int $transactionId = null)
     {
         parent::__construct($startAddress, $unitId, $transactionId);
         $this->andMask = $andMask;

@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet\ModbusFunction;
-
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Exception\ModbusException;
@@ -39,7 +39,7 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
     /** @var int[] */
     private array $dataBytes;
 
-    public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
+    public function __construct(string $rawData, int $unitId = 0, ?int $transactionId = null)
     {
         parent::__construct($rawData, $unitId, $transactionId);
         $this->data = substr($rawData, 1); //first byte is byteCount. remove it
@@ -201,7 +201,7 @@ class ReadHoldingRegistersResponse extends ByteCountResponse implements \ArrayAc
      * @param int|null $endianness byte and word order for modbus binary data
      * @return string
      */
-    public function getAsciiStringAt(int $startFromWord, int $length, int $endianness = null): string
+    public function getAsciiStringAt(int $startFromWord, int $length, ?int $endianness = null): string
     {
         $address = ($startFromWord - $this->getStartAddress()) * 2;
 
