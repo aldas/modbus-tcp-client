@@ -40,7 +40,7 @@ class ReportServerIDResponse extends ProtocolDataUnit implements ModbusResponse
      */
     private ?string $additionalData = null;
 
-    public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
+    public function __construct(string $rawData, int $unitId = 0, ?int $transactionId = null)
     {
         $serverIDLength = Types::parseByte($rawData[0]);
         if (strlen($rawData) < ($serverIDLength + 2)) {

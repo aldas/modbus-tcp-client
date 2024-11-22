@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read\Coil;
-
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Packet\ModbusResponse;
@@ -21,7 +21,7 @@ class ReadCoilAddress implements Address
     /** @var callable */
     private $errorCallback;
 
-    public function __construct(int $address, string $name = null, callable $callback = null, callable $errorCallback = null)
+    public function __construct(int $address, ?string $name = null, ?callable $callback = null, ?callable $errorCallback = null)
     {
         $this->address = $address;
         $this->name = $name ?: (string)($address);

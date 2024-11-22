@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
-
 
 /*
  * Here is an example of a Modbus RTU request for the content of analog output holding registers # 40108 to 40110.
@@ -21,7 +21,7 @@ abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
 {
     private int $startAddress;
 
-    public function __construct(int $startAddress, int $unitId = 0, int $transactionId = null)
+    public function __construct(int $startAddress, int $unitId = 0, ?int $transactionId = null)
     {
         parent::__construct($unitId, $transactionId);
 
@@ -63,7 +63,8 @@ abstract class ProtocolDataUnitRequest extends ProtocolDataUnit
     protected static function parseStartAddressPacket(string|null $binaryString, int $minLength, int $functionCode, callable $createFunctor): mixed
     {
         if ($binaryString === null || strlen($binaryString) < $minLength) {
-            return new ErrorResponse(new ModbusApplicationHeader(2, 0, 0),
+            return new ErrorResponse(
+                new ModbusApplicationHeader(2, 0, 0),
                 $functionCode,
                 4 // Server failure
             );

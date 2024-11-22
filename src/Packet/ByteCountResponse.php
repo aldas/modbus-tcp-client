@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
-
 
 use ModbusTcpClient\Exception\ParseException;
 use ModbusTcpClient\Utils\Types;
@@ -15,7 +15,7 @@ abstract class ByteCountResponse extends ProtocolDataUnit implements ModbusRespo
     /** @var int */
     private int $startAddress = 0;
 
-    public function __construct(string $rawData, int $unitId = 0, int $transactionId = null)
+    public function __construct(string $rawData, int $unitId = 0, ?int $transactionId = null)
     {
         $this->byteCount = Types::parseByte($rawData[0]);
 

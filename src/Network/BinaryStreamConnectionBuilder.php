@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Network;
-
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Utils\Packet;
@@ -167,7 +167,7 @@ class BinaryStreamConnectionBuilder extends BinaryStreamConnectionProperties
      * @param array<string,mixed>|null $options
      * @return $this
      */
-    public function setFromOptions(array $options = null): static
+    public function setFromOptions(?array $options = null): static
     {
         if ($options !== null) {
             foreach ($options as $option => $value) {

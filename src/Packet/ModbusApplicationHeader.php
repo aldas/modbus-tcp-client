@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
-
 
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Exception\ModbusException;
@@ -25,7 +25,7 @@ class ModbusApplicationHeader
     /**
      * @var int 2 bytes set by the Client, always = 00 00
      */
-    const PROTOCOL_ID = 0;
+    public const PROTOCOL_ID = 0;
 
     /**
      * @var int 2 bytes set by the Client to uniquely identify each request. These bytes are echoed by the Server since its responses may not be received in the same order as the requests.
@@ -43,7 +43,7 @@ class ModbusApplicationHeader
      */
     private int $unitId = 0;
 
-    public function __construct(int $length, int $unitId = 0, int $transactionId = null)
+    public function __construct(int $length, int $unitId = 0, ?int $transactionId = null)
     {
         $this->validate($length, $unitId, $transactionId);
 

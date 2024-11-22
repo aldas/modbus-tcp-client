@@ -2,7 +2,6 @@
 
 namespace ModbusTcpClient\Composer\Write\Register;
 
-
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\RegisterAddress;
 use ModbusTcpClient\Utils\Types;

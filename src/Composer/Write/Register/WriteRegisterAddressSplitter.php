@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Write\Register;
-
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\AddressSplitter;
@@ -35,7 +35,7 @@ class WriteRegisterAddressSplitter extends AddressSplitter
         return new WriteRegisterRequest($uri, $addressesChunk, new $this->requestClass($startAddress, $binaryStrings, $unitId));
     }
 
-    protected function shouldSplit(Address $currentAddress, int $currentQuantity, Address $previousAddress = null, int $previousQuantity = null): bool
+    protected function shouldSplit(Address $currentAddress, int $currentQuantity, ?Address $previousAddress = null, ?int $previousQuantity = null): bool
     {
         $isOverAddressLimit = $currentQuantity >= $this->getMaxAddressesPerModbusRequest();
         if ($isOverAddressLimit) {

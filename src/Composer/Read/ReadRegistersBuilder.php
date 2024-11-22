@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read;
@@ -39,7 +40,7 @@ class ReadRegistersBuilder
     /** @var int */
     private int $unitId;
 
-    public function __construct(string $requestClass, string $uri = null, int $unitId = 0)
+    public function __construct(string $requestClass, ?string $uri = null, int $unitId = 0)
     {
         $this->addressSplitter = new ReadRegisterAddressSplitter($requestClass);
 
@@ -49,12 +50,12 @@ class ReadRegistersBuilder
         $this->unitId = $unitId;
     }
 
-    public static function newReadHoldingRegisters(string $uri = null, int $unitId = 0): ReadRegistersBuilder
+    public static function newReadHoldingRegisters(?string $uri = null, int $unitId = 0): ReadRegistersBuilder
     {
         return new ReadRegistersBuilder(ReadHoldingRegistersRequest::class, $uri, $unitId);
     }
 
-    public static function newReadInputRegisters(string $uri = null, int $unitId = 0): ReadRegistersBuilder
+    public static function newReadInputRegisters(?string $uri = null, int $unitId = 0): ReadRegistersBuilder
     {
         return new ReadRegistersBuilder(ReadInputRegistersRequest::class, $uri, $unitId);
     }
@@ -206,7 +207,7 @@ class ReadRegistersBuilder
         return $this;
     }
 
-    public function bit(int $address, int $nthBit, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
+    public function bit(int $address, int $nthBit, ?string $name = null, ?callable $callback = null, ?callable $errorCallback = null): ReadRegistersBuilder
     {
         if ($nthBit < 0 || $nthBit > 15) {
             throw new InvalidArgumentException("Invalid bit number in for register given! nthBit: '{$nthBit}', address: {$address}");
@@ -214,19 +215,18 @@ class ReadRegistersBuilder
         return $this->addAddress(new BitReadRegisterAddress($address, $nthBit, $name, $callback, $errorCallback));
     }
 
-    public function byte(int $address, bool $firstByte = true, string $name = null, callable $callback = null, callable $errorCallback = null): ReadRegistersBuilder
+    public function byte(int $address, bool $firstByte = true, ?string $name = null, ?callable $callback = null, ?callable $errorCallback = null): ReadRegistersBuilder
     {
         return $this->addAddress(new ByteReadRegisterAddress($address, $firstByte, $name, $callback, $errorCallback));
     }
 
     public function int16(
         int      $address,
-        string   $name = null,
-        callable $callback = null,
-        callable $errorCallback = null,
-        int      $endian = null
-    ): ReadRegistersBuilder
-    {
+        ?string   $name = null,
+        ?callable $callback = null,
+        ?callable $errorCallback = null,
+        ?int      $endian = null
+    ): ReadRegistersBuilder {
         $r = new ReadRegisterAddress(
             $address,
             Address::TYPE_INT16,
@@ -240,12 +240,11 @@ class ReadRegistersBuilder
 
     public function uint16(
         int      $address,
-        string   $name = null,
-        callable $callback = null,
-        callable $errorCallback = null,
-        int      $endian = null
-    ): ReadRegistersBuilder
-    {
+        ?string   $name = null,
+        ?callable $callback = null,
+        ?callable $errorCallback = null,
+        ?int      $endian = null
+    ): ReadRegistersBuilder {
         $r = new ReadRegisterAddress(
             $address,
             Address::TYPE_UINT16,
@@ -259,12 +258,11 @@ class ReadRegistersBuilder
 
     public function int32(
         int      $address,
-        string   $name = null,
-        callable $callback = null,
-        callable $errorCallback = null,
-        int      $endian = null
-    ): ReadRegistersBuilder
-    {
+        ?string   $name = null,
+        ?callable $callback = null,
+        ?callable $errorCallback = null,
+        ?int      $endian = null
+    ): ReadRegistersBuilder {
         $r = new ReadRegisterAddress(
             $address,
             Address::TYPE_INT32,
@@ -278,12 +276,11 @@ class ReadRegistersBuilder
 
     public function uint32(
         int      $address,
-        string   $name = null,
-        callable $callback = null,
-        callable $errorCallback = null,
-        int      $endian = null
-    ): ReadRegistersBuilder
-    {
+        ?string   $name = null,
+        ?callable $callback = null,
+        ?callable $errorCallback = null,
+        ?int      $endian = null
+    ): ReadRegistersBuilder {
         $r = new ReadRegisterAddress(
             $address,
             Address::TYPE_UINT32,
@@ -297,12 +294,11 @@ class ReadRegistersBuilder
 
     public function uint64(
         int      $address,
-        string   $name = null,
-        callable $callback = null,
-        callable $errorCallback = null,
-        int      $endian = null
-    ): ReadRegistersBuilder
-    {
+        ?string   $name = null,
+        ?callable $callback = null,
+        ?callable $errorCallback = null,
+        ?int      $endian = null
+    ): ReadRegistersBuilder {
         $r = new ReadRegisterAddress(
             $address,
             Address::TYPE_UINT64,
@@ -316,12 +312,11 @@ class ReadRegistersBuilder
 
     public function int64(
         int      $address,
-        string   $name = null,
-        callable $callback = null,
-        callable $errorCallback = null,
-        int      $endian = null
-    ): ReadRegistersBuilder
-    {
+        ?string   $name = null,
+        ?callable $callback = null,
+        ?callable $errorCallback = null,
+        ?int      $endian = null
+    ): ReadRegistersBuilder {
         $r = new ReadRegisterAddress(
             $address,
             Address::TYPE_INT64,
@@ -335,12 +330,11 @@ class ReadRegistersBuilder
 
     public function float(
         int      $address,
-        string   $name = null,
-        callable $callback = null,
-        callable $errorCallback = null,
-        int      $endian = null
-    ): ReadRegistersBuilder
-    {
+        ?string   $name = null,
+        ?callable $callback = null,
+        ?callable $errorCallback = null,
+        ?int      $endian = null
+    ): ReadRegistersBuilder {
         $r = new ReadRegisterAddress(
             $address,
             Address::TYPE_FLOAT,
@@ -354,12 +348,11 @@ class ReadRegistersBuilder
 
     public function double(
         int      $address,
-        string   $name = null,
-        callable $callback = null,
-        callable $errorCallback = null,
-        int      $endian = null
-    ): ReadRegistersBuilder
-    {
+        ?string   $name = null,
+        ?callable $callback = null,
+        ?callable $errorCallback = null,
+        ?int      $endian = null
+    ): ReadRegistersBuilder {
         $r = new ReadRegisterAddress(
             $address,
             Address::TYPE_DOUBLE,
@@ -374,12 +367,11 @@ class ReadRegistersBuilder
     public function string(
         int      $address,
         int      $byteLength,
-        string   $name = null,
-        callable $callback = null,
-        callable $errorCallback = null,
-        int      $endian = null
-    ): ReadRegistersBuilder
-    {
+        ?string   $name = null,
+        ?callable $callback = null,
+        ?callable $errorCallback = null,
+        ?int      $endian = null
+    ): ReadRegistersBuilder {
         if ($byteLength < 1 || $byteLength > 228) {
             throw new InvalidArgumentException("Out of range string length for given! length: '{$byteLength}', address: {$address}");
         }
@@ -399,8 +391,3 @@ class ReadRegistersBuilder
         return !empty($this->addresses);
     }
 }
-
-
-
-
-

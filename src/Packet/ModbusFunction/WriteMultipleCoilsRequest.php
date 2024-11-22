@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet\ModbusFunction;
@@ -42,7 +43,7 @@ class WriteMultipleCoilsRequest extends ProtocolDataUnitRequest implements Modbu
      * @param int $unitId
      * @param int|null $transactionId
      */
-    public function __construct(int $startAddress, array $coils, int $unitId = 0, int $transactionId = null)
+    public function __construct(int $startAddress, array $coils, int $unitId = 0, ?int $transactionId = null)
     {
         $this->coils = $coils;
         $this->coilCount = count($this->coils);

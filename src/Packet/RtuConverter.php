@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
-
 
 use ModbusTcpClient\Exception\ModbusException;
 use ModbusTcpClient\Exception\ParseException;
@@ -57,7 +57,8 @@ final class RtuConverter
             $calculatedCrc = self::crc16($data);
             if ($originalCrc !== $calculatedCrc) {
                 throw new ParseException(
-                    sprintf('Packet crc (\x%s) does not match calculated crc (\x%s)!',
+                    sprintf(
+                        'Packet crc (\x%s) does not match calculated crc (\x%s)!',
                         bin2hex($originalCrc),
                         bin2hex($calculatedCrc)
                     )

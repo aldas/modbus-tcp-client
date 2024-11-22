@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Network;
-
 
 use ModbusTcpClient\Composer\Request;
 use ModbusTcpClient\Exception\ModbusException;
@@ -17,8 +17,8 @@ class NonBlockingClient
 {
     use StreamHandler;
 
-    const OPT_FLAT_REQUEST_RESPONSE = 'flatRequestResponse';
-    const OPT_THROW_ON_ERROR = 'throwOnError';
+    public const OPT_FLAT_REQUEST_RESPONSE = 'flatRequestResponse';
+    public const OPT_THROW_ON_ERROR = 'throwOnError';
 
     /**
      * @var array<string, mixed>
@@ -31,7 +31,7 @@ class NonBlockingClient
     /**
      * @param array<string, mixed>|null $options
      */
-    public function __construct(array $options = null)
+    public function __construct(?array $options = null)
     {
         $this->options = $this->getMergeOptions($options);
     }
@@ -44,7 +44,7 @@ class NonBlockingClient
      * @param array<string, mixed>|null $options
      * @return ModbusResponse[]
      */
-    public function sendPackets(array $packets, string $uri = null, array $options = null): array
+    public function sendPackets(array $packets, ?string $uri = null, ?array $options = null): array
     {
         $readStreams = [];
         $connections = [];
@@ -102,7 +102,7 @@ class NonBlockingClient
      * @param array<string, mixed>|null $options
      * @return ModbusPacket
      */
-    public function sendPacket(ModbusPacket $packet, string $uri = null, array $options = null): ModbusPacket
+    public function sendPacket(ModbusPacket $packet, ?string $uri = null, ?array $options = null): ModbusPacket
     {
         $responses = $this->sendPackets([$packet], $uri, $options);
         return reset($responses);
@@ -115,7 +115,7 @@ class NonBlockingClient
      * @param array<string, mixed>|null $options options for tcp stream. See 'BinaryStreamConnection' properties.
      * @return ResultContainer
      */
-    public function sendRequests(array $requests, array $options = null): ResultContainer
+    public function sendRequests(array $requests, ?array $options = null): ResultContainer
     {
         $readStreams = [];
         $connections = [];
@@ -193,7 +193,7 @@ class NonBlockingClient
      * @param array<string, mixed>|null $options
      * @return ResultContainer
      */
-    public function sendRequest(Request $request, array $options = null): ResultContainer
+    public function sendRequest(Request $request, ?array $options = null): ResultContainer
     {
         return $this->sendRequests([$request], $options);
     }
@@ -202,7 +202,7 @@ class NonBlockingClient
      * @param array<string, mixed>|null $options
      * @return array<string, mixed>
      */
-    private function getMergeOptions(array $options = null): array
+    private function getMergeOptions(?array $options = null): array
     {
         if (!empty($options)) {
             return array_merge($this->options, $options);

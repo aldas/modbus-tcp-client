@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Write\Coil;
-
 
 use ModbusTcpClient\Composer\Address;
 

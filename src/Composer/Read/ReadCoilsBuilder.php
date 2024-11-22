@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read;
@@ -34,7 +35,7 @@ class ReadCoilsBuilder
     /** @var int */
     private int $unitId;
 
-    public function __construct(string $requestClass, string $uri = null, int $unitId = 0)
+    public function __construct(string $requestClass, ?string $uri = null, int $unitId = 0)
     {
         $this->addressSplitter = new ReadCoilAddressSplitter($requestClass);
 
@@ -44,12 +45,12 @@ class ReadCoilsBuilder
         $this->unitId = $unitId;
     }
 
-    public static function newReadCoils(string $uri = null, int $unitId = 0): ReadCoilsBuilder
+    public static function newReadCoils(?string $uri = null, int $unitId = 0): ReadCoilsBuilder
     {
         return new ReadCoilsBuilder(ReadCoilsRequest::class, $uri, $unitId);
     }
 
-    public static function newReadInputDiscretes(string $uri = null, int $unitId = 0): ReadCoilsBuilder
+    public static function newReadInputDiscretes(?string $uri = null, int $unitId = 0): ReadCoilsBuilder
     {
         return new ReadCoilsBuilder(ReadInputDiscretesRequest::class, $uri, $unitId);
     }
@@ -157,11 +158,10 @@ class ReadCoilsBuilder
 
     public function coil(
         int      $address,
-        string   $name = null,
-        callable $callback = null,
-        callable $errorCallback = null
-    ): ReadCoilsBuilder
-    {
+        ?string   $name = null,
+        ?callable $callback = null,
+        ?callable $errorCallback = null
+    ): ReadCoilsBuilder {
         return $this->addAddress(new ReadCoilAddress($address, $name, $callback, $errorCallback));
     }
 
@@ -178,8 +178,3 @@ class ReadCoilsBuilder
         return !empty($this->addresses);
     }
 }
-
-
-
-
-

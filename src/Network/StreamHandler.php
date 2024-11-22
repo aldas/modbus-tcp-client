@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Network;
@@ -17,7 +18,7 @@ trait StreamHandler
      * @param LoggerInterface|null $logger
      * @return string[]
      */
-    protected function receiveFrom(array $readStreams, float $timeout = null, LoggerInterface $logger = null): array
+    protected function receiveFrom(array $readStreams, ?float $timeout = null, ?LoggerInterface $logger = null): array
     {
         if ($timeout === null) {
             $timeout = 0.3;

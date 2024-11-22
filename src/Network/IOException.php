@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Network;
@@ -10,5 +11,4 @@ use ModbusTcpClient\Exception\ModbusException;
  */
 class IOException extends ModbusException
 {
-
 }

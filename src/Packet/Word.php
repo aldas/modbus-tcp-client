@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
@@ -20,7 +21,7 @@ class Word extends AbstractWord
      * @param int|null $endianness byte and word order for modbus binary data
      * @return int
      */
-    public function getInt16(int $endianness = null): int
+    public function getInt16(?int $endianness = null): int
     {
         return Types::parseInt16($this->data, $endianness);
     }
@@ -29,7 +30,7 @@ class Word extends AbstractWord
      * @param int|null $endianness byte and word order for modbus binary data
      * @return int
      */
-    public function getUInt16(int $endianness = null): int
+    public function getUInt16(?int $endianness = null): int
     {
         return Types::parseUInt16($this->data, $endianness);
     }

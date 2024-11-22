@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet\ModbusFunction;
@@ -11,7 +12,6 @@ use ModbusTcpClient\Packet\ProtocolDataUnitRequest;
 use ModbusTcpClient\Packet\Word;
 use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
-
 
 /**
  * Request for Write Single Register (FC=06)
@@ -28,13 +28,12 @@ use ModbusTcpClient\Utils\Types;
  */
 class WriteSingleRegisterRequest extends ProtocolDataUnitRequest implements ModbusRequest
 {
-
     /**
      * @var int value to be sent to modbus
      */
     private int $value;
 
-    public function __construct(int $startAddress, int $value, int $unitId = 0, int $transactionId = null)
+    public function __construct(int $startAddress, int $value, int $unitId = 0, ?int $transactionId = null)
     {
         parent::__construct($startAddress, $unitId, $transactionId);
         $this->value = $value;

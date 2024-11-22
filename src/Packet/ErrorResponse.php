@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Packet;
-
 
 use ModbusTcpClient\Utils\Types;
 
@@ -23,7 +23,7 @@ class ErrorResponse implements ModbusResponse
     /**
      * @var int Modbus exceptions are transferred in function code byte and have their high bit set (128)
      */
-    const EXCEPTION_BITMASK = 128;
+    public const EXCEPTION_BITMASK = 128;
 
     /**
      * @var ModbusApplicationHeader

@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read\Register;
-
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
@@ -16,12 +16,11 @@ class StringReadRegisterAddress extends ReadRegisterAddress
     public function __construct(
         int      $address,
         int      $byteLength,
-        string   $name = null,
-        callable $callback = null,
-        callable $errorCallback = null,
-        int      $endian = null
-    )
-    {
+        ?string   $name = null,
+        ?callable $callback = null,
+        ?callable $errorCallback = null,
+        ?int      $endian = null
+    ) {
         $type = Address::TYPE_STRING;
         parent::__construct($address, $type, $name ?: "{$type}_{$address}_{$byteLength}", $callback, $errorCallback, $endian);
         $this->byteLength = $byteLength;

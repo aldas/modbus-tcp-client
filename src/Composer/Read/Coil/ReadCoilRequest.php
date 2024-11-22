@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read\Coil;
-
 
 use ModbusTcpClient\Composer\Request;
 use ModbusTcpClient\Exception\ModbusException;

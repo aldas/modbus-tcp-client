@@ -21,7 +21,7 @@ use ModbusTcpClient\Utils\Types;
  */
 class GetCommEventCounterRequest extends ProtocolDataUnit implements ModbusRequest
 {
-    public function __construct(int $unitId = 0, int $transactionId = null)
+    public function __construct(int $unitId = 0, ?int $transactionId = null)
     {
         parent::__construct($unitId, $transactionId);
     }

@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ModbusTcpClient\Composer\Read\Register;
-
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
@@ -13,7 +13,7 @@ class ByteReadRegisterAddress extends ReadRegisterAddress
     /** @var bool */
     private bool $firstByte;
 
-    public function __construct(int $address, bool $firstByte, string $name = null, callable $callback = null, callable $errorCallback = null)
+    public function __construct(int $address, bool $firstByte, ?string $name = null, ?callable $callback = null, ?callable $errorCallback = null)
     {
         $type = Address::TYPE_BYTE;
         $fbInt = (int)$firstByte;
