@@ -44,6 +44,13 @@ composer require aldas/modbus-tcp-client
 ## Intention
 This library is influenced by [phpmodbus](https://github.com/adduc/phpmodbus) library and meant to be provide decoupled Modbus protocol (request/response packets) and networking related features so you could build modbus client with our own choice of networking code (ext_sockets/streams/Reactphp/Amp asynchronous streams) or use library provided networking classes (php Streams)
 
+## Addresses
+
+This library uses PDU / protocol level address numbers (`0` is very first register/coil). This is different from numbering 
+schemes (`0xxxxx`, `1xxxxx`, `3xxxxx`, and `4xxxxx`). The `x` denotes coil or register address starting from `1`.
+
+So when your documentation gives you address as `300102` you should interpret it in this library context as: FC3, address `101`
+
 ## Endianness
 Applies to multibyte data that are stored in Word/Double/Quad word registers basically everything
 that is not (u)int16/byte/char. 
