@@ -50,4 +50,15 @@ class ReadInputRegistersResponseTest extends TestCase
         new ReadInputRegistersResponse("\x03\xCD\x6B", 3, 33152);
     }
 
+
+    public function test32BitEndians()
+    {
+        $packet = new ReadInputRegistersResponse("\x04\x0\x0\x02\x01", 3, 33152);
+        $this->assertEquals(ModbusPacket::READ_INPUT_REGISTERS, $packet->getFunctionCode());
+
+        $dw = $packet->getDoubleWordAt(0);
+        $this->assertEquals(258, $dw->getUInt32());
+        $this->assertEquals(258, $dw->getLowBytesAsWord()->getUInt16());
+    }
+
 }
