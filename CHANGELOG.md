@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# [3.6.0] - 2026-01-28
+
+* Fix PHP 8.5 warning and bump dependencies [#173](https://github.com/aldas/modbus-tcp-client/pull/173)
+
+
 # [3.5.1] - 2024-03-10
 
 * Allow unit ID to be in range of 0-255 [#160](https://github.com/aldas/modbus-tcp-client/pull/160)
