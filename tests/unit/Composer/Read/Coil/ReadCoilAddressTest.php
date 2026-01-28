@@ -4,12 +4,13 @@ namespace Tests\unit\Composer\Read\Coil;
 
 use ModbusTcpClient\Composer\Read\Coil\ReadCoilAddress;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsResponse;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ReadCoilAddressTest extends TestCase
 {
 
-    public function toExtractProvider()
+    public static function toExtractProvider(): array
     {
         return [
             'extract true from 1 bit' => ["\x01\x01", 0, true],
@@ -18,9 +19,7 @@ class ReadCoilAddressTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider toExtractProvider
-     */
+    #[DataProvider('toExtractProvider')]
     public function testExtract(string $payload, int $address, bool $expected)
     {
         $responsePacket = new ReadCoilsResponse($payload, 3, 33152);

@@ -13,6 +13,7 @@ use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputRegistersRequest;
 use ModbusTcpClient\Utils\Endian;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ReadRegistersBuilderTest extends TestCase
@@ -50,7 +51,7 @@ class ReadRegistersBuilderTest extends TestCase
         $this->assertCount(1, $readRequest2->getAddresses());
     }
 
-    public function unaddressableRangeProvider(): array
+    public static function unaddressableRangeProvider(): array
     {
         return [
             'ok, empty range' => [[], [3], null],
@@ -63,9 +64,7 @@ class ReadRegistersBuilderTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider unaddressableRangeProvider
-     */
+    #[DataProvider('unaddressableRangeProvider')]
     public function testBuildSplitRequestUnaddressableRange($unaddressable, $expectRequestCounts, $expectExceptionMessage)
     {
         if ($expectExceptionMessage !== null) {
@@ -356,9 +355,7 @@ class ReadRegistersBuilderTest extends TestCase
             ->build();
     }
 
-    /**
-     * @dataProvider typesProvider
-     */
+    #[DataProvider('typesProvider')]
     public function testAddressTypes($type, $size)
     {
         $requests = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
@@ -378,7 +375,7 @@ class ReadRegistersBuilderTest extends TestCase
         $this->assertEquals($size, $address->getSize());
     }
 
-    public function typesProvider(): array
+    public static function typesProvider(): array
     {
         return [
             'add int16' => ['int16', 1],
@@ -391,9 +388,7 @@ class ReadRegistersBuilderTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider typesWithEndianProvider
-     */
+    #[DataProvider('typesWithEndianProvider')]
     public function testAddressTypesWithEndian($type, $size, $endian)
     {
         $requests = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022')
@@ -414,7 +409,7 @@ class ReadRegistersBuilderTest extends TestCase
         $this->assertEquals($endian, $address->getEndian());
     }
 
-    public function typesWithEndianProvider(): array
+    public static function typesWithEndianProvider(): array
     {
         return [
             'add int16' => ['int16', 1, Endian::LITTLE_ENDIAN],
@@ -474,7 +469,7 @@ class ReadRegistersBuilderTest extends TestCase
         $this->assertEquals(2, $address->getSize());
     }
 
-    public function requestValuesProvider(): array
+    public static function requestValuesProvider(): array
     {
         return [
             'first address is bigger in size than second' => [
@@ -569,9 +564,7 @@ class ReadRegistersBuilderTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider requestValuesProvider
-     */
+    #[DataProvider('requestValuesProvider')]
     public function testRequestValues($requestArgs)
     {
         $builder = ReadRegistersBuilder::newReadHoldingRegisters('tcp://127.0.0.1:5022');

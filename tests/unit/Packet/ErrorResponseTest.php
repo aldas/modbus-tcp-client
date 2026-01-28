@@ -5,20 +5,19 @@ namespace Tests\unit\Packet;
 
 use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusApplicationHeader;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ErrorResponseTest extends TestCase
 {
-    /**
-     * @dataProvider errorMessageProvider
-     */
+    #[DataProvider('errorMessageProvider')]
     public function testErrorMessages($errorCode, $expectedMessage)
     {
         $address = new ErrorResponse(new ModbusApplicationHeader(1), 1, $errorCode);
         $this->assertEquals($expectedMessage, $address->getErrorMessage());
     }
 
-    public function errorMessageProvider(): array
+    public static function errorMessageProvider(): array
     {
         return [
             'errorCode 1 means "Illegal function"' => [1, 'Illegal function'],
@@ -70,7 +69,7 @@ class ErrorResponseTest extends TestCase
         $this->assertEquals($address->toHex(), $withStartAddress->toHex());
     }
 
-    public function isProvider(): array
+    public static function isProvider(): array
     {
         return [
             'complete error packet is error' => ["\xda\x87\x00\x00\x00\x03\x00\x81\x03", true],
@@ -79,9 +78,7 @@ class ErrorResponseTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider isProvider
-     */
+    #[DataProvider('isProvider')]
     public function testIs($binaryData, $expect)
     {
         $is = ErrorResponse::is($binaryData);

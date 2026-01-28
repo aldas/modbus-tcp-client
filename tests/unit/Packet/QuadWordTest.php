@@ -7,6 +7,7 @@ use ModbusTcpClient\Exception\OverflowException;
 use ModbusTcpClient\Packet\QuadWord;
 use ModbusTcpClient\Packet\Word;
 use ModbusTcpClient\Utils\Endian;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_Error;
 
@@ -101,9 +102,7 @@ class QuadWordTest extends TestCase
         $this->assertEquals("\x01\x02\x03\x04\x05\x06\x07\x08", $quadWord->getData());
     }
 
-    /**
-     * @requires PHP 7
-     */
+    #[RequiresPhp(">=7.0")]
     public function testShouldNotCreateFromWordsWhenParamNotWord()
     {
         $this->expectException(\TypeError::class);

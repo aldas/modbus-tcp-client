@@ -14,7 +14,7 @@ class SerialMockData
 
 }
 
-function exec($command, array &$output = null, &$return_var = null)
+function exec($command, ?array &$output = null, ?int &$return_var = null)
 {
     if (SerialMockData::$exec === null) {
         return \exec($command, $output, $return_var);

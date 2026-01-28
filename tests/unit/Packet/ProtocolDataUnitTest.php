@@ -8,6 +8,7 @@ use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusApplicationHeader;
 use ModbusTcpClient\Packet\ProtocolDataUnit;
 use ModbusTcpClient\Utils\Types;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ProtocolDataUnitTest extends TestCase
@@ -28,7 +29,7 @@ class ProtocolDataUnitTest extends TestCase
         new ProtocolDataUnitImpl(-1);
     }
 
-    public function parseProvider(): array
+    public static function parseProvider(): array
     {
         return [
             'ok' => ["\x01\x38\x00\x00\x00\x02\x11\x0b", (new ProtocolDataUnitImpl(0x11, 0x0138))->__toString()],
@@ -39,9 +40,7 @@ class ProtocolDataUnitTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider parseProvider
-     */
+    #[DataProvider('parseProvider')]
     public function testParse($binaryData, $expect)
     {
         $packet = ProtocolDataUnitImpl::parse($binaryData);

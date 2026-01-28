@@ -90,7 +90,7 @@ abstract class AddressSplitter
                         return $typeCmp;
                     }
                     if ($a instanceof ByteReadRegisterAddress && $b instanceof ByteReadRegisterAddress) {
-                        return $b->isFirstByte();
+                        return $b->isFirstByte() ? 1 : -1;
                     }
                     return $typeCmp;
                 }

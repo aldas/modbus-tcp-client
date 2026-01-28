@@ -21,7 +21,7 @@ function stream_socket_client($remote_socket, &$errno = null, &$errstr = null, $
     return SSCMockData::$stream_socket_client[SSCMockData::$stream_socket_clientCounter++];
 }
 
-function stream_context_create(array $options = null, array $params = null)
+function stream_context_create(array $options, ?array $params)
 {
     if (SSCMockData::$stream_context_create === null) {
         return \stream_context_create($options, $params);

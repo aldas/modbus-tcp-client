@@ -8,6 +8,7 @@ use ModbusTcpClient\Composer\Write\Register\WriteRegisterAddress;
 use ModbusTcpClient\Composer\Write\WriteRegistersBuilder;
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\WriteMultipleRegistersRequest;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class WriteRegistersBuilderTest extends TestCase
@@ -192,9 +193,7 @@ class WriteRegistersBuilderTest extends TestCase
             ->build();
     }
 
-    /**
-     * @dataProvider typesProvider
-     */
+    #[DataProvider('typesProvider')]
     public function testAddressTypes($type, $value, $size, $length)
     {
         $requests = WriteRegistersBuilder::newWriteMultipleRegisters('tcp://127.0.0.1:5022')
@@ -214,7 +213,7 @@ class WriteRegistersBuilderTest extends TestCase
         $this->assertEquals($size, $address->getSize());
     }
 
-    public function typesProvider(): array
+    public static function typesProvider(): array
     {
         return [
             'add int16' => ['int16', 1, 1, null],

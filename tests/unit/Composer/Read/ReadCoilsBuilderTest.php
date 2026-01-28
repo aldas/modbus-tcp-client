@@ -8,6 +8,7 @@ use ModbusTcpClient\Composer\Read\ReadCoilsBuilder;
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadCoilsRequest;
 use ModbusTcpClient\Packet\ModbusFunction\ReadInputDiscretesRequest;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ReadCoilsBuilderTest extends TestCase
@@ -41,7 +42,7 @@ class ReadCoilsBuilderTest extends TestCase
         $this->assertCount(1, $readRequest2->getAddresses());
     }
 
-    public function unaddressableRangeProvider(): array
+    public static function unaddressableRangeProvider(): array
     {
         return [
             'ok, empty range' => [[], [3], null],
@@ -54,9 +55,7 @@ class ReadCoilsBuilderTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider unaddressableRangeProvider
-     */
+    #[DataProvider('unaddressableRangeProvider')]
     public function testBuildSplitRequestUnaddressableRange($unaddressable, $expectRequestCounts, $expectExceptionMessage)
     {
         if ($expectExceptionMessage !== null) {

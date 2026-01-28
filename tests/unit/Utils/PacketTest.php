@@ -4,12 +4,13 @@ namespace Tests\Utils;
 
 use ModbusTcpClient\Network\IOException;
 use ModbusTcpClient\Utils\Packet;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class PacketTest extends TestCase
 {
 
-    public function isCompleteLengthProvider(): array
+    public static function isCompleteLengthProvider(): array
     {
         return [
             'complete error packet is complete' => ["\xda\x87\x00\x00\x00\x03\x00\x81\x03", true],
@@ -21,16 +22,14 @@ class PacketTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider isCompleteLengthProvider
-     */
+    #[DataProvider('isCompleteLengthProvider')]
     public function testIsCompleteLength($binaryData, $expect)
     {
         $is = Packet::isCompleteLength($binaryData);
         $this->assertEquals($expect, $is);
     }
 
-    public function isCompleteLengthRTUProvider(): array
+    public static function isCompleteLengthRTUProvider(): array
     {
         return [
             'complete error packet is complete' => ["\x00\x81\x03\x51\x91", true],
@@ -40,9 +39,7 @@ class PacketTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider isCompleteLengthRTUProvider
-     */
+    #[DataProvider('isCompleteLengthRTUProvider')]
     public function testIsCompleteLengthRTUh($binaryData, $expect)
     {
         $is = Packet::isCompleteLengthRTU($binaryData);
@@ -57,7 +54,7 @@ class PacketTest extends TestCase
         Packet::isCompleteLengthRTU("\x01\x03\x04\x00\x00\x00\x00\xfa\x33\xFF");
     }
 
-    public function isCompleteLengthRTUTypesProvider(): array
+    public static function isCompleteLengthRTUTypesProvider(): array
     {
         return [ // all have CRC as \x00\x00
             'GetCommEventCounterResponse' => ["\x01\x0b\xFF\xFF\x00\x01\x00\x00", true],
@@ -74,9 +71,7 @@ class PacketTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider isCompleteLengthRTUTypesProvider
-     */
+    #[DataProvider('isCompleteLengthRTUTypesProvider')]
     public function testIsCompleteLengthRTUTypes($binaryData, $expect)
     {
         $is = Packet::isCompleteLengthRTU($binaryData);
