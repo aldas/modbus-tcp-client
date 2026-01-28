@@ -35,7 +35,7 @@ class InternetDomainStreamCreator implements StreamCreator
                 ],
             ];
         }
-        $context = stream_context_create($opts);
+        $context = stream_context_create($opts, null);
 
         $stream = @stream_socket_client(
             $uri,

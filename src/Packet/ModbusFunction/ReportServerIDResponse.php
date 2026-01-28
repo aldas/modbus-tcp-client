@@ -119,7 +119,7 @@ class ReportServerIDResponse extends ProtocolDataUnit implements ModbusResponse
     protected function getLengthInternal(): int
     {
         $serverIDLength = strlen($this->getServerID());
-        $additionalDataLength = strlen($this->getAdditionalData());
+        $additionalDataLength = strlen($this->getAdditionalData() ?? '');
         // size of function code (1 byte) +
         // server id byte count (1 byte) +
         // server id value bytes (N bytes) +

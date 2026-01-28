@@ -7,6 +7,7 @@ use ModbusTcpClient\Packet\ErrorResponse;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleRegisterRequest;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Utils\Endian;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class WriteSingleRegisterRequestTest extends TestCase
@@ -29,7 +30,7 @@ class WriteSingleRegisterRequestTest extends TestCase
         );
     }
 
-    public function validationFailureProvider(): array
+    public static function validationFailureProvider(): array
     {
         return [
             'validation fails over max uint16"' => [65536, 'value is not set or out of range (u)int16: 65536'],
@@ -40,9 +41,7 @@ class WriteSingleRegisterRequestTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider validationFailureProvider
-     */
+    #[DataProvider('validationFailureProvider')]
     public function testValueValidationException($value, $expectedMessage)
     {
         try {

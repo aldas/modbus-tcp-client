@@ -65,7 +65,7 @@ class SerialStreamCreator implements StreamCreator
         $device = $conn->getUri();
 
         $sttyModes = implode(' ', $this->sttyModes);
-        $cmd = escapeshellcmd("stty -F ${device} ${sttyModes}");
+        $cmd = escapeshellcmd("stty -F {$device} {$sttyModes}");
         $sttyResult = exec($cmd);
         if ($sttyResult === false) {
             throw new IOException('stty failed to configure device');

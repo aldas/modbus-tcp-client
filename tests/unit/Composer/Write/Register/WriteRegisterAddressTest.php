@@ -5,6 +5,7 @@ namespace Tests\unit\Composer\Write\Register;
 
 use ModbusTcpClient\Composer\Address;
 use ModbusTcpClient\Composer\Write\Register\WriteRegisterAddress;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class WriteRegisterAddressTest extends TestCase
@@ -17,9 +18,7 @@ class WriteRegisterAddressTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider toBinaryProvider
-     */
+    #[DataProvider('toBinaryProvider')]
     public function testToBinary(string $expectedBinaryString, string $type, $value, $expectedException = null, $skipOn32Bit = false)
     {
         if ($skipOn32Bit && PHP_INT_SIZE === 4) {
@@ -34,7 +33,7 @@ class WriteRegisterAddressTest extends TestCase
         $this->assertEquals($expectedBinaryString, $address->toBinary());
     }
 
-    public function toBinaryProvider()
+    public static function toBinaryProvider(): array
     {
         return [
             'int16 to binary' => ["\xFF\xFF", Address::TYPE_INT16, -1],

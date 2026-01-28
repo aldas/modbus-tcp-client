@@ -8,6 +8,7 @@ use ModbusTcpClient\Exception\OverflowException;
 use ModbusTcpClient\Exception\ParseException;
 use ModbusTcpClient\Utils\Endian;
 use ModbusTcpClient\Utils\Types;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class TypesTest extends TestCase
@@ -494,9 +495,7 @@ class TypesTest extends TestCase
         $this->assertEquals('Sør', $string);
     }
 
-    /**
-     * @dataProvider toInt16Provider
-     */
+    #[DataProvider('toInt16Provider')]
     public function testShouldEncodeToBinaryInt16(string $expectedBinaryString, int $integer, int $endian, $expectedException = null)
     {
         if ($expectedException !== null) {
@@ -505,7 +504,7 @@ class TypesTest extends TestCase
         $this->assertEquals($expectedBinaryString, Types::toInt16($integer, $endian));
     }
 
-    public function toInt16Provider()
+    public static function toInt16Provider(): array
     {
         return [
             'BigEndian: toInt16 1' => ["\x00\x01", 1, Endian::BIG_ENDIAN],
@@ -522,9 +521,7 @@ class TypesTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider toUint16Provider
-     */
+    #[DataProvider('toUint16Provider')]
     public function testShouldEncodeToBinaryUint16(string $expectedBinaryString, int $integer, int $endian, $expectedException = null)
     {
         if ($expectedException !== null) {
@@ -533,7 +530,7 @@ class TypesTest extends TestCase
         $this->assertEquals($expectedBinaryString, Types::toUint16($integer, $endian));
     }
 
-    public function toUint16Provider()
+    public static function toUint16Provider(): array
     {
         return [
             'BigEndian: toInt16 1 (min uint16)' => ["\x00\x01", 1, Endian::BIG_ENDIAN],
@@ -548,9 +545,7 @@ class TypesTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider toInt32Provider
-     */
+    #[DataProvider('toInt32Provider')]
     public function testShouldEncodeToBinaryInt32(string $expectedBinaryString, $integer, int $endian, $expectedException = null)
     {
         if ($expectedException !== null) {
@@ -559,7 +554,7 @@ class TypesTest extends TestCase
         $this->assertEquals($expectedBinaryString, Types::toInt32($integer, $endian));
     }
 
-    public function toInt32Provider()
+    public static function toInt32Provider(): array
     {
         return [
             'BigEndian: toInt32 1' => ["\x00\x00\x00\x01", 1, Endian::BIG_ENDIAN],
@@ -578,9 +573,7 @@ class TypesTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider toUint32Provider
-     */
+    #[DataProvider('toUint32Provider')]
     public function testShouldEncodeToBinaryUint32(string $expectedBinaryString, $integer, int $endian, $expectedException = null)
     {
         if ($expectedException !== null) {
@@ -589,7 +582,7 @@ class TypesTest extends TestCase
         $this->assertEquals($expectedBinaryString, Types::toUint32($integer, $endian));
     }
 
-    public function toUint32Provider()
+    public static function toUint32Provider(): array
     {
         return [
             'BigEndian: toInt32 1' => ["\x00\x00\x00\x01", 1, Endian::BIG_ENDIAN],
@@ -610,9 +603,7 @@ class TypesTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider toInt64Provider
-     */
+    #[DataProvider('toInt64Provider')]
     public function testShouldEncodeToBinaryInt64(string $expectedBinaryString, $integer, int $endian, $skipOn32Bit = false)
     {
         if ($skipOn32Bit && PHP_INT_SIZE === 4) {
@@ -622,7 +613,7 @@ class TypesTest extends TestCase
         $this->assertEquals($expectedBinaryString, Types::toInt64($integer, $endian));
     }
 
-    public function toInt64Provider()
+    public static function toInt64Provider(): array
     {
         return [
             'BigEndianLowWordFirst: toInt64 1' => ["\x00\x01\x00\x00\x00\x00\x00\x00", 1, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
@@ -641,9 +632,7 @@ class TypesTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider toUint64Provider
-     */
+    #[DataProvider('toUint64Provider')]
     public function testShouldEncodeToBinaryUint64(string $expectedBinaryString, $integer, int $endian, $expectedException = null, $skipOn32Bit = false)
     {
         if ($skipOn32Bit && PHP_INT_SIZE === 4) {
@@ -656,7 +645,7 @@ class TypesTest extends TestCase
         $this->assertEquals($expectedBinaryString, Types::toUint64($integer, $endian));
     }
 
-    public function toUint64Provider()
+    public static function toUint64Provider(): array
     {
         return [
             'BigEndianLowWordFirst: toInt64 1' => ["\x00\x01\x00\x00\x00\x00\x00\x00", 1, Endian::BIG_ENDIAN_LOW_WORD_FIRST],
@@ -676,9 +665,7 @@ class TypesTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider toStringProvider
-     */
+    #[DataProvider('toStringProvider')]
     public function testShouldEncodeToBinaryString(string $expectedBinaryString, string $string, int $registersCount, int $endian, $expectedException = null)
     {
         if ($expectedException !== null) {
@@ -687,7 +674,7 @@ class TypesTest extends TestCase
         $this->assertEquals($expectedBinaryString, Types::toString($string, $registersCount, 'cp1252', $endian));
     }
 
-    public function toStringProvider()
+    public static function toStringProvider(): array
     {
         return [
             'empty toString "\x00\x00\x00\x00"' => ["\x00\x00\x00\x00", '', 2, Endian::BIG_ENDIAN],

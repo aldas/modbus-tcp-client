@@ -84,9 +84,9 @@ final class Types
      *
      * @param string $doubleWord binary string to be converted to signed 16 bit integer
      * @param int|null $fromEndian byte and word order for modbus binary data
-     * @return int|float
+     * @return int
      */
-    public static function parseUInt32(string $doubleWord, ?int $fromEndian = null): int|float
+    public static function parseUInt32(string $doubleWord, ?int $fromEndian = null): int
     {
         $byteArray = self::getBytesForInt32Parse($doubleWord, $fromEndian);
         if (PHP_INT_SIZE === 4) {
@@ -149,17 +149,19 @@ final class Types
      */
     private static function uintToSignedInt(int $uint, int $bitSize = 16): int
     {
-        if ($bitSize === 16 && ($uint & 0x8000) > 0) {
-            // This is a negative number.  Invert the bits and add 1 and add negative sign
-            $uint = -((~$uint & 0xFFFF) + 1);
-        } elseif ($bitSize === 32 && ($uint & 0x80000000) > 0) {
-            // This is a negative number.  Invert the bits and add 1 and add negative sign
-            $uint = -((~$uint & 0xFFFFFFFF) + 1);
-        } elseif ($bitSize === 64 && ($uint & 0x8000000000000000) > 0) {
-            // This is a negative number.  Invert the bits and add 1 and add negative sign
-            $uint = -((~$uint & 0xFFFFFFFFFFFFFFFF) + 1);
+        // Mask for 16/32 so higher bits don't leak in (optional but safer)
+        if ($bitSize === 16) {
+            $uint &= 0xFFFF;
+        } elseif ($bitSize === 32) {
+            $uint &= 0xFFFFFFFF;
+        } elseif ($bitSize !== 64) {
+            // $uint already is an int; values >= 2^63 can't be represented as positive anyway.
+            // So if you're truly passing "uint64" values > PHP_INT_MAX, you must represent them differently (string/GMP).
+            throw new \InvalidArgumentException("Unsupported bitSize: $bitSize");
         }
-        return $uint;
+
+        $shift = 64 - $bitSize;
+        return ($uint << $shift) >> $shift;
     }
 
     /**

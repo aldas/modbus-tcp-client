@@ -8,20 +8,19 @@ use ModbusTcpClient\Composer\Read\Register\ReadRegisterAddress;
 use ModbusTcpClient\Exception\InvalidArgumentException;
 use ModbusTcpClient\Packet\ModbusFunction\ReadHoldingRegistersResponse;
 use ModbusTcpClient\Utils\Endian;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ReadRegisterAddressTest extends TestCase
 {
-    /**
-     * @dataProvider sizeProvider
-     */
+    #[DataProvider('sizeProvider')]
     public function testGetSize($type, $expectedSize)
     {
         $address = new ReadRegisterAddress(1, $type);
         $this->assertEquals($expectedSize, $address->getSize());
     }
 
-    public function sizeProvider()
+    public static function sizeProvider(): array
     {
         return [
             'int16 size should be 1' => ['int16', 1],

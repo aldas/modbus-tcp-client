@@ -20,11 +20,12 @@ use ModbusTcpClient\Packet\ModbusFunction\WriteSingleCoilRequest;
 use ModbusTcpClient\Packet\ModbusFunction\WriteSingleRegisterRequest;
 use ModbusTcpClient\Packet\ModbusPacket;
 use ModbusTcpClient\Packet\RequestFactory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class RequestFactoryTest extends TestCase
 {
-    public function everyFunctionTypePacket()
+    public static function everyFunctionTypePacket(): array
     {
         return [
             "ok, parse ReadCoilsRequest" => ["\x00\x01\x00\x00\x00\x06\x10\x01\x00\x6B\x00\x03", ReadCoilsRequest::class],
@@ -42,9 +43,7 @@ class RequestFactoryTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider everyFunctionTypePacket
-     */
+    #[DataProvider('everyFunctionTypePacket')]
     public function testShouldParseRequestPacket($packet, $expectedClass)
     {
         $request = RequestFactory::parseRequest($packet);
